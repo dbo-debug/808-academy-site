@@ -91,12 +91,18 @@ export async function GET(req: NextRequest) {
     ];
 
     return NextResponse.json({
-      course: { slug: course_slug, title: course_slug.replace("-", " ").replace(/\b\w/g, c => c.toUpperCase()) },
-      progress: { done, total, percent },
-      gpa: { percent: gpaPct },
-      links,
-      announcements,
-    });
+  course: {
+    slug: course_slug,
+    title: course_slug
+      .replace("-", " ")
+      .replace(/\b\w/g, (c: string) => c.toUpperCase()),
+  },
+  progress: { done, total, percent },
+  gpa: { percent: gpaPct },
+  links,
+  announcements,
+});
+
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || "Unknown error" }, { status: 500 });
   }
