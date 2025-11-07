@@ -1,109 +1,120 @@
 // src/app/students/api/lounge/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { lessons as mpLessons } from "../../music-production/data/lessons";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+export const runtime = "nodejs";
 
-const COURSE_TOTALS: Record<string, number> = {
-  "music-production": mpLessons.length,
-  // add more course totals as they go live
-};
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-function client(token: string) {
-  return createClient(supabaseUrl, supabaseAnon, {
+/** Create a supabase client bound to the incoming user's auth token */
+function sb(token: string): SupabaseClient {
+  return createClient(SUPABASE_URL, SUPABASE_ANON, {
     global: { headers: { Authorization: `Bearer ${token}` } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
 
+/** "music-production" → "Music Production" */
+const toTitle = (slug: string): string =>
+  slug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+
+type LoungeResponse = {
+  course: { slug: string; title: string };
+  progress: { done: number; total: number; percent: number };
+  gpa: { percent: number };
+  links: Array<{ label: string; href: string }>;
+  announcements: Array<{ id: string; title: string; body?: string }>;
+};
+
+/**
+ * GET /students/api/lounge
+ * optional query: ?course=<slug>
+ * Requires Authorization: Bearer <token>
+ */
 export async function GET(req: NextRequest) {
   try {
-    const auth = req.headers.get("authorization") || "";
-    const token = auth.replace(/^Bearer\s+/i, "").trim();
-    if (!token) return NextResponse.json({ error: "Missing auth" }, { status: 401 });
+    const authHeader = req.headers.get("authorization") ?? "";
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    if (!token) {
+      return NextResponse.json({ error: "Missing auth" }, { status: 401 });
+    }
 
-    const supabase = client(token);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const supabase = sb(token);
+    const { data: auth } = await supabase.auth.getUser();
+    const user = auth?.user;
+    if (!user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
-    // 1) find current enrollment (active)
-    const { data: enroll } = await supabase
-      .from("enrollments")
-      .select("course_slug, is_active, created_at")
-      .eq("user_id", user.id)
-      .eq("is_active", true)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // Which course? query param takes precedence, else active enrollment, else default
+    const url = new URL(req.url);
+    const qCourse = url.searchParams.get("course") ?? undefined;
 
-    // default to music-production if not enrolled yet
-    const course_slug = enroll?.course_slug || "music-production";
+    // Try to read active enrollment
+    let course_slug: string | undefined = qCourse;
+    if (!course_slug) {
+      const { data: enr, error: enrErr } = await supabase
+        .from("enrollments")
+        .select("course_slug, is_active")
+        .eq("user_id", user.id)
+        .order("is_active", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-    // 2) progress: count completed lessons for this user & course
-    const { data: progRows } = await supabase
-      .from("lesson_progress")
+      if (!enrErr && enr?.course_slug) course_slug = enr.course_slug;
+    }
+    if (!course_slug) course_slug = "music-production";
+
+    // Progress summary (best-effort; if tables are empty, fall back to zeros)
+    let done = 0;
+    let total = 0;
+
+    // total lessons from our lessons table (optional)
+    const { data: lessons } = await supabase
+      .from("lessons")
+      .select("id")
+      .eq("course_slug", course_slug);
+
+    total = Array.isArray(lessons) ? lessons.length : 8; // fallback to 8
+
+    // completed from progress table (optional)
+    const { data: prog } = await supabase
+      .from("progress")
       .select("lesson_id")
       .eq("user_id", user.id)
       .eq("course_slug", course_slug)
       .eq("completed", true);
 
-    const done = new Set((progRows || []).map(r => r.lesson_id)).size;
-    const total = COURSE_TOTALS[course_slug] ?? 0;
+    done = Array.isArray(prog) ? prog.length : 0;
+
     const percent = total > 0 ? Math.round((done / total) * 100) : 0;
 
-    // 3) GPA (simple): average of latest quiz attempts for this course
-    //    GPA here = average % score (0–100). Adjust to a 4.0 scale later if you like.
-    const { data: latestAttempts } = await supabase
-      .from("quiz_attempts")
-      .select("lesson_id, score, max_score, created_at")
-      .eq("user_id", user.id)
-      .eq("course_slug", course_slug)
-      .order("created_at", { ascending: false });
+    // simple GPA proxy for now: equal to progress percent
+    const gpaPct = percent;
 
-    // Keep only the latest attempt per lesson
-    const latestByLesson = new Map<string, { score: number; max_score: number }>();
-    for (const a of latestAttempts || []) {
-      if (!latestByLesson.has(a.lesson_id)) {
-        latestByLesson.set(a.lesson_id, { score: a.score, max_score: a.max_score });
-      }
-    }
-    let gpaPct = 0;
-    if (latestByLesson.size > 0) {
-      const sum = [...latestByLesson.values()].reduce((acc, x) => acc + (x.score / Math.max(1, x.max_score)), 0);
-      gpaPct = Math.round((sum / latestByLesson.size) * 100);
-    }
-
-    // 4) surface quick links (customize as needed)
-    const links = {
-      contactTeacher: "mailto:teacher@808academy.com?subject=Student%20Question",
-      contactTech: "mailto:tech@808academy.com?subject=Tech%20Support",
-      contactAdmin: "mailto:admin@808academy.com?subject=Admin%20Request",
-      discordDownload: "https://discord.com/download",
-      discordServer: "https://discord.gg/your-server-code",
-      tutoringBooking: "https://calendly.com/your-org/tutoring",
-    };
-
-    // 5) announcements (stub — you can source from DB later)
-    const announcements = [
-      { id: "a1", title: "Welcome to the Lounge", body: "Check the Knowledge Base and book tutoring if you need a hand.", date: new Date().toISOString() },
+    const links: LoungeResponse["links"] = [
+      { label: "Student Discord", href: "/students/discord" },
+      { label: "Contact Teacher", href: "mailto:teacher@the808academy.com" },
+      { label: "Tech Support", href: "mailto:support@the808academy.com" },
+      { label: "Book Tutoring", href: "/tutoring" },
     ];
 
-    return NextResponse.json({
-  course: {
-    slug: course_slug,
-    title: course_slug
-      .replace("-", " ")
-      .replace(/\b\w/g, (c: string) => c.toUpperCase()),
-  },
-  progress: { done, total, percent },
-  gpa: { percent: gpaPct },
-  links,
-  announcements,
-});
+    const announcements: LoungeResponse["announcements"] = [
+      { id: "welcome", title: "Welcome to the Student Lounge" },
+    ];
 
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || "Unknown error" }, { status: 500 });
+    const body: LoungeResponse = {
+      course: { slug: course_slug, title: toTitle(course_slug) },
+      progress: { done, total, percent },
+      gpa: { percent: gpaPct },
+      links,
+      announcements,
+    };
+
+    return NextResponse.json(body);
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Unknown error";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
