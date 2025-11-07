@@ -2,12 +2,6 @@
 import type { Metadata } from "next";
 
 type Search = { [key: string]: string | string[] | undefined };
-type Props = { searchParams: Search | Promise<Search> };
-
-// supports both plain object and Promise (Next 15)
-async function resolve<T>(v: T | Promise<T>): Promise<T> {
-  return typeof (v as any)?.then === "function" ? await (v as Promise<T>) : (v as T);
-}
 
 export const metadata: Metadata = {
   title: "Schedule | 808 Academy",
@@ -74,14 +68,19 @@ function defaultMonth() {
   return ALL_MONTHS[idx];
 }
 
-export default async function SchedulePage({ searchParams }: Props) {
-  const q = await resolve(searchParams);
+export default async function SchedulePage({
+  // ✅ Next 15 expects a Promise here; we await it below.
+  searchParams,
+}: {
+  searchParams: Promise<Search>;
+}) {
+  const q = await searchParams;
+
   const program = (typeof q.program === "string" ? q.program : "Course") as
     | "Course"
     | "VIP"
     | "Tutoring";
 
-  // Calendly links via env so you can change them without code changes
   const COURSE_CAL =
     process.env.NEXT_PUBLIC_CALENDLY_COURSE_4WK ||
     process.env.NEXT_PUBLIC_CALENDLY_URL ||
@@ -139,7 +138,6 @@ export default async function SchedulePage({ searchParams }: Props) {
             <div className="text-xl font-semibold mb-4">Lock your session</div>
 
             <form action="/apply/pay" method="get" className="space-y-4">
-              {/* carry program forward */}
               <input type="hidden" name="program" value={program} />
 
               <div>
