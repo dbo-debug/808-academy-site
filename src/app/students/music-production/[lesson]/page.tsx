@@ -5,20 +5,28 @@ import MediaPlayer from "../../components/MediaPlayer";
 import ResourceDownloads from "../../components/ResourceDownloads";
 import LessonNavigation from "../../components/LessonNavigation";
 import MarkCompleteButton from "../../components/MarkCompleteButton";
-import Quiz from "../../components/Quiz";
 import LessonContent from "../../components/LessonContent";
+import Quiz from "../../components/Quiz";
 import BookShell from "../../components/BookShell";
 
+type Search = { [key: string]: string | string[] | undefined };
 type Params = { lesson: string };
 
-async function resolveParams(p: Params | Promise<Params>): Promise<Params> {
-  return typeof (p as any)?.then === "function" ? await (p as Promise<Params>) : (p as Params);
-}
+export default async function LessonPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
+  const { lesson } = await params;
 
-export default async function LessonPage({ params }: { params: Params | Promise<Params> }) {
-  const { lesson } = await resolveParams(params);
   const current = lessonById(lesson);
-  if (!current) notFound();
+  if (!current) return notFound();
+
+  const normalizedResources =
+    (current.resources ?? []).map((r: any) => ({
+      name: r.name ?? r.label,
+      url: r.url ?? r.href,
+    })) ?? [];
 
   const toc =
     current.id === "sound-hearing"
@@ -56,15 +64,11 @@ export default async function LessonPage({ params }: { params: Params | Promise<
 
       <BookShell title={current.title} subtitle={current.description} toc={toc}>
         <LessonContent lessonId={current.id} />
-        <ResourceDownloads resources={current.resources ?? []} />
+        <ResourceDownloads resources={normalizedResources} />
 
         {current.quizId ? (
           <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-            <Quiz
-              quizId={current.quizId}
-              courseSlug="music-production"
-              lessonId={current.id}
-            />
+            <Quiz quizId={current.quizId} />
           </div>
         ) : null}
 
