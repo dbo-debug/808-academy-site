@@ -1,8 +1,15 @@
 /* eslint-disable react/no-unescaped-entities */
+import type { Metadata } from "next";
 
 type Search = { [key: string]: string | string[] | undefined };
+type Props = { searchParams: Search | Promise<Search> };
 
-export const metadata = {
+// supports both plain object and Promise (Next 15)
+async function resolve<T>(v: T | Promise<T>): Promise<T> {
+  return typeof (v as any)?.then === "function" ? await (v as Promise<T>) : (v as T);
+}
+
+export const metadata: Metadata = {
   title: "Schedule | 808 Academy",
   description: "Step 2 of 3 — Pick your start date, then complete payment.",
 };
@@ -63,21 +70,16 @@ const ALL_MONTHS = [
 
 function defaultMonth() {
   const now = new Date();
-  // default to next month (or December if at year-end)
-  const idx = Math.min(now.getMonth() + 1, 11);
+  const idx = Math.min(now.getMonth() + 1, 11); // next month (cap at Dec)
   return ALL_MONTHS[idx];
 }
 
-export default function SchedulePage({
-  searchParams,
-}: {
-  searchParams: Search;
-}) {
-  const program =
-    (typeof searchParams.program === "string" ? searchParams.program : "Course") as
-      | "Course"
-      | "VIP"
-      | "Tutoring";
+export default async function SchedulePage({ searchParams }: Props) {
+  const q = await resolve(searchParams);
+  const program = (typeof q.program === "string" ? q.program : "Course") as
+    | "Course"
+    | "VIP"
+    | "Tutoring";
 
   // Calendly links via env so you can change them without code changes
   const COURSE_CAL =
@@ -90,9 +92,6 @@ export default function SchedulePage({
     "";
 
   const url = program === "VIP" ? VIP_CAL : COURSE_CAL;
-
-  // We’ll render a simple (server-rendered) select for month
-  // and carry it to the Payment page via query string.
   const chosenMonth = defaultMonth();
 
   return (
@@ -139,42 +138,38 @@ export default function SchedulePage({
             <div className="text-sm text-gray-300 mb-2">Step 2 of 3</div>
             <div className="text-xl font-semibold mb-4">Lock your session</div>
 
-            <div className="mb-4">
-              <label className="block text-sm text-gray-300 mb-1">
-                Session month
-              </label>
-              {/* Basic select that defaults to next month.
-                  It posts forward via the Continue button's link. */}
-              <select
-                id="session-month"
-                defaultValue={chosenMonth}
-                className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
-              >
-                {ALL_MONTHS.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <form action="/apply/pay" method="get" className="space-y-4">
+              {/* carry program forward */}
+              <input type="hidden" name="program" value={program} />
 
-            <button
-              onClick={() => {
-                const sel = (document.getElementById("session-month") as HTMLSelectElement)
-                  ?.value;
-                const u = new URL("/apply/pay", window.location.origin);
-                u.searchParams.set("program", program);
-                if (sel) u.searchParams.set("month", sel);
-                window.location.href = u.toString();
-              }}
-              className="w-full rounded-full bg-teal-400 px-5 py-3 font-semibold text-black hover:bg-teal-300 transition"
-            >
-              Continue to Payment
-            </button>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1" htmlFor="session-month">
+                  Session month
+                </label>
+                <select
+                  id="session-month"
+                  name="month"
+                  defaultValue={chosenMonth}
+                  className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
+                >
+                  {ALL_MONTHS.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full rounded-full bg-teal-400 px-5 py-3 font-semibold text-black hover:bg-teal-300 transition"
+              >
+                Continue to Payment
+              </button>
+            </form>
 
             <p className="text-xs text-gray-400 mt-4">
-              You can adjust your slot later through the Calendly confirmation
-              email.
+              You can adjust your slot later through the Calendly confirmation email.
             </p>
           </aside>
         </div>
