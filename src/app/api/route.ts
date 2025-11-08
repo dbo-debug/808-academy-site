@@ -1,10 +1,11 @@
-// src/app/api/apply/route.ts
-import { NextResponse } from "next/server";
+// src/app/api/route.ts  (root /api endpoint)
+import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic"; // prevent build-time evaluation
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
     if (!body) {
@@ -32,10 +33,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // --- Send email via Resend (admin inbox) ---
-    const toAdmin = process.env.ENROLLMENT_INBOX || "admin@the808academy.com";
-    const from = process.env.ENROLLMENT_FROM || "808 Academy <admin@the808academy.com>";
-
+    // Build email
     const subject = `New Application: ${firstName} ${lastName} • ${program ?? "Program"}`;
     const html = `
       <h2>New Application</h2>
@@ -52,19 +50,20 @@ export async function POST(req: Request) {
       <p style="margin-top:12px;color:#888">Submitted: ${new Date().toISOString()}</p>
     `;
 
-    // If you want to test the 405 fix first, comment this block:
-    if (process.env.RESEND_API_KEY) {
-      await resend.emails.send({
-        from,
-        to: toAdmin,
-        subject,
-        html,
-      });
+    // Safe Resend usage: only init inside the handler and only if configured
+    const key = process.env.RESEND_API_KEY;
+    const toAdmin = process.env.ENROLLMENT_INBOX || "admin@the808academy.com";
+    const from = process.env.ENROLLMENT_FROM || "808 Academy <admin@the808academy.com>";
+
+    if (key) {
+      const resend = new Resend(key);
+      await resend.emails.send({ from, to: toAdmin, subject, html });
     }
 
-    // Optional: fire-and-forget Zapier webhook (no await)
-    if (process.env.ZAPIER_ENROLL_WEBHOOK_URL) {
-      fetch(process.env.ZAPIER_ENROLL_WEBHOOK_URL, {
+    // Optional Zapier hook (fire-and-forget)
+    const zap = process.env.ZAPIER_ENROLL_WEBHOOK_URL;
+    if (zap) {
+      fetch(zap, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...body, createdAt: new Date().toISOString() }),
@@ -72,10 +71,16 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (err: any) {
-    return NextResponse.json(
-      { ok: false, error: err?.message || "Server error" },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Server error";
+    return NextResponse.json({ ok: false, error: msg }, { status: 500 });
   }
+}
+
+// Optional quick health check so hitting GET /api returns something useful
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    emailConfigured: Boolean(process.env.RESEND_API_KEY),
+  });
 }
