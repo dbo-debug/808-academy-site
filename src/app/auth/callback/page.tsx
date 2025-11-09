@@ -18,7 +18,7 @@ export default function AuthCallback() {
         if (code) {
           const { error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) throw error;
-          router.replace("/students/lounge");
+          router.replace("/students");
           return;
         }
 
@@ -26,7 +26,7 @@ export default function AuthCallback() {
         // Let supabase-js read the hash and populate the session on first call.
         const { data: s1 } = await supabase.auth.getSession();
         if (s1.session) {
-          router.replace("/students/lounge");
+          router.replace("/students");
           return;
         }
 
