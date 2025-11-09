@@ -9,19 +9,38 @@ export default function AuthCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    // When this page loads, supabase-js sees the #access_token in the URL
-    // and sets the session. We then send the user into /students.
-    (async () => {
-      // First check immediately
-      let { data: { session } } = await supabase.auth.getSession();
-      if (session) return router.replace("/students");
+    const run = async () => {
+      try {
+        const url = new URL(window.location.href);
 
-      // Give the client a beat to process the hash, then check again
-      setTimeout(async () => {
-        const { data: { session: s2 } } = await supabase.auth.getSession();
-        router.replace(s2 ? "/students" : "/auth/signin");
-      }, 400);
-    })();
+        // 1) Newer Supabase flow: ?code=...
+        const code = url.searchParams.get("code");
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) throw error;
+          router.replace("/students/lounge");
+          return;
+        }
+
+        // 2) Hash-token flow: #access_token=...
+        // Let supabase-js read the hash and populate the session on first call.
+        const { data: s1 } = await supabase.auth.getSession();
+        if (s1.session) {
+          router.replace("/students/lounge");
+          return;
+        }
+
+        // Give it a beat to process the hash, then check again
+        setTimeout(async () => {
+          const { data: s2 } = await supabase.auth.getSession();
+          router.replace(s2.session ? "/students/lounge" : "/auth/signin");
+        }, 400);
+      } catch {
+        router.replace("/auth/signin");
+      }
+    };
+
+    run();
   }, [router]);
 
   return (
