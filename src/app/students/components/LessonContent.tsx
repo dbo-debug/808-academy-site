@@ -1,8 +1,222 @@
 // src/app/students/components/LessonContent.tsx
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Callout from "./Callout";
 import Figure from "./Figure";
+
+/* -------------------------------------------------------
+   Lightweight local UI helpers so you don't need new files
+   ------------------------------------------------------- */
+
+function DiagramCard({
+  src,
+  alt,
+  caption,
+}: {
+  src: string;
+  alt: string;
+  caption?: string;
+}) {
+  return (
+    <figure className="rounded-2xl border border-white/10 bg-white/[0.02] p-3">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt={alt} className="w-full rounded-xl" />
+      {caption ? (
+        <figcaption className="mt-2 text-sm text-white/70">{caption}</figcaption>
+      ) : null}
+    </figure>
+  );
+}
+
+function AudioPlay({ src, label }: { src: string; label?: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+      {label ? <div className="mb-2 text-sm text-white/80">{label}</div> : null}
+      <audio controls className="w-full">
+        <source src={src} />
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  );
+}
+
+/** Very small WebAudio ADSR playground */
+function InteractiveADSR() {
+  const [a, setA] = useState(0.02);
+  const [d, setD] = useState(0.2);
+  const [s, setS] = useState(0.7);
+  const [r, setR] = useState(0.4);
+  const ctxRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    return () => {
+      ctxRef.current?.close().catch(() => {});
+    };
+  }, []);
+
+  const trigger = async () => {
+    if (!ctxRef.current) ctxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const ctx = ctxRef.current;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.value = 220;
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+
+    // ADSR envelope
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(1, now + a);
+    gain.gain.linearRampToValueAtTime(s, now + a + d);
+    gain.gain.setValueAtTime(s, now + a + d + 0.3); // short hold
+    gain.gain.linearRampToValueAtTime(0, now + a + d + 0.3 + r);
+
+    osc.start(now);
+    osc.stop(now + a + d + 0.3 + r + 0.05);
+  };
+
+  const Slider = ({
+    label,
+    value,
+    onChange,
+    min = 0,
+    max = 2,
+    step = 0.01,
+  }: {
+    label: string;
+    value: number;
+    onChange: (v: number) => void;
+    min?: number;
+    max?: number;
+    step?: number;
+  }) => (
+    <label className="flex items-center gap-3 text-sm">
+      <span className="w-10 text-white/70">{label}</span>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        className="w-full"
+      />
+      <span className="w-12 text-right tabular-nums text-white/60">
+        {value.toFixed(2)}
+      </span>
+    </label>
+  );
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+      <div className="mb-3 text-sm font-medium text-white/90">ADSR Playground</div>
+      <div className="grid gap-2">
+        <Slider label="A" value={a} onChange={setA} max={1} />
+        <Slider label="D" value={d} onChange={setD} max={1.5} />
+        <Slider label="S" value={s} onChange={setS} max={1} />
+        <Slider label="R" value={r} onChange={setR} max={2} />
+      </div>
+      <button
+        onClick={trigger}
+        className="mt-4 rounded-full bg-cyan-400 px-4 py-2 text-sm font-semibold text-black hover:bg-cyan-300"
+      >
+        Play Note
+      </button>
+    </div>
+  );
+}
+
+/** Simple stereo panner using WebAudio Oscillator + StereoPannerNode */
+function StereoPanDemo() {
+  const [pan, setPan] = useState(0);
+  const [isOn, setIsOn] = useState(false);
+  const ctxRef = useRef<AudioContext | null>(null);
+  const oscRef = useRef<OscillatorNode | null>(null);
+  const panRef = useRef<StereoPannerNode | null>(null);
+
+  const start = async () => {
+    if (!ctxRef.current) ctxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const ctx = ctxRef.current;
+
+    const osc = ctx.createOscillator();
+    const panner = ctx.createStereoPanner();
+    const gain = ctx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.value = 440;
+    panner.pan.value = pan;
+    gain.gain.value = 0.1; // gentle
+
+    osc.connect(panner);
+    panner.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    oscRef.current = osc;
+    panRef.current = panner;
+    setIsOn(true);
+  };
+
+  const stop = () => {
+    oscRef.current?.stop();
+    oscRef.current = null;
+    setIsOn(false);
+  };
+
+  useEffect(() => {
+    if (panRef.current) panRef.current.pan.value = pan;
+  }, [pan]);
+
+  useEffect(() => {
+    return () => {
+      try {
+        oscRef.current?.stop();
+        ctxRef.current?.close();
+      } catch {}
+    };
+  }, []);
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+      <div className="mb-2 text-sm font-medium text-white/90">Stereo Panner</div>
+      <label className="flex items-center gap-3 text-sm">
+        <span className="w-8 text-white/70">Pan</span>
+        <input
+          type="range"
+          min={-1}
+          max={1}
+          step={0.01}
+          value={pan}
+          onChange={(e) => setPan(parseFloat(e.target.value))}
+          className="w-full"
+        />
+        <span className="w-14 text-right tabular-nums text-white/60">{pan.toFixed(2)}</span>
+      </label>
+      <div className="mt-3 flex gap-2">
+        {!isOn ? (
+          <button onClick={start} className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-semibold text-black hover:bg-cyan-300">
+            Start
+          </button>
+        ) : (
+          <button onClick={stop} className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20">
+            Stop
+          </button>
+        )}
+      </div>
+      <p className="mt-2 text-xs text-white/60">Tip: pan hard L/R and then bring it back to center.</p>
+    </div>
+  );
+}
+
+/* =======================================================================
+   MAIN CONTENT
+   ======================================================================= */
 
 export default function LessonContent({ lessonId }: { lessonId: string }) {
   // ---------------------------
@@ -27,6 +241,21 @@ export default function LessonContent({ lessonId }: { lessonId: string }) {
           <Figure caption="Air molecules: compressions (dense) and rarefactions (sparse) radiating from a vibrating source.">
             <div className="aspect-[16/9] w-full" />
           </Figure>
+
+          {/* NEW: two illustrative diagrams */}
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <DiagramCard
+              src="/assets/sound-hearing/diagrams/soundwave-diagram.png"
+              alt="Sound wave diagram"
+              caption="Compressions & rarefactions radiating from a source"
+            />
+            <DiagramCard
+              src="/assets/sound-hearing/diagrams/real-world-dBs.png"
+              alt="Real-world dB levels"
+              caption="Approximate SPL of common sounds"
+            />
+          </div>
+
           <Callout title="Try this" tone="info">
             Watch the “Air Molecules &amp; Atmospheric Pressure” animation, then pause and point out where compressions
             and rarefactions occur.
@@ -46,6 +275,18 @@ export default function LessonContent({ lessonId }: { lessonId: string }) {
             their average positions.
           </p>
           <Callout title="Watch">“Vocal Cords in Action” — stroboscopic view of the voice setting air into motion.</Callout>
+
+          {/* NEW: quick sine comparisons */}
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <AudioPlay
+              src="/assets/sound-hearing/sinwave-samples/500HZ-SigGen_01-01.wav"
+              label="500 Hz sine"
+            />
+            <AudioPlay
+              src="/assets/sound-hearing/sinwave-samples/1000HZ-SigGen_02-01.wav"
+              label="1000 Hz sine"
+            />
+          </div>
         </section>
 
         {/* WAVEFORM CHARACTERISTICS */}
@@ -67,6 +308,25 @@ export default function LessonContent({ lessonId }: { lessonId: string }) {
             Drag one waveform against another to hear comb-filtering as phase shifts. Try moving a mic a few centimeters
             in a two-mic setup to hear the real-world effect.
           </Callout>
+
+          {/* NEW: diagram + pitch A/B */}
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <DiagramCard
+              src="/assets/sound-hearing/diagrams/waveform-diagram.png"
+              alt="Waveform anatomy"
+              caption="Amplitude, frequency, wavelength, period, velocity, phase"
+            />
+            <div className="space-y-3">
+              <AudioPlay
+                src="/assets/sound-hearing/sinwave-samples/150HZ-SigGen_01-01.wav"
+                label="Low pitch (150 Hz)"
+              />
+              <AudioPlay
+                src="/assets/sound-hearing/sinwave-samples/1500HZ-SigGen_01-01.wav"
+                label="High pitch (1500 Hz)"
+              />
+            </div>
+          </div>
         </section>
 
         {/* LOUDNESS, TIMBRE, ENVELOPES */}
@@ -78,6 +338,11 @@ export default function LessonContent({ lessonId }: { lessonId: string }) {
           <Figure caption="Spectrum analyzer: sine (no harmonics) vs saw (rich harmonics).">
             <div className="aspect-[16/9] w-full" />
           </Figure>
+
+          {/* NEW: ADSR playground */}
+          <div className="mt-6">
+            <InteractiveADSR />
+          </div>
         </section>
 
         {/* HOW WE HEAR */}
@@ -88,6 +353,21 @@ export default function LessonContent({ lessonId }: { lessonId: string }) {
             <em> incus</em>, and <em> stapes</em>, and reaches the <strong>cochlea</strong>, where hair cells tuned to different
             frequencies convert motion into electrical signals for the brain.
           </p>
+
+          {/* NEW: ear diagrams */}
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <DiagramCard
+              src="/assets/sound-hearing/diagrams/ear-diagram-labeled.png"
+              alt="Ear diagram labeled"
+              caption="Outer, middle, inner ear pathway"
+            />
+            <DiagramCard
+              src="/assets/sound-hearing/diagrams/cochlea-diagram.png"
+              alt="Cochlea diagram"
+              caption="Hair cells transduce motion to nerve signals"
+            />
+          </div>
+
           <Callout title="Protect Your Ears" tone="warn">
             Hair cells don’t regenerate. Use musician’s earplugs, take breaks, and mix around 85–95 dB SPL.
           </Callout>
@@ -102,6 +382,14 @@ export default function LessonContent({ lessonId }: { lessonId: string }) {
           <p>Overlapping material hides detail. Create space with arrangement, panning, subtractive EQ, and dynamics.</p>
           <h3 className="mt-4">Beats</h3>
           <p>Two nearby frequencies create pulsing—useful for tuning and phase checks.</p>
+
+          {/* NEW: Shepard tone clip */}
+          <div className="mt-4">
+            <AudioPlay
+              src="/assets/sound-hearing/Shepard-Tone.mp3"
+              label="Shepard tone (illusory ascent)"
+            />
+          </div>
         </section>
 
         {/* STEREO IMAGING */}
@@ -112,6 +400,16 @@ export default function LessonContent({ lessonId }: { lessonId: string }) {
             <li><strong>Depth:</strong> front–back via brightness, level, pre-delay, and reverb.</li>
             <li><strong>Focus:</strong> kick, bass, lead vocal must remain clear in mono.</li>
           </ul>
+
+          {/* NEW: pan demo + ear safety */}
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <StereoPanDemo />
+            <DiagramCard
+              src="/assets/sound-hearing/diagrams/ear-safety-diagram.png"
+              alt="Ear safety diagram"
+              caption="Safe listening levels & exposure time"
+            />
+          </div>
         </section>
 
         {/* REVIEW */}

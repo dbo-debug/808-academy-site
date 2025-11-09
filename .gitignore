@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# large media will live in storage, not git
+public/assets/**/*.mov
+public/assets/**/*.mp4
+public/assets/**/*.wav
