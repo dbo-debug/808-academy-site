@@ -10,39 +10,65 @@ export default function SignInPage() {
   const [pwd, setPwd] = useState("");
   const [mode, setMode] = useState<"magic" | "password">("magic");
   const [msg, setMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // ---- MAGIC LINK SIGN-IN ----
+  const siteUrl =
+    (typeof window === "undefined"
+      ? process.env.NEXT_PUBLIC_SITE_URL
+      : process.env.NEXT_PUBLIC_SITE_URL) || // prefer env when present
+    (typeof window !== "undefined" ? window.location.origin : "");
+
+  const redirectTo = `${siteUrl}/auth/callback`;
+
   const sendMagic = async () => {
     setMsg(null);
-
-    // Use current site origin or fallback for SSR
-    const origin =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : process.env.NEXT_PUBLIC_SITE_URL!;
-
-    // 👇 Redirect users directly to Student Lounge after magic link login
-    const redirectTo = `${origin}/students/lounge`;
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: redirectTo },
-    });
-
-    if (error) return setMsg(error.message);
-    setMsg("✅ Magic link sent! Check your email.");
+    if (!email) {
+      setMsg("Please enter your email.");
+      return;
+    }
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: redirectTo },
+      });
+      if (error) {
+        setMsg(error.message);
+      } else {
+        setMsg("Magic link sent! Check your email.");
+      }
+    } catch (e: any) {
+      setMsg(e?.message || "Something went wrong sending the magic link.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ---- EMAIL + PASSWORD SIGN-IN ----
   const signWithPassword = async () => {
     setMsg(null);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password: pwd,
-    });
-    if (error) return setMsg(error.message);
-    if (data.user) router.push("/students/lounge"); // also redirect to lounge here
+    if (!email || !pwd) {
+      setMsg("Please enter your email and password.");
+      return;
+    }
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password: pwd,
+      });
+      if (error) {
+        setMsg(error.message);
+      } else if (data.user) {
+        router.push("/students");
+      } else {
+        setMsg("Unable to sign in. Please try again.");
+      }
+    } catch (e: any) {
+      setMsg(e?.message || "Sign-in failed.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,7 +77,6 @@ export default function SignInPage() {
         <h1 className="text-2xl font-semibold mb-2">Sign in</h1>
         <p className="text-white/60 mb-6">Access the 808 Academy student portal.</p>
 
-        {/* Toggle mode */}
         <div className="mb-4 flex gap-2">
           <button
             className={`rounded-lg px-3 py-1.5 border ${
@@ -60,6 +85,7 @@ export default function SignInPage() {
                 : "border-white/10 text-white/70"
             }`}
             onClick={() => setMode("magic")}
+            type="button"
           >
             Magic link
           </button>
@@ -70,12 +96,12 @@ export default function SignInPage() {
                 : "border-white/10 text-white/70"
             }`}
             onClick={() => setMode("password")}
+            type="button"
           >
             Email & password
           </button>
         </div>
 
-        {/* Email input */}
         <label className="block text-sm text-white/70 mb-1">Email</label>
         <input
           className="mb-3 w-full rounded-lg bg-black/40 border border-white/10 p-2 outline-none"
@@ -83,9 +109,9 @@ export default function SignInPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@email.com"
+          autoComplete="email"
         />
 
-        {/* Password input (only in password mode) */}
         {mode === "password" && (
           <>
             <label className="block text-sm text-white/70 mb-1">Password</label>
@@ -95,29 +121,41 @@ export default function SignInPage() {
               value={pwd}
               onChange={(e) => setPwd(e.target.value)}
               placeholder="••••••••"
+              autoComplete="current-password"
             />
           </>
         )}
 
-        {/* Buttons */}
         {mode === "magic" ? (
           <button
             onClick={sendMagic}
-            className="w-full rounded-lg border border-cyan-400/40 px-3 py-2 text-cyan-300 hover:bg-cyan-400/10"
+            disabled={loading}
+            className={`w-full rounded-lg border border-cyan-400/40 px-3 py-2 text-cyan-300 hover:bg-cyan-400/10 ${
+              loading ? "opacity-60 cursor-not-allowed" : ""
+            }`}
+            type="button"
           >
-            Send magic link
+            {loading ? "Sending…" : "Send magic link"}
           </button>
         ) : (
           <button
             onClick={signWithPassword}
-            className="w-full rounded-lg border border-cyan-400/40 px-3 py-2 text-cyan-300 hover:bg-cyan-400/10"
+            disabled={loading}
+            className={`w-full rounded-lg border border-cyan-400/40 px-3 py-2 text-cyan-300 hover:bg-cyan-400/10 ${
+              loading ? "opacity-60 cursor-not-allowed" : ""
+            }`}
+            type="button"
           >
-            Sign in
+            {loading ? "Signing in…" : "Sign in"}
           </button>
         )}
 
-        {/* Status message */}
         {msg && <p className="mt-3 text-sm text-white/70">{msg}</p>}
+
+        {/* Dev helper: shows where magic link will return */}
+        <p className="mt-4 text-xs text-white/40">
+          Redirect target: <span className="text-white/60">{redirectTo}</span>
+        </p>
       </div>
     </div>
   );
