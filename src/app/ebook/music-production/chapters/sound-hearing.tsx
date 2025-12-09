@@ -76,12 +76,12 @@ export default function SoundHearingChapter() {
     <>
       <div id="top" className="space-y-12">
         {/* HERO / TITLE PAGE */}
-        <section className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-br from-slate-950 via-black to-slate-950 p-6 sm:p-10">
+        <section className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-br from-slate-950 via-black to-slate-950">
           {/* Background video */}
           <div className="pointer-events-none absolute inset-0 opacity-35">
             <video
               className="h-full w-full object-cover"
-              src="/assets/sound-hearing/sound-is-vibration-animations/speaker-vibration.mp4"
+              src="/assets/music-production/sound-hearing/images/sound-bkgrnd.mp4"
               autoPlay
               loop
               muted
@@ -91,98 +91,112 @@ export default function SoundHearingChapter() {
           </div>
 
           {/* Foreground content */}
-          <div className="relative z-10 flex flex-col gap-8 sm:flex-row sm:items-center">
-            <div className="flex-1 space-y-4">
-              <p className="inline-flex items-center rounded-full border border-emerald-500/40 bg-black/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
-                Pre-Class • Sound &amp; Hearing Fundamentals
-              </p>
-              <h2 className="text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl">
-                Sound &amp; Hearing Fundamentals
-              </h2>
-              <p className="max-w-xl text-sm text-slate-200 sm:text-base">
-                Before you tweak a single plug-in, you need to understand the air
-                around you, how vibration becomes sound, how your ears decode it,
-                and how your brain decides what to pay attention to. This pre-lesson
-                is your launchpad for everything in Music Production.
-              </p>
+          <div className="relative z-10 space-y-8 p-6 sm:p-10">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-3">
+                <p className="inline-flex items-center rounded-full border border-emerald-500/40 bg-black/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+                  Pre-Class • Sound &amp; Hearing Fundamentals
+                </p>
+                <h2 className="text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl">
+                  Sound &amp; Hearing Fundamentals
+                </h2>
+                <p className="max-w-2xl text-sm text-slate-200 sm:text-base">
+                  Before you tweak a single plug-in, you need to understand the air
+                  around you, how vibration becomes sound, how your ears decode it,
+                  and how your brain decides what to pay attention to. This
+                  pre-lesson is your launchpad for everything in Music Production.
+                </p>
+              </div>
 
-              <div className="grid gap-3 text-xs text-slate-200 sm:grid-cols-2">
-                <div className="rounded-2xl border border-slate-700/80 bg-black/60 p-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                    You&apos;ll learn
-                  </p>
-                  <ul className="mt-1 space-y-1">
-                    <li>• What sound actually is</li>
-                    <li>• Waveform &amp; frequency basics</li>
-                    <li>• How the ear &amp; cochlea work</li>
-                    <li>• Psychoacoustics &amp; masking</li>
-                  </ul>
-                </div>
-                <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-300">
-                    Before week 1
-                  </p>
-                  <p className="mt-1 text-xs">
-                    Complete this chapter and try every{" "}
-                    <span className="font-semibold text-emerald-200">Listen</span>{" "}
-                    and <span className="font-semibold text-emerald-200">Watch</span>{" "}
-                    box. We&apos;ll build on all of it in the first live session.
-                  </p>
-                </div>
+              <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50 md:max-w-xs">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                  Big Idea
+                </p>
+                <p className="mt-2">
+                  Sound is just moving air. Learn how it behaves and how your ears
+                  perceive it so every production decision is intentional.
+                </p>
+                <p className="mt-3 text-[11px] text-emerald-200">
+                  Complete every Listen/Watch box before Week 1.
+                </p>
               </div>
             </div>
 
-            {/* Mini TOC */}
-            <aside className="flex-1 max-w-xs rounded-2xl border border-slate-800/80 bg-black/70 p-4 text-xs text-slate-200">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Chapter map
-              </p>
-              <ul className="mt-2 space-y-1.5">
-                <li>
-                  <a href="#intro-air" className="hover:text-emerald-300">
-                    0. Introduction: The Air Around You
-                  </a>
-                </li>
-                <li>
-                  <a href="#what-is-sound" className="hover:text-emerald-300">
-                    1. What Is Sound?
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#waveform-characteristics"
-                    className="hover:text-emerald-300"
-                  >
-                    2. Waveform Characteristics
-                  </a>
-                </li>
-                <li>
-                  <a href="#timbre-harmonics" className="hover:text-emerald-300">
-                    3. Timbre &amp; Harmonics
-                  </a>
-                </li>
-                <li>
-                  <a href="#how-we-hear" className="hover:text-emerald-300">
-                    4. How We Hear
-                  </a>
-                </li>
-                <li>
-                  <a href="#psychoacoustics" className="hover:text-emerald-300">
-                    5. Psychoacoustics — How We Perceive Sound
-                  </a>
-                </li>
-                <li>
-                  <a href="#stereo-imaging" className="hover:text-emerald-300">
-                    6. Stereo Imaging &amp; Space
-                  </a>
-                </li>
-                <li>
-                  <a href="#review" className="hover:text-emerald-300">
-                    7. Review &amp; Knowledge Check
-                  </a>
-                </li>
-              </ul>
-            </aside>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 text-xs text-slate-200 backdrop-blur">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Chapter Map
+                </p>
+                <p className="mt-2 text-[12px] text-slate-300">
+                  Jump to any section as you work through this pre-class lesson.
+                </p>
+                <ul className="mt-3 space-y-1.5">
+                  <li>
+                    <a href="#intro-air" className="hover:text-emerald-300">
+                      Intro — The Air Around You
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#what-is-sound" className="hover:text-emerald-300">
+                      1. What Is Sound?
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#waveform-characteristics"
+                      className="hover:text-emerald-300"
+                    >
+                      2. Waveform Characteristics
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#timbre-harmonics" className="hover:text-emerald-300">
+                      3. Timbre &amp; Harmonics
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#how-we-hear" className="hover:text-emerald-300">
+                      4. How We Hear
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#psychoacoustics" className="hover:text-emerald-300">
+                      5. Psychoacoustics
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#stereo-imaging" className="hover:text-emerald-300">
+                      6. Stereo Imaging &amp; Space
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#review" className="hover:text-emerald-300">
+                      7. Review &amp; Knowledge Check
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200 backdrop-blur">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  You&apos;ll Learn
+                </p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <ul className="ml-4 list-disc space-y-1">
+                    <li>What sound actually is</li>
+                    <li>Waveform &amp; frequency basics</li>
+                    <li>How the ear &amp; cochlea work</li>
+                    <li>Psychoacoustics &amp; masking</li>
+                  </ul>
+                  <ul className="ml-4 list-disc space-y-1">
+                    <li>Protecting your ears</li>
+                    <li>Stereo imaging &amp; space</li>
+                    <li>Critical listening habits</li>
+                    <li>How to apply this before Week 1</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -235,31 +249,13 @@ export default function SoundHearingChapter() {
           </div>
 
           {/* Static interactive idea – main graded version appears in Review */}
-          <div className="grid gap-4 md:grid-cols-[minmax(0,1.3fr),minmax(0,1fr)]">
-            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-sm text-slate-200">
-              <h3 className="text-sm font-semibold text-slate-50">
-                Compression vs. Rarefaction
-              </h3>
-              <p className="mt-2 text-xs text-slate-300">
-                Any sound wave is just air pressure going up and down over time:
-                high-pressure regions called{" "}
-                <span className="font-semibold text-emerald-300">compressions</span>{" "}
-                and low-pressure regions called{" "}
-                <span className="font-semibold text-emerald-300">rarefactions</span>
-                . As these regions move away from the source, they form the
-                waveform you&apos;ll see inside your DAW.
-              </p>
-              <p className="mt-2 text-xs text-slate-300">
-                Later, in the quiz at the end of this chapter, you&apos;ll drag C
-                (compression) and R (rarefaction) labels onto a waveform to test
-                yourself.
-              </p>
-            </div>
-            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative mx-auto h-40 w-full max-w-sm">
+          <div className="grid gap-4 md:grid-cols-2 md:items-center">
+            <figure className="flex h-full flex-col rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+              <div className="relative h-full w-full min-h-[220px] aspect-[16/10]">
                 <ZoomableImage
                   src="/assets/music-production/sound-hearing/diagrams/speaker-soundwave-diagram.jpg"
                   alt="Speaker creating high and low pressure regions in the air"
+                  className="rounded-xl"
                 />
               </div>
               <figcaption className="mt-2 text-center text-[11px] text-slate-400">
@@ -268,6 +264,25 @@ export default function SoundHearingChapter() {
                 through the air.
               </figcaption>
             </figure>
+            <div className="flex h-full flex-col rounded-2xl border border-slate-800/80 bg-slate-950/80 p-5 text-sm text-slate-200 space-y-3">
+              <h3 className="text-sm font-semibold text-slate-50">
+                Compression vs. Rarefaction
+              </h3>
+              <p className="leading-relaxed text-slate-200">
+                Any sound wave is just air pressure going up and down over time:
+                high-pressure regions called{" "}
+                <span className="font-semibold text-emerald-300">compressions</span>{" "}
+                and low-pressure regions called{" "}
+                <span className="font-semibold text-emerald-300">rarefactions</span>
+                . As these regions move away from the source, they form the
+                waveform you&apos;ll see inside your DAW.
+              </p>
+              <p className="leading-relaxed text-slate-200">
+                Later, in the quiz at the end of this chapter, you&apos;ll drag C
+                (compression) and R (rarefaction) labels onto a waveform to test
+                yourself.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -438,10 +453,10 @@ export default function SoundHearingChapter() {
           </div>
 
           {/* Wavelength & Velocity */}
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 md:items-start">
             <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 flex flex-col">
               <h3 className="text-sm font-semibold text-slate-50">
-                Wavelength → Physical Size of the Tone
+                2.1 Wavelength → Physical Size of the Tone
               </h3>
               <p className="mt-2 text-sm text-slate-300">
                 The <span className="font-medium">wavelength</span> of a waveform is
@@ -457,7 +472,7 @@ export default function SoundHearingChapter() {
                 around obstacles more easily than short, high-frequency waves.
               </p>
               <figure className="mt-3 flex-1 rounded-xl border border-slate-800/80 bg-black/60 p-3">
-                <div className="relative h-full min-h-[9rem] w-full">
+                <div className="relative h-56 w-full">
                   <ZoomableImage
                     src="/assets/music-production/sound-hearing/diagrams/wavelength-diagram.png"
                     alt="Diagram comparing short and long wavelengths"
@@ -472,7 +487,7 @@ export default function SoundHearingChapter() {
 
             <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 flex flex-col">
               <h3 className="text-sm font-semibold text-slate-50">
-                Velocity → Speed Through a Medium
+                2.2 Velocity → Speed Through a Medium
               </h3>
               <p className="mt-2 text-sm text-slate-300">
                 <span className="font-medium">Velocity</span> refers to the speed at
@@ -820,39 +835,40 @@ export default function SoundHearingChapter() {
           </div>
 
           {/* Protect your ears */}
-          <div className="grid gap-4 md:grid-cols-[minmax(0,1.4fr),minmax(0,1fr)]">
-            <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-sm text-emerald-50">
+          <div className="grid gap-4 md:grid-cols-2 md:items-center">
+            <figure className="flex h-full flex-col rounded-2xl border border-slate-800/80 bg-slate-950/80 p-3">
+              <div className="relative h-full w-full min-h-[240px] aspect-[3/4]">
+                <ZoomableImage
+                  src="/assets/music-production/sound-hearing/diagrams/real-world-Dbs.png"
+                  alt="Real world dB levels diagram"
+                  className="rounded-xl"
+                />
+              </div>
+              <figcaption className="mt-2 text-center text-[11px] text-slate-400">
+                Real-world SPL examples. Long exposure to high dB levels speeds up
+                hearing loss.
+              </figcaption>
+            </figure>
+            <div className="flex h-full flex-col gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-6 text-sm sm:text-base text-emerald-50 leading-relaxed">
               <h3 className="text-sm font-semibold text-emerald-100">
                 Protect Your Ears!
               </h3>
-              <p className="mt-2 text-xs">
+              <p>
                 The cochlea&apos;s hair cells vibrate with different frequencies,
                 but they can be permanently damaged or destroyed by high sound
                 pressure levels. Once they&apos;re gone, they don&apos;t grow back.
               </p>
-              <p className="mt-2 text-xs">
+              <p>
                 Many people experience a random ringing in their ears (tinnitus) at
                 some point. That can be a sign of hair cell stress or damage.
               </p>
-              <p className="mt-2 text-xs">
+              <p className="mb-1">
                 As an audio engineer or producer, your ears are a{" "}
                 <span className="font-semibold">non-replaceable asset</span>. Use
                 ear protection at loud events, keep your monitoring levels
                 reasonable, and take breaks.
               </p>
             </div>
-            <figure className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-3">
-              <div className="relative h-40 w-full">
-                <ZoomableImage
-                  src="/assets/music-production/sound-hearing/diagrams/real-world-Dbs.png"
-                  alt="Real world dB levels diagram"
-                />
-              </div>
-              <figcaption className="mt-2 text-[11px] text-slate-400">
-                Real-world SPL examples. Long exposure to high dB levels speeds up
-                hearing loss.
-              </figcaption>
-            </figure>
           </div>
 
           {/* Hearing test samples */}
@@ -925,22 +941,35 @@ export default function SoundHearingChapter() {
 
           {/* Fletcher-Munson layout tweak */}
           <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 space-y-3">
-            <div className="grid gap-4 md:grid-cols-[minmax(0,1.4fr),minmax(0,1fr)] md:items-start">
-              <div className="text-sm text-slate-200 space-y-2">
-                <h3 className="text-sm font-semibold text-slate-50">
+            <div className="grid gap-4 md:grid-cols-2 md:items-center">
+              <figure className="flex h-full flex-col rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+                <div className="relative h-full w-full min-h-[220px] aspect-[4/3]">
+                  <ZoomableImage
+                    src="/assets/music-production/sound-hearing/diagrams/fletcher-munson-curve-diagram.png"
+                    alt="Fletcher–Munson equal loudness contours diagram"
+                    className="rounded-xl"
+                  />
+                </div>
+                <figcaption className="mt-2 text-center text-[11px] text-slate-400">
+                  Equal loudness contours: our ears are most sensitive in the 2–5 kHz
+                  range where speech lives.
+                </figcaption>
+              </figure>
+              <div className="flex h-full flex-col gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-5 text-sm sm:text-base text-emerald-50 leading-relaxed">
+                <h3 className="text-sm font-semibold text-emerald-100">
                   Fletcher–Munson Curves
                 </h3>
-                <p className="text-xs text-slate-300">
+                <p>
                   In 1933, Harvey Fletcher and Wilden A. Munson measured how humans
                   perceive loudness at different frequencies and levels. They found
                   that our ears do not respond equally across the spectrum.
                 </p>
-                <p className="text-xs text-slate-300">
+                <p>
                   At lower listening levels, we perceive mids more clearly than
                   extreme lows and highs. As volume goes up, lows and highs feel
                   relatively louder.
                 </p>
-                <p className="text-xs text-slate-300">
+                <p className="mb-1">
                   This means the{" "}
                   <span className="font-medium">
                     same mix will feel different at different playback volumes
@@ -948,18 +977,6 @@ export default function SoundHearingChapter() {
                   .
                 </p>
               </div>
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative h-48 w-full">
-                  <ZoomableImage
-                    src="/assets/music-production/sound-hearing/diagrams/fletcher-munson-curve-diagram.png"
-                    alt="Fletcher–Munson equal loudness contours diagram"
-                  />
-                </div>
-                <figcaption className="mt-2 text-[11px] text-slate-400">
-                  Equal loudness contours: our ears are most sensitive in the 2–5 kHz
-                  range where speech lives.
-                </figcaption>
-              </figure>
             </div>
             <aside className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs text-emerald-50">
               <h4 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
@@ -977,39 +994,42 @@ export default function SoundHearingChapter() {
           {/* Masking with images */}
           <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
             <h3 className="text-sm font-semibold text-slate-50">Masking</h3>
-            <div className="mt-2 grid gap-4 md:grid-cols-[minmax(0,1.4fr),minmax(0,1fr)]">
-              <div className="space-y-2 text-sm text-slate-200">
-                <p>
-                  Auditory <span className="font-medium">masking</span> occurs
-                  Auditory <span className="font-medium">masking</span> occurs when
-                  one sound makes another sound harder to hear. A loud jackhammer can
-                  make a nearby bird’s song effectively disappear—even though the bird
-                  is still singing.
-                </p>
-                <p className="text-xs text-slate-300">
-                  In survival terms, this is useful: if there’s a lion roaring, you
-                  need that information more than subtle background noises.
-                </p>
-                <p className="text-xs text-slate-300">
-                  In mixing, masking is why two instruments with similar frequencies
-                  clash and make each other harder to distinguish.
-                </p>
-              </div>
-
+            <div className="mt-3 grid gap-4 md:grid-cols-2 md:items-center">
               {/* Bird + Jackhammer images */}
-              <div className="rounded-xl border border-slate-800/80 bg-black/80 p-3 space-y-3">
-                <div className="relative h-32 w-full">
+              <div className="grid gap-3 rounded-xl border border-slate-800/80 bg-black/80 p-3">
+                <figure className="relative h-44 w-full">
                   <ZoomableImage
                     src="/assets/music-production/sound-hearing/images/bird.png"
                     alt="Bird singing"
                   />
-                </div>
-                <div className="relative h-32 w-full">
+                </figure>
+                <figure className="relative h-44 w-full">
                   <ZoomableImage
                     src="/assets/music-production/sound-hearing/images/jackhammer.png"
                     alt="Jackhammer drowning out quiet sound"
                   />
-                </div>
+                </figure>
+              </div>
+
+              <div className="flex h-full flex-col gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-5 text-sm sm:text-base text-emerald-50 leading-relaxed">
+                <p>
+                  Auditory <span className="font-medium">masking</span> happens when
+                  one sound makes another sound harder to hear. A loud jackhammer can
+                  make a nearby bird’s song effectively disappear — even though the
+                  bird is still singing.
+                </p>
+                <p>
+                  In survival terms, this is useful: if there’s a lion roaring, you
+                  need that information more than subtle background noises. In
+                  mixing, masking is why two instruments with similar frequencies
+                  clash and make each other harder to distinguish.
+                </p>
+                <p className="mb-1">
+                  To reduce masking, separate parts by frequency, panning, dynamics,
+                  and arrangement: carve EQ space, use sidechain ducking, adjust
+                  levels, and avoid stacking too many elements in the same octave or
+                  rhythm.
+                </p>
               </div>
             </div>
           </div>
@@ -1068,7 +1088,7 @@ export default function SoundHearingChapter() {
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-[minmax(0,1.3fr),minmax(0,1fr)]">
+          <div className="grid gap-6 md:grid-cols-[minmax(0,1.3fr),minmax(0,1.05fr)] md:items-start">
             <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 flex flex-col">
               <h3 className="text-sm font-semibold text-slate-50">
                 Stereo Image &amp; Depth
@@ -1109,7 +1129,7 @@ export default function SoundHearingChapter() {
             </div>
 
             <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative h-48 w-full">
+              <div className="relative mx-auto h-[24rem] w-full max-w-5xl">
                 <ZoomableImage
                   src="/assets/music-production/sound-hearing/images/stereo-imaging.png"
                   alt="Stereo imaging diagram showing left-right placement"
@@ -1197,13 +1217,13 @@ export default function SoundHearingChapter() {
                 <div
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={() => handleDrop("compression")}
-                  className="absolute left-10 top-4 w-20 h-20 border-2 border-emerald-500/40 rounded-lg"
+                  className="absolute left-[32%] top-12 h-24 w-32 rounded-lg border-2 border-emerald-500/40"
                 />
                 {/* Drop target - Rarefaction */}
                 <div
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={() => handleDrop("rarefaction")}
-                  className="absolute right-10 top-4 w-20 h-20 border-2 border-emerald-500/40 rounded-lg"
+                  className="absolute right-[6%] top-6 h-24 w-36 rounded-lg border-2 border-emerald-500/40"
                 />
               </div>
 

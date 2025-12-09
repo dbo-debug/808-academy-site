@@ -25,29 +25,35 @@ type VerseHookTab = "verse" | "hook";
 type CleanDirtyTab = "clean" | "dirty";
 
 const chapterSections: { id: string; label: string }[] = [
-  { id: "introduction", label: "1. Introduction" },
-  { id: "understanding-groove", label: "2. Understanding Groove" },
-  { id: "essential-drum-components", label: "3. Essential Drum Components" },
+  { id: "introduction", label: "Introduction: Groove First" },
+  {
+    id: "understanding-groove",
+    label: "Understanding Groove (The Human Element)",
+  },
+  { id: "essential-drum-components", label: "Essential Drum Components" },
   {
     id: "drum-programming-fundamentals",
-    label: "4. Drum Programming Fundamentals",
+    label: "Drum Programming Fundamentals",
   },
   {
     id: "quantization-swing-humanization",
-    label: "5. Quantization, Swing & Humanization",
+    label: "Quantization, Swing & Humanization",
   },
-  { id: "verse-vs-hook-drums", label: "6. Verse vs Hook Drums" },
-  { id: "sound-selection", label: "7. Sound Selection" },
-  { id: "working-with-drum-loops", label: "8. Working With Drum Loops" },
+  { id: "verse-vs-hook-drums", label: "Verse vs Hook Drums" },
+  {
+    id: "sound-selection",
+    label: "Sound Selection: Choosing Drum Tones",
+  },
+  { id: "working-with-drum-loops", label: "Working With Drum Loops" },
   {
     id: "drum-arrangement-transitions",
-    label: "9. Drum Arrangement & Transitions",
+    label: "Drum Arrangement & Transitions",
   },
   {
     id: "applying-to-project-track",
-    label: "10. Applying This to Your Project Track",
+    label: "Applying This to Your Project Track",
   },
-  { id: "homework", label: "11. Homework" },
+  { id: "homework", label: "Homework" },
 ];
 
 export default function DrumProductionChapter() {
@@ -102,13 +108,6 @@ export default function DrumProductionChapter() {
     },
   };
 
-  const scrollToSection = (id: string) => {
-    if (typeof document === "undefined") return;
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   const handleSubdivisionChange = (key: SubdivisionKey) => {
     setSubdivision(key);
     if (subdivisionAudioRef.current) {
@@ -150,205 +149,140 @@ export default function DrumProductionChapter() {
       <article className="relative space-y-10 text-sm text-slate-200">
         {/* 1. INTRODUCTION / HERO */}
         <section id="introduction" className="space-y-6 scroll-mt-24">
-          {/* HERO: background image with overlaid title */}
-          <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-black/80">
-            <div className="relative h-52 w-full sm:h-64 md:h-72">
+          <header className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-black/80 shadow-lg shadow-black/40">
+            <div className="absolute inset-0">
               <Image
                 src="/assets/music-production/drum-production/images/drums-bkgrnd.jpg"
                 alt="Modern drum kit in a studio"
                 fill
                 priority
-                className="object-cover brightness-[0.4]"
+                className="object-cover brightness-[0.35]"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/70 to-black/95" />
-              <div className="relative z-10 flex h-full flex-col justify-end gap-2 p-5 md:p-8">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-                  Chapter 4
-                </p>
-                <h1 className="text-2xl font-semibold text-emerald-50 md:text-3xl">
-                  DRUM PRODUCTION: Groove, rhythm &amp; energy
-                </h1>
-                <p className="text-[11px] text-emerald-100/80">
-                  Rhythm, Pocket, Bounce, Feel, and the Engine of Modern Music
-                </p>
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/50" />
             </div>
-          </div>
 
-          {/* Intro text + side image + Big Idea with groove image */}
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1.7fr),minmax(0,1.1fr)] md:items-start">
-            {/* LEFT: intro + big idea + outcomes */}
-            <div className="space-y-4">
-              <p>
-                Drums are the heartbeat of modern music. Before the melody,
-                before the chords, before any vocals are added, the drums often
-                establish the emotional center of a track. Whether it’s the
-                hypnotic pulse of trap hi-hats, the swagger of a boom-bap
-                groove, the driving four-on-the-floor of house, or the loose,
-                human swing of neo-soul — the drums define how the listener will
-                feel the music in their body.
-              </p>
-
-              {/* Big Idea card with groove image beside text */}
-              <div className="grid gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50 md:grid-cols-[minmax(0,1.4fr),minmax(0,1fr)] md:items-center">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                    Big Idea • Groove
+            <div className="relative z-10 space-y-8 p-6 sm:p-8 md:p-12">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="space-y-3">
+                  <p className="inline-flex items-center rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200">
+                    Chapter 4
                   </p>
-                  <p className="mt-2">
-                    This chapter teaches you one of the most valuable skills in
-                    all of production:
-                    <br />
-                    how to create groove — the invisible force that makes a
-                    track move.
+                  <h1 className="text-3xl font-semibold tracking-tight text-emerald-50 sm:text-4xl">
+                    Drum Production: Groove, Rhythm &amp; Energy
+                  </h1>
+                  <p className="max-w-2xl text-sm text-emerald-50/90 sm:text-base">
+                    Rhythm, pocket, bounce, feel, and the engine of modern music.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    openZoom(
-                      "/assets/music-production/drum-production/diagrams/groove.jpg",
-                      "Diagram illustrating drum groove and movement"
-                    )
-                  }
-                  className="block"
-                >
-                  <div className="relative h-28 w-full sm:h-32">
-                    <Image
-                      src="/assets/music-production/drum-production/diagrams/groove.jpg"
-                      alt="Groove diagram"
-                      fill
-                      className="rounded-xl object-cover"
-                    />
+
+                <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50 md:max-w-xs">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                    Big Idea
+                  </p>
+                  <p className="mt-2">
+                    Groove is the invisible force that makes a track move.
+                    Mastering rhythm, feel, and contrast gives your music its
+                    pulse.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 md:items-start">
+                <aside className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 text-xs text-slate-200 backdrop-blur md:justify-self-end md:max-w-sm">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    Chapter Map
+                  </p>
+                  <ol className="mt-3 ml-3 list-decimal space-y-1.5 text-left text-sm text-slate-200">
+                    {chapterSections.map((section) => (
+                      <li key={section.id}>{section.label}</li>
+                    ))}
+                  </ol>
+                </aside>
+
+                <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200 backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    You&apos;ll Learn
+                  </p>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Build drum patterns from scratch</li>
+                      <li>Use quantization, swing, humanization</li>
+                      <li>Understand time signatures &amp; subdivisions</li>
+                      <li>Create verse vs hook drum contrast</li>
+                    </ul>
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Chop and customize loops</li>
+                      <li>Add transitions and fills</li>
+                      <li>Build the drum foundation of your project track</li>
+                    </ul>
                   </div>
-                </button>
+                </div>
               </div>
-
-              <p>And here’s the first truth of this chapter:</p>
-              <ul className="ml-4 list-disc space-y-1">
-                <li>Many producers start with drums.</li>
-              </ul>
-              <p>
-                Even though we began the class by focusing on verse/hook
-                structure, that doesn’t mean drums belong later in the workflow.
-                There are no rules. You may find that a kick pattern gives you
-                your hook idea, or that a crushed snare riff leads you to your
-                verse melody.
-              </p>
-
-              <p className="font-semibold">
-                By the end of this chapter, you’ll be able to:
-              </p>
-              <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs">
-                <ul className="ml-4 list-disc space-y-1">
-                  <li>Build drum patterns from scratch</li>
-                  <li>Use quantization, swing, and humanization to shape feel</li>
-                  <li>Understand time signatures and subdivisions</li>
-                  <li>Create contrasting verse vs hook drum sections</li>
-                  <li>Chop and customize loops</li>
-                  <li>Add transitions and fills</li>
-                  <li>Build the full drum foundation of your project track</li>
-                </ul>
-              </div>
-
-              <p>Let’s begin with where groove comes from.</p>
             </div>
+          </header>
 
-            {/* RIGHT: stacked images, textbook style */}
-            <div className="space-y-4">
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3 text-xs">
-                <button
-                  type="button"
-                  onClick={() =>
-                    openZoom(
-                      "/assets/music-production/drum-production/images/drum-program.jpg",
-                      "Producer programming drums in a DAW"
-                    )
-                  }
-                  className="block"
-                >
-                  <div className="relative h-40 w-full sm:h-48">
-                    <Image
-                      src="/assets/music-production/drum-production/images/drum-program.jpg"
-                      alt="Programming drums in a DAW"
-                      fill
-                      className="rounded-xl object-cover"
-                    />
-                  </div>
-                </button>
-                <figcaption className="mt-2 text-[11px] text-slate-400">
-                  Drums act as the emotional engine that drives the rest of the
-                  production.
-                </figcaption>
-              </figure>
+          <div className="space-y-6 rounded-2xl border border-slate-800/80 bg-slate-950/80 p-6">
+            <div className="grid gap-6 md:grid-cols-[minmax(0,1.6fr),minmax(0,1fr)] md:items-start">
+              <div className="space-y-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
+                  Section 1
+                </p>
+                <h2 className="text-lg font-semibold text-emerald-50">
+                  1. Introduction: Groove First
+                </h2>
+                <p>
+                  Drums are the heartbeat of modern music. Before the melody,
+                  before the chords, before any vocals are added, the drums often
+                  establish the emotional center of a track. Whether it’s the
+                  hypnotic pulse of trap hi-hats, the swagger of a boom-bap
+                  groove, the driving four-on-the-floor of house, or the loose,
+                  human swing of neo-soul — the drums define how the listener
+                  will feel the music in their body.
+                </p>
+
+                <p>And here’s the first truth of this chapter:</p>
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>Many producers start with drums.</li>
+                </ul>
+                <p>
+                  Even though we began the class by focusing on verse/hook
+                  structure, that doesn’t mean drums belong later in the
+                  workflow. There are no rules. You may find that a kick pattern
+                  gives you your hook idea, or that a crushed snare riff leads
+                  you to your verse melody.
+                </p>
+                <p>Let’s begin with where groove comes from.</p>
+              </div>
 
               <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3 text-xs">
-                <button
-                  type="button"
-                  onClick={() =>
-                    openZoom(
-                      "/assets/music-production/drum-production/images/producer-listening.jpg",
-                      "Producers listening critically to drums"
-                    )
-                  }
-                  className="block"
-                >
-                  <div className="relative h-40 w-full sm:h-48">
-                    <Image
-                      src="/assets/music-production/drum-production/images/producer-listening.jpg"
-                      alt="Producers listening to drum grooves"
-                      fill
-                      className="rounded-xl object-cover"
-                    />
-                  </div>
-                </button>
+                <div className="relative h-56 w-full sm:h-64">
+                  <Image
+                    src="/assets/music-production/drum-production/images/drum-program.jpg"
+                    alt="Programming drums in a DAW"
+                    fill
+                    className="rounded-xl object-cover"
+                  />
+                </div>
                 <figcaption className="mt-2 text-[11px] text-slate-400">
                   We&apos;ll move from basic patterns to full, expressive
                   grooves.
                 </figcaption>
               </figure>
             </div>
-          </div>
 
-          {/* Watch: Groove & Drums in Modern Production */}
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
-            <div className="border-b border-slate-800/80 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Watch • Groove &amp; Drums in Modern Production
-            </div>
-            <div className="aspect-video w-full">
-              <iframe
-                src="https://www.youtube.com/embed/TwzJJaJmF6o"
-                className="h-full w-full rounded-b-2xl"
-                title="Groove & Drums in Modern Production"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Chapter Map */}
-        <section className="scroll-mt-24">
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs">
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Chapter Map
-              </p>
-              <p className="text-[11px] text-slate-500">
-                Jump to any section of this chapter.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {chapterSections.map((section) => (
-                <button
-                  key={section.id}
-                  type="button"
-                  onClick={() => scrollToSection(section.id)}
-                  className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1 text-[11px] font-medium text-slate-100 transition hover:border-emerald-500/60 hover:bg-emerald-500/10"
-                >
-                  {section.label}
-                </button>
-              ))}
+            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+              <div className="border-b border-slate-800/80 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                Watch • Groove &amp; Drums in Modern Production
+              </div>
+              <div className="aspect-video w-full">
+                <iframe
+                  src="https://www.youtube.com/embed/TwzJJaJmF6o"
+                  className="h-full w-full rounded-b-2xl"
+                  title="Groove & Drums in Modern Production"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -626,9 +560,14 @@ export default function DrumProductionChapter() {
           </p>
 
           {/* Drum Kit Interactive */}
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1.4fr),minmax(0,1.1fr)] md:items-center">
+          <div className="grid gap-6 md:grid-cols-[minmax(0,1.4fr),minmax(0,1.1fr)] md:items-start">
             {/* Left: clickable drum kit image */}
             <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+              <div className="mb-2 text-[11px] text-slate-300">
+                Hover or tap each drum surface to see the zone highlight, then
+                click to hear that piece of the kit. Aim for the visible heads
+                and cymbal tops — every playable surface is mapped.
+              </div>
               <div className="relative w-full overflow-hidden rounded-xl">
                 <img
                   src="/assets/music-production/drum-production/images/drum-kit.jpg"
@@ -646,7 +585,7 @@ export default function DrumProductionChapter() {
                       "/assets/music-production/drum-production/samples/crash.wav"
                     )
                   }
-                  className="absolute left-[20%] top-[18%] h-[12%] w-[14%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/40 bg-emerald-400/0 hover:bg-emerald-400/10"
+                  className="absolute left-[22%] top-[15%] h-[14%] w-[22%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/60 bg-emerald-400/5 hover:bg-emerald-400/15"
                 />
 
                 {/* Ride (top-right cymbal) */}
@@ -658,7 +597,7 @@ export default function DrumProductionChapter() {
                       "/assets/music-production/drum-production/samples/ride.wav"
                     )
                   }
-                  className="absolute left-[78%] top-[18%] h-[13%] w-[16%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/40 bg-emerald-400/0 hover:bg-emerald-400/10"
+                  className="absolute left-[82%] top-[18%] h-[14%] w-[24%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/60 bg-emerald-400/5 hover:bg-emerald-400/15"
                 />
 
                 {/* Hi-hat (far-left cymbal set) */}
@@ -670,7 +609,7 @@ export default function DrumProductionChapter() {
                       "/assets/music-production/drum-production/samples/closed-hat.wav"
                     )
                   }
-                  className="absolute left-[10%] top-[42%] h-[11%] w-[12%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/40 bg-emerald-400/0 hover:bg-emerald-400/10"
+                  className="absolute left-[10%] top-[45%] h-[13%] w-[18%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/60 bg-emerald-400/5 hover:bg-emerald-400/15"
                 />
 
                 {/* Snare (center-left drum) */}
@@ -682,7 +621,7 @@ export default function DrumProductionChapter() {
                       "/assets/music-production/drum-production/samples/snare.wav"
                     )
                   }
-                  className="absolute left-[38%] top-[56%] h-[14%] w-[16%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/40 bg-emerald-400/0 hover:bg-emerald-400/10"
+                  className="absolute left-[32%] top-[64%] h-[16%] w-[18%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/70 bg-emerald-400/10 hover:bg-emerald-400/20"
                 />
 
                 {/* Kick (front center) */}
@@ -694,7 +633,7 @@ export default function DrumProductionChapter() {
                       "/assets/music-production/drum-production/samples/kick.wav"
                     )
                   }
-                  className="absolute left-[50%] top-[78%] h-[16%] w-[18%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/40 bg-emerald-400/0 hover:bg-emerald-400/10"
+                  className="absolute left-[52%] top-[73%] h-[24%] w-[24%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/60 bg-emerald-400/5 hover:bg-emerald-400/15"
                 />
 
                 {/* Hi tom */}
@@ -706,7 +645,7 @@ export default function DrumProductionChapter() {
                       "/assets/music-production/drum-production/samples/hi-tom.wav"
                     )
                   }
-                  className="absolute left-[43%] top-[40%] h-[11%] w-[12%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/40 bg-emerald-400/0 hover:bg-emerald-400/10"
+                  className="absolute left-[39%] top-[31%] h-[12%] w-[14%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/60 bg-emerald-400/5 hover:bg-emerald-400/15"
                 />
 
                 {/* Mid tom */}
@@ -718,7 +657,7 @@ export default function DrumProductionChapter() {
                       "/assets/music-production/drum-production/samples/mid-tom.wav"
                     )
                   }
-                  className="absolute left-[57%] top-[42%] h-[11%] w-[12%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/40 bg-emerald-400/0 hover:bg-emerald-400/10"
+                  className="absolute left-[63%] top-[32%] h-[12%] w-[14%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/60 bg-emerald-400/5 hover:bg-emerald-400/15"
                 />
 
                 {/* Floor tom */}
@@ -730,15 +669,9 @@ export default function DrumProductionChapter() {
                       "/assets/music-production/drum-production/samples/floor-tom.wav"
                     )
                   }
-                  className="absolute left-[71%] top-[52%] h-[13%] w-[15%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/40 bg-emerald-400/0 hover:bg-emerald-400/10"
+                  className="absolute left-[86%] top-[60%] h-[15%] w-[20%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-400/60 bg-emerald-400/5 hover:bg-emerald-400/15"
                 />
               </div>
-
-              <figcaption className="mt-2 text-[11px] text-slate-400">
-                Hover to see which drum you&apos;re over (via tooltips), and
-                click different parts of the kit to hear each sound — like
-                playing drums with your mouse.
-              </figcaption>
             </figure>
 
             {/* Right: description + audio examples grid */}
@@ -751,61 +684,6 @@ export default function DrumProductionChapter() {
                 zone on the photo is mapped to a drum sound so you can tap
                 around and feel how the kit is arranged.
               </p>
-              <p className="mt-2 text-[11px] text-slate-400">
-                Below are direct audio examples for each core drum. Click play
-                on any control to hear its tone in isolation.
-              </p>
-
-              <div className="mt-3 grid gap-2 md:grid-cols-2">
-                {[
-                  {
-                    label: "Kick",
-                    src: "/assets/music-production/drum-production/samples/kick.wav",
-                  },
-                  {
-                    label: "Snare",
-                    src: "/assets/music-production/drum-production/samples/snare.wav",
-                  },
-                  {
-                    label: "Hi-hat (closed)",
-                    src: "/assets/music-production/drum-production/samples/closed-hat.wav",
-                  },
-                  {
-                    label: "Hi-hat (open)",
-                    src: "/assets/music-production/drum-production/samples/open-hat.wav",
-                  },
-                  {
-                    label: "Hi Tom",
-                    src: "/assets/music-production/drum-production/samples/hi-tom.wav",
-                  },
-                  {
-                    label: "Mid Tom",
-                    src: "/assets/music-production/drum-production/samples/mid-tom.wav",
-                  },
-                  {
-                    label: "Floor Tom",
-                    src: "/assets/music-production/drum-production/samples/floor-tom.wav",
-                  },
-                  {
-                    label: "Ride Cymbal",
-                    src: "/assets/music-production/drum-production/samples/ride.wav",
-                  },
-                  {
-                    label: "Crash Cymbal",
-                    src: "/assets/music-production/drum-production/samples/crash.wav",
-                  },
-                ].map((sample) => (
-                  <div
-                    key={sample.label}
-                    className="rounded-xl border border-slate-800/80 bg-black/70 p-2"
-                  >
-                    <p className="text-[11px] font-semibold text-slate-200">
-                      {sample.label}
-                    </p>
-                    <audio className="mt-1 w-full" controls src={sample.src} />
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 
@@ -1774,24 +1652,40 @@ export default function DrumProductionChapter() {
 
           {/* 7.1 Match Your Production Brief */}
           <section className="space-y-4">
-            <h3 className="text-sm font-semibold text-emerald-100">
-              7.1 Match Your Production Brief
-            </h3>
-            <ul className="ml-4 list-disc space-y-1">
-              <li>Mood</li>
-              <li>Genre</li>
-              <li>Emotional tone</li>
-            </ul>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold text-emerald-100">
+                  7.1 Match Your Production Brief
+                </h3>
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>Mood</li>
+                  <li>Genre</li>
+                  <li>Emotional tone</li>
+                </ul>
 
-            <div className="rounded-2xl border border-slate-800/80 bg-black/80 p-3 text-xs">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Tutorial • Drum Kits &amp; Sound Selection
-              </p>
-              <video
-                className="mt-2 w-full rounded-xl"
-                controls
-                src="/assets/music-production/drum-production/tutorials/drum-kits.mp4"
-              />
+                <div className="rounded-2xl border border-slate-800/80 bg-black/80 p-3 text-xs">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    Tutorial • Drum Kits &amp; Sound Selection
+                  </p>
+                  <video
+                    className="mt-2 w-full rounded-xl"
+                    controls
+                    src="/assets/music-production/drum-production/tutorials/drum-kits.mp4"
+                  />
+                </div>
+              </div>
+
+              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+                <div className="relative aspect-[4/5] w-full">
+                  <Image
+                    src="/assets/music-production/drum-production/images/drum-sources.jpg"
+                    alt="Selecting drum sounds to match a production brief"
+                    fill
+                    sizes="(min-width: 1024px) 360px, 100vw"
+                    className="rounded-xl object-cover"
+                  />
+                </div>
+              </figure>
             </div>
           </section>
 
@@ -1870,7 +1764,7 @@ export default function DrumProductionChapter() {
               7.3 Layering
             </h3>
             <p>
-              Layering drums isn&apos;t about adding random hits — it's about
+              Layering drums isn&apos;t about adding random hits — it&apos;s about
               giving each sound a purpose. You might layer a kick for punch, add
               a second snare for width, blend extra percussion for texture, or
               combine unique hits to create your own signature identity.
@@ -2004,6 +1898,7 @@ export default function DrumProductionChapter() {
                 src: "/assets/music-production/drum-production/images/chad-smith.jpg",
                 alt: "Chad Smith playing drums",
                 caption: "Chad Smith — Red Hot Chili Peppers",
+                objectPosition: "center 30%",
               },
               {
                 src: "/assets/music-production/drum-production/images/neil-peart.jpg",
@@ -2030,11 +1925,14 @@ export default function DrumProductionChapter() {
                   onClick={() => openZoom(drummer.src, drummer.alt)}
                   className="block w-full"
                 >
-                  <div className="relative w-full">
+                  <div className="relative w-full overflow-hidden rounded-xl aspect-[4/5]">
                     <img
                       src={drummer.src}
                       alt={drummer.alt}
-                      className="h-auto w-full rounded-xl object-cover"
+                      className="absolute inset-0 h-full w-full object-cover"
+                      style={{
+                        objectPosition: drummer.objectPosition ?? "center",
+                      }}
                     />
                   </div>
                 </button>

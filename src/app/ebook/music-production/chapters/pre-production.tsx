@@ -14,193 +14,218 @@ export default function PreProductionChapter() {
   return (
     <div className="space-y-10">
       {/* HERO / INTRO */}
-      <section className="space-y-4">
-        <p className="text-sm text-slate-200 sm:text-base">
-          Chapter 2 — Creative Preparation for Modern Music Producers
+      <section className="space-y-6">
+        <div className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-black/80 min-h-[32rem] sm:min-h-[36rem]">
+          <Image
+            src="/assets/music-production/pre-production/images/mood-collage.jpg"
+            alt="Creative collage mood board"
+            fill
+            priority
+            className="object-cover brightness-[0.35]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/75 to-black/40" />
+
+          <div className="relative z-10 flex h-full flex-col justify-center gap-8 p-6 sm:p-9 md:p-14">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-3">
+                <p className="inline-flex items-center rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-200">
+                  Chapter 2
+                </p>
+                <h2 className="text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl">
+                  Pre-Production: Inspiration, Sources &amp; Session Setup
+                </h2>
+                <p className="max-w-2xl text-sm text-slate-200 sm:text-base">
+                  Prepare your creative mind, capture inspiration on demand, and
+                  set up a repeatable system so every session starts with clarity
+                  instead of chaos.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50 md:max-w-xs">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                  Big Idea
+                </p>
+                <p className="mt-2">
+                  Great producers design environments where inspiration is
+                  captured, organized, and ready to build on instantly.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 md:items-start md:pr-6">
+              <aside className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 text-xs text-slate-200 backdrop-blur">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Chapter Map
+                </p>
+                <p className="mt-2 text-[12px] text-slate-300">
+                  Jump to any section as you lay the groundwork for consistent
+                  creative sessions.
+                </p>
+                <ol className="mt-3 space-y-1.5 text-left">
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection("introduction")}
+                      className="hover:text-emerald-300"
+                    >
+                      1. Introduction
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        scrollToSection("tracking-inspiration-everywhere")
+                      }
+                      className="hover:text-emerald-300"
+                    >
+                      2. Tracking Inspiration Everywhere
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection("finding-inspiration")}
+                      className="hover:text-emerald-300"
+                    >
+                      3. Finding Inspiration
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection("modern-ai-tools")}
+                      className="hover:text-emerald-300"
+                    >
+                      4. Modern AI Tools for Inspiration
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection("production-brief")}
+                      className="hover:text-emerald-300"
+                    >
+                      5. Shaping Your Vision: The Production Brief
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection("song-structure")}
+                      className="hover:text-emerald-300"
+                    >
+                      6. Understanding Song Structure
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection("apply-project")}
+                      className="hover:text-emerald-300"
+                    >
+                      7. Apply to Your Project
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection("homework-project-session")}
+                      className="hover:text-emerald-300"
+                    >
+                      8. Homework: Project Session
+                    </button>
+                  </li>
+                </ol>
+              </aside>
+
+              <div className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 text-xs text-slate-200 backdrop-blur">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  You&apos;ll Learn
+                </p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <ul className="ml-4 list-disc space-y-1">
+                    <li>Systems for capturing ideas</li>
+                    <li>Reference gathering &amp; sampling ethics</li>
+                    <li>Writing a production brief</li>
+                  </ul>
+                  <ul className="ml-4 list-disc space-y-1">
+                    <li>AI tools for creative sparks</li>
+                    <li>Song structure foundations</li>
+                    <li>Session setup templates</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="introduction"
+        className="space-y-3 scroll-mt-24 text-sm text-slate-200"
+      >
+        <h3 className="text-xl font-semibold tracking-tight text-slate-50">
+          1. Introduction: Preparing the Creative Mind
+        </h3>
+        <p>
+          Before any great track comes to life, there’s a quiet but powerful stage
+          that happens long before you hit record or touch a plugin: pre-production.
+          This is the phase where ideas are born, organized, shaped, and prepared so
+          that when you finally sit down to produce, you’re not guessing — you’re
+          executing with intention.
         </p>
+        <p>
+          In this chapter, you’ll learn how modern producers capture inspiration,
+          gather reference material, explore sample sources responsibly, experiment
+          with creative tools (including AI), and build repeatable workflows that
+          make starting new songs faster and more consistent.
+        </p>
+        <p>This chapter teaches you how.</p>
+      </section>
 
-        {/* Hero layout: workspace + intro copy + chapter map */}
-        <div className="grid gap-4 md:grid-cols-[minmax(0,1.1fr),minmax(0,1.1fr)]">
-          {/* Left: images + quote + Rick Rubin */}
-          <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative h-40 w-full sm:h-44">
-                  <Image
-                    src="/assets/music-production/pre-production/images/desk.jpg"
-                    alt="Minimalist creative workspace with clean desk, plant, light, and headphones"
-                    fill
-                    className="rounded-xl object-cover"
-                  />
-                </div>
-                <figcaption className="mt-2 text-[11px] text-slate-400">
-                  A minimalist “creative workspace” photo (clean desk, plant,
-                  light, headphones).
-                </figcaption>
-              </figure>
-
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative h-40 w-full sm:h-44">
-                  <Image
-                    src="/assets/music-production/pre-production/diagrams/creative-diagram.jpg"
-                    alt="Creative flow collage from mental space to inspiration, capture, and development"
-                    fill
-                    className="rounded-xl object-cover"
-                  />
-                </div>
-                <figcaption className="mt-2 text-[11px] text-slate-400">
-                  A “Creative Flow Diagram”: mental space → inspiration →
-                  capture → development.
-                </figcaption>
-              </figure>
-            </div>
-
-            <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                Big Idea
-              </p>
-              <p className="mt-2">
-                Great producers don’t wait for inspiration to strike.
-                <br />
-                They prepare the environment where inspiration can thrive.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
-              <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Watch • Rick Rubin creativity interview
-              </div>
-              <div className="aspect-video w-full">
-                <iframe
-                  src="https://www.youtube.com/embed/36L9cYkHyZM"
-                  className="h-full w-full rounded-b-2xl"
-                  title="Rick Rubin creativity interview"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </div>
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+        <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+          <div className="relative h-48 w-full">
+            <Image
+              src="/assets/music-production/pre-production/images/desk.jpg"
+              alt="Minimalist creative workspace with clean desk, plant, light, and headphones"
+              fill
+              className="rounded-xl object-cover"
+            />
           </div>
+          <figcaption className="mt-2 text-[11px] text-slate-400">
+            A minimalist “creative workspace” keeps distractions low and focus high.
+          </figcaption>
+        </figure>
 
-          {/* Right: intro text + chapter map */}
-          <div className="space-y-4 text-sm text-slate-200">
-            <section id="introduction" className="space-y-3 scroll-mt-24">
-              <h3 className="text-xl font-semibold tracking-tight text-slate-50">
-                1. Introduction: Preparing the Creative Mind
-              </h3>
-              <p>
-                Before any great track comes to life, there’s a quiet but
-                powerful stage that happens long before you hit record or touch
-                a plugin: pre-production. This is the phase where ideas are
-                born, organized, shaped, and prepared so that when you finally
-                sit down to produce, you’re not guessing — you’re executing with
-                intention.
-              </p>
-              <p>
-                In this chapter, you’ll learn how modern producers capture
-                inspiration, gather reference material, explore sample sources
-                responsibly, experiment with creative tools (including AI), and
-                build repeatable workflows that make starting new songs faster
-                and more consistent. You’ll also set up the foundational
-                elements of your session — templates, labels, structure, sounds
-                — so you always begin with clarity rather than chaos.
-              </p>
-              <p>This chapter teaches you how.</p>
-            </section>
-
-            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Chapter Map
-              </p>
-              <ol className="mt-2 space-y-1.5 text-left">
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection("introduction")}
-                    className="hover:text-emerald-300"
-                  >
-                    1. Introduction: Preparing the Creative Mind
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      scrollToSection("tracking-inspiration-everywhere")
-                    }
-                    className="hover:text-emerald-300"
-                  >
-                    2. Tracking Inspiration Everywhere
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection("finding-inspiration")}
-                    className="hover:text-emerald-300"
-                  >
-                    3. Finding Inspiration
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection("modern-ai-tools")}
-                    className="hover:text-emerald-300"
-                  >
-                    4. Modern AI Tools for Inspiration
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection("production-brief")}
-                    className="hover:text-emerald-300"
-                  >
-                    5. Shaping Your Vision: The Production Brief
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection("session-template")}
-                    className="hover:text-emerald-300"
-                  >
-                    6. Creating Your Foundation: The Session Template
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection("song-structure")}
-                    className="hover:text-emerald-300"
-                  >
-                    7. Understanding Song Structure
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection("sound-palette")}
-                    className="hover:text-emerald-300"
-                  >
-                    8. Choosing Your Initial Sound Palette
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      scrollToSection("homework-project-session")
-                    }
-                    className="hover:text-emerald-300"
-                  >
-                    9. Homework: Create Your Official Project Session
-                  </button>
-                </li>
-              </ol>
-            </div>
+        <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+          <div className="relative h-48 w-full">
+            <Image
+              src="/assets/music-production/pre-production/diagrams/creative-diagram.jpg"
+              alt="Creative flow collage from mental space to inspiration, capture, and development"
+              fill
+              className="rounded-xl object-cover"
+            />
           </div>
+          <figcaption className="mt-2 text-[11px] text-slate-400">
+            Creative flow: mental space → inspiration → capture → development.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+        <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+          Watch • Rick Rubin creativity interview
+        </div>
+        <div className="aspect-video w-full">
+          <iframe
+            src="https://www.youtube.com/embed/36L9cYkHyZM"
+            className="h-full w-full rounded-b-2xl"
+            title="Rick Rubin creativity interview"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
         </div>
       </section>
 
@@ -318,7 +343,7 @@ export default function PreProductionChapter() {
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
                 <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                   Watch • Using Voice Memos for Song Ideas
@@ -471,8 +496,8 @@ export default function PreProductionChapter() {
           </div>
 
           {/* Image + video side by side */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-stretch">
-            <figure className="md:w-5/12 rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-stretch">
+            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
               <div className="relative aspect-[4/3] w-full">
                 <Image
                   src="/assets/music-production/pre-production/images/early-tools.jpg"
@@ -486,7 +511,7 @@ export default function PreProductionChapter() {
               </figcaption>
             </figure>
 
-            <div className="md:w-7/12 rounded-2xl border border-slate-800/80 bg-slate-950/80">
+            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
               <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                 Watch • Sampling History &amp; Legacy
               </div>
@@ -512,7 +537,7 @@ export default function PreProductionChapter() {
               clicked.
             </p>
 
-            <div className="mt-3 grid gap-3 md:grid-cols-3">
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {/* 1. Fairlight CMI */}
               <div className="flex flex-col gap-2 rounded-xl border border-emerald-500/40 bg-black/70 p-3">
                 <figure className="relative h-28 w-full">
@@ -711,30 +736,14 @@ export default function PreProductionChapter() {
           </div>
         </section>
 
- <div className="mt-4 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-              Interactive Element • Clickable Sampler Museum
-            </p>
-            <p className="mt-2 text-emerald-50">
-              Small grid where each sampler image plays an iconic sound when
-              clicked.
-            </p>
-
-            <div className="mt-3 grid gap-3 md:grid-cols-3">
-              {/* cards 1–6 unchanged from your current version */}
-              {/* ... keep your existing sampler cards here ... */}
-            </div>
-          </div>
-        </section>
-
         {/* 3.3 Modern Sample Libraries */}
         <section id="modern-sample-libraries" className="space-y-4">
           <h4 className="text-lg font-semibold tracking-tight text-slate-50">
             3.3 Modern Sample Libraries
           </h4>
 
-          <div className="flex flex-col gap-6 md:flex-row md:items-center">
-            <div className="md:w-3/5 space-y-3 text-sm text-slate-200">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-center">
+            <div className="space-y-3 text-sm text-slate-200">
               <p>
                 Platforms like Splice, Arcade, LoopCloud, and LANDR Samples have
                 transformed how producers work. They offer a nearly infinite
@@ -756,7 +765,7 @@ export default function PreProductionChapter() {
               </p>
             </div>
 
-            <figure className="md:w-2/5 rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
               <div className="relative aspect-[4/3] w-full">
                 <Image
                   src="/assets/music-production/pre-production/images/capture-collage.jpg"
@@ -781,8 +790,8 @@ export default function PreProductionChapter() {
             3.4 Public Domain &amp; Unique Source Material
           </h4>
 
-          <div className="flex flex-col gap-6 md:flex-row md:items-center">
-            <div className="md:w-3/5 space-y-3 text-sm text-slate-200">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-center">
+            <div className="space-y-3 text-sm text-slate-200">
               <p>
                 Some of the most interesting samples come from places no one
                 else is digging:
@@ -807,7 +816,7 @@ export default function PreProductionChapter() {
               </p>
             </div>
 
-            <figure className="md:w-2/5 rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
               <div className="relative aspect-[4/3] w-full">
                 <Image
                   src="/assets/music-production/pre-production/images/freesound.png"
@@ -822,11 +831,12 @@ export default function PreProductionChapter() {
             </figure>
           </div>
         </section>
+      </section>
 
       {/* 4. MODERN AI TOOLS FOR INSPIRATION */}
       <section id="modern-ai-tools" className="space-y-5 scroll-mt-24">
         <h3 className="text-xl font-semibold tracking-tight text-slate-50">
-          4. Modern AI Tools for Inspiration (Updated with Examples)
+          4. Modern AI Tools for Inspiration
         </h3>
 
         <p className="text-sm text-slate-200">
@@ -1018,8 +1028,8 @@ export default function PreProductionChapter() {
             4.4 Ethical Use (Your Fingerprint Matters Most)
           </h4>
 
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1.5fr),minmax(0,1.1fr)] md:items-center">
-            <div className="space-y-3 text-sm text-slate-200">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-center">
+            <div className="space-y-3 text-sm text-slate-200 max-w-2xl">
               <p>AI is a tool — not a replacement for your creativity.</p>
               <p className="text-sm text-slate-200">
                 The rule is simple:
@@ -1038,13 +1048,13 @@ export default function PreProductionChapter() {
               </p>
             </div>
 
-            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative h-40 w-full sm:h-48">
+            <figure className="rounded-2xl border border-slate-700/80 bg-black/80 p-1">
+              <div className="relative w-full overflow-hidden rounded-xl aspect-[16/10]">
                 <Image
                   src="/assets/music-production/pre-production/diagrams/ai-pro-con.jpg"
                   alt="Diagram of pros and cons of AI in music production"
                   fill
-                  className="rounded-xl object-contain"
+                  className="object-contain"
                 />
               </div>
             </figure>
@@ -1060,12 +1070,12 @@ export default function PreProductionChapter() {
 
         {/* Big image above section */}
         <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-          <div className="relative h-44 w-full sm:h-56">
+          <div className="relative h-64 w-full overflow-hidden rounded-xl bg-slate-950 sm:h-72">
             <Image
               src="/assets/music-production/pre-production/images/mood-collage.jpg"
               alt="Mood collage showing visual inspiration for a track"
               fill
-              className="rounded-xl object-cover"
+              className="object-cover object-[center_35%]"
             />
           </div>
         </figure>
@@ -1164,73 +1174,10 @@ export default function PreProductionChapter() {
         </section>
       </section>
 
-      {/* 6. SESSION TEMPLATE */}
-      <section id="session-template" className="space-y-5 scroll-mt-24">
-        <h3 className="text-xl font-semibold tracking-tight text-slate-50">
-          6. Creating Your Foundation: The Session Template
-        </h3>
-
-        <p className="text-sm text-slate-200">
-          A session template is like prepped ingredients for a chef—you start
-          cooking sooner because the basics are ready.
-        </p>
-
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1.2fr),minmax(0,1.1fr)]">
-          <div className="space-y-3 text-sm text-slate-200">
-            <p>Background image:</p>
-            <p>
-              public/assets/music-production/pre-production/images/templates.png
-            </p>
-            <p>
-              public/assets/music-production/pre-production/images/templates-matter.png
-            </p>
-            <p className="text-sm font-semibold text-slate-100">
-              A good template doesn’t constrain you—it frees you.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative h-40 w-full sm:h-48">
-                <Image
-                  src="/assets/music-production/pre-production/images/templates.png"
-                  alt="Overview of DAW templates"
-                  fill
-                  className="rounded-xl object-contain"
-                />
-              </div>
-            </figure>
-            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative h-40 w-full sm:h-48">
-                <Image
-                  src="/assets/music-production/pre-production/images/templates-matter.png"
-                  alt="Why templates matter for music production workflow"
-                  fill
-                  className="rounded-xl object-contain"
-                />
-              </div>
-            </figure>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
-          <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Tutorial Video • Going Thru The 808 Templates
-          </div>
-          <div className="aspect-video w-full">
-            <video
-              className="h-full w-full rounded-b-2xl"
-              controls
-              src="/assets/music-production/pre-production/tutorials/templates.mp4"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* 7. UNDERSTANDING SONG STRUCTURE */}
+      {/* 6. UNDERSTANDING SONG STRUCTURE */}
       <section id="song-structure" className="space-y-5 scroll-mt-24">
         <h3 className="text-xl font-semibold tracking-tight text-slate-50">
-          7. Understanding Song Structure
+          6. Understanding Song Structure
         </h3>
 
         <p className="text-sm text-slate-200">
@@ -1239,10 +1186,10 @@ export default function PreProductionChapter() {
           rest, density and openness.
         </p>
 
-        {/* 7.1 Common Arrangement Parts */}
+        {/* 6.1 Common Arrangement Parts */}
         <section id="common-arrangement-parts" className="space-y-4">
           <h4 className="text-lg font-semibold tracking-tight text-slate-50">
-            7.1 Common Arrangement Parts
+            6.1 Common Arrangement Parts
           </h4>
           <ul className="space-y-1 pl-4 text-sm text-slate-200">
             <li>Intro – establishes mood</li>
@@ -1269,10 +1216,10 @@ export default function PreProductionChapter() {
           </div>
         </section>
 
-        {/* 7.2 Arrangement Theory */}
+        {/* 6.2 Arrangement Theory */}
         <section id="arrangement-theory" className="space-y-4">
           <h4 className="text-lg font-semibold tracking-tight text-slate-50">
-            7.2 Arrangement Theory
+            6.2 Arrangement Theory
           </h4>
           <p className="text-sm text-slate-200">
             Think of arrangement as energy management.
@@ -1292,94 +1239,79 @@ export default function PreProductionChapter() {
         </section>
       </section>
 
-      {/* 8. CHOOSING YOUR INITIAL SOUND PALETTE */}
-      <section id="sound-palette" className="space-y-5 scroll-mt-24">
+      {/* 7. APPLY TO YOUR PROJECT */}
+      <section id="apply-project" className="space-y-5 scroll-mt-24">
         <h3 className="text-xl font-semibold tracking-tight text-slate-50">
-          8. Choosing Your Initial Sound Palette
+          7. Apply to Your Project — Inspiration Sprint
         </h3>
-
         <p className="text-sm text-slate-200">
-          Your sound palette is the sonic DNA of your track.
+          Use this week to collect sparks for your class project. The goal is a small,
+          intentional palette and clear direction before you open the DAW.
         </p>
 
-        {/* 8.1 Drum Sources */}
-        <section id="drum-sources" className="space-y-4">
-          <h4 className="text-lg font-semibold tracking-tight text-slate-50">
-            8.1 Drum Sources
-          </h4>
+        <div className="grid gap-6 md:grid-cols-[minmax(0,1.3fr),minmax(0,1.05fr)]">
+          <div className="space-y-3 text-sm text-slate-200">
+            <ul className="space-y-2 pl-4 list-disc">
+              <li>Listen to 2–3 reference tracks that match your vibe.</li>
+              <li>Pick one artist/producer to emulate for arrangement or sonics.</li>
+              <li>Scan loops/samples for inspiration; save only 5–10 favorites.</li>
+              <li>Record rough voice memos (melodies, rhythms, lyric sparks).</li>
+              <li>Jam on an instrument or synth patch and save anything promising.</li>
+              <li>Start a notes doc with adjectives, moods, and story ideas.</li>
+            </ul>
+            <p className="text-xs text-slate-300">
+              The aim is direction, not perfection. Capture options now so the next
+              chapter can move fast.
+            </p>
+          </div>
 
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1.3fr),minmax(0,1.1fr)]">
-            <div className="space-y-3 text-sm text-slate-200">
-              <p>Explore options like:</p>
-              <ul className="space-y-1 pl-4 text-sm text-slate-200">
-                <li>808s for modern hip-hop and R&amp;B</li>
-                <li>909s for house, techno, and pop</li>
-                <li>
-                  Acoustic drum samples for organic or hybrid production
-                </li>
-                <li>Loops for vibe and groove inspiration</li>
-              </ul>
-              <p className="text-sm text-slate-200">
-                Choose samples that match your Production Brief’s emotional
-                target.
-              </p>
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+            <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Tutorial • Palette Setup
             </div>
-
-            <div className="space-y-3">
-              <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
-                <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  Tutorial • Palette Setup
-                </div>
-                <div className="aspect-video w-full">
-                  <video
-                    className="h-full w-full rounded-b-2xl"
-                    controls
-                    src="/assets/music-production/pre-production/tutorials/palette-setup.mp4"
-                  />
-                </div>
-              </div>
+            <div className="aspect-video w-full">
+              <video
+                className="h-full w-full rounded-b-2xl"
+                controls
+                src="/assets/music-production/pre-production/tutorials/palette-setup.mp4"
+              />
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* 8.2 Instrument & Patch Selection */}
-        <section id="instrument-patch-selection" className="space-y-4">
-          <h4 className="text-lg font-semibold tracking-tight text-slate-50">
-            8.2 Instrument &amp; Patch Selection
-          </h4>
-          <p className="text-sm text-slate-200">Consider:</p>
-          <ul className="space-y-1 pl-4 text-sm text-slate-200">
-            <li>Leads – melodies and motifs</li>
-            <li>Pads – atmospheric support</li>
-            <li>Plucks – rhythmic harmony</li>
-            <li>Bass – foundation and movement</li>
-            <li>Textures – noise, ambience, ear candy</li>
-          </ul>
-          <p className="text-sm text-slate-200">
-            Picking the right combination of sounds creates identity.
-          </p>
-        </section>
+        <div className="grid gap-4 md:grid-cols-2 text-sm text-slate-200">
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+              Palette Checklist
+            </p>
+            <ul className="mt-2 space-y-1 pl-4">
+              <li>1–2 kicks, 1–2 snares/claps, hats</li>
+              <li>1–2 bass options</li>
+              <li>1–2 lead voices + 1 pad/texture</li>
+              <li>Reference list + mood adjectives</li>
+            </ul>
+          </div>
 
-        {/* 8.3 Build a Limited Palette */}
-        <section id="build-limited-palette" className="space-y-4">
-          <h4 className="text-lg font-semibold tracking-tight text-slate-50">
-            8.3 Build a Limited Palette
-          </h4>
-          <p className="text-sm text-slate-200">
-            Choose only 5–10 core sounds to start.
-            <br />
-            Limitation increases creativity. Too many choices kills momentum.
-          </p>
-        </section>
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+              Keep It Organized
+            </p>
+            <ul className="mt-2 space-y-1 pl-4">
+              <li>Name and color-code tracks.</li>
+              <li>Save presets for repeat use.</li>
+              <li>Limit choices so you move faster.</li>
+            </ul>
+          </div>
+        </div>
       </section>
 
-      {/* 9. HOMEWORK */}
+      {/* 8. HOMEWORK */}
       <section
         id="homework-project-session"
         className="space-y-5 scroll-mt-24"
       >
         <h3 className="text-xl font-semibold tracking-tight text-slate-50">
-          9. Homework: Create Your Official Project Session
+          8. Homework: Create Your Official Project Session
         </h3>
 
         <div className="grid gap-6 md:grid-cols-[minmax(0,1.4fr),minmax(0,1.1fr)]">

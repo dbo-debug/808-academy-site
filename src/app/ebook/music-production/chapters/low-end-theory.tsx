@@ -66,6 +66,21 @@ const approachLabels: Record<ApproachKey, string> = {
   shared: "Shared Space",
 };
 
+const sections = [
+  { id: "intro-low-end", label: "1. Introduction: Why the Low End Matters" },
+  {
+    id: "understanding-low-frequencies",
+    label: "2. Understanding Low Frequencies",
+  },
+  { id: "types-of-low-end", label: "3. Types of Low-End Instruments" },
+  { id: "writing-basslines", label: "4. Writing Basslines" },
+  { id: "kick-bass-relationship", label: "5. Kick & Bass Relationship" },
+  { id: "design-808", label: "6. Designing an 808" },
+  { id: "bass-selection", label: "7. Bass Sound Selection" },
+  { id: "bass-dynamics", label: "8. Bass Dynamics & Movement" },
+  { id: "verse-vs-hook", label: "9. Verse vs Hook Low End" },
+];
+
 export default function LowEndTheoryChapter() {
   const [zoomedImage, setZoomedImage] = useState<ZoomedImage>(null);
   const [activeInstrument, setActiveInstrument] = useState<InstrumentId | null>(
@@ -105,6 +120,13 @@ export default function LowEndTheoryChapter() {
       el.currentTime = 0;
       setActiveInstrument(null);
     }
+  };
+
+  const scrollToSection = (id: string) => {
+    if (typeof document === "undefined") return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const renderApproachContent = () => {
@@ -373,33 +395,89 @@ export default function LowEndTheoryChapter() {
     <div className="relative">
       <article className="space-y-10 text-sm text-slate-200">
         {/* HERO */}
-        <section className="space-y-6">
-<div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/90">
-  <div className="relative w-full aspect-[21/9] sm:aspect-[18/9] md:aspect-[16/9] overflow-hidden">
-    <Image
-      src="/assets/music-production/low-end/images/low-end-bkgrnd.jpg"
-      alt="Studio with subwoofers and bass instruments"
-      fill
-      priority
-      className="object-cover brightness-[0.42]"
-    />
-    {/* Gradient overlay to match Chapter 4 */}
-    <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/70 to-black/95" />
+        <section id="intro-low-end" className="space-y-6 scroll-mt-24">
+          <header className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-black/80 shadow-lg shadow-black/40">
+            <div className="absolute inset-0">
+              <Image
+                src="/assets/music-production/low-end/images/low-end-bkgrnd.jpg"
+                alt="Studio with subwoofers and bass instruments"
+                fill
+                priority
+                className="object-cover brightness-[0.4]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/45" />
+            </div>
 
-    {/* Text content */}
-    <div className="relative z-10 flex h-full flex-col justify-end gap-2 px-5 pb-5 pt-10 sm:px-7 sm:pb-7 md:px-10 md:pb-8">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-        Chapter 5
-      </p>
-      <h1 className="text-2xl font-semibold text-emerald-50 sm:text-[26px] md:text-3xl lg:text-[32px]">
-        LOW END THEORY: Bass, Subs, 808s &amp; Foundation
-      </h1>
-      <p className="max-w-xl text-[11px] text-emerald-100/80 sm:text-[12px]">
-        Bass, Subs, 808s, Movement, Weight, and the Foundation of Modern Production
-      </p>
-    </div>
-  </div>
-</div>
+            <div className="relative z-10 space-y-8 p-6 sm:p-8 md:p-12">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="space-y-3">
+                  <p className="inline-flex items-center rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200">
+                    Chapter 5
+                  </p>
+                  <h1 className="text-3xl font-semibold tracking-tight text-emerald-50 sm:text-4xl">
+                    Low End Theory: Bass, Subs, 808s &amp; Foundation
+                  </h1>
+                  <p className="max-w-2xl text-sm text-emerald-50/90 sm:text-base">
+                    Bass, subs, 808s, movement, weight, and the foundation of modern production.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50 md:max-w-xs">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                    Big Idea
+                  </p>
+                  <p className="mt-2">
+                    The low end is the emotional and physical foundation of modern tracks. Get it right and everything else locks into place.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 md:items-start">
+                <aside className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    Chapter Map
+                  </p>
+                  <p className="mt-2 text-[12px] text-slate-300">
+                    Jump to any major section.
+                  </p>
+                  <ol className="mt-3 space-y-1.5 text-left">
+                    {sections.map((section) => (
+                      <li key={section.id}>
+                        <button
+                          type="button"
+                          onClick={() => scrollToSection(section.id)}
+                          className="hover:text-emerald-300"
+                        >
+                          {section.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ol>
+                </aside>
+
+                <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200 backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    You&apos;ll Learn
+                  </p>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Sub frequencies &amp; harmonics</li>
+                      <li>808s as bass instruments</li>
+                      <li>Bass sound selection</li>
+                      <li>Kick / bass relationship</li>
+                      <li>Layering &amp; tuning</li>
+                    </ul>
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Sidechaining &amp; movement</li>
+                      <li>Low-end arrangement</li>
+                      <li>Dynamics &amp; control</li>
+                      <li>How to build the low end of your project track</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
 
           {/* INTRO */}
           <section className="grid gap-6 md:grid-cols-[minmax(0,1.6fr),minmax(0,1fr)] md:items-start">
@@ -416,8 +494,7 @@ export default function LowEndTheoryChapter() {
                 but the low end is what makes the track hit.
               </p>
               <p>
-                Bass and drums form what producers call <span>the engine.</span>{" "}
-                It’s the driving force of the arrangement. If your low end is
+                Bass and drums form what producers call <span>the engine.</span> It’s the driving force of the arrangement. If your low end is
                 weak, unfocused, or muddy, the entire track collapses. A
                 beautiful chord progression won’t save it. A perfect hook won’t
                 save it. But once your low end is solid, cohesive, and
@@ -433,27 +510,6 @@ export default function LowEndTheoryChapter() {
               <p>
                 This chapter breaks it all down in a clear and approachable way.
               </p>
-
-              <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                  By the end of this chapter, you&apos;ll understand:
-                </p>
-                <div className="mt-2 grid gap-2 md:grid-cols-2">
-                  <ul className="ml-4 list-disc space-y-1">
-                    <li>Sub frequencies &amp; harmonics</li>
-                    <li>808s as bass instruments</li>
-                    <li>Bass sound selection</li>
-                    <li>Kick / bass relationship</li>
-                    <li>Layering &amp; tuning</li>
-                  </ul>
-                  <ul className="ml-4 list-disc space-y-1">
-                    <li>Sidechaining &amp; movement</li>
-                    <li>Low-end arrangement</li>
-                    <li>Dynamics &amp; control</li>
-                    <li>How to build the low end of your project track</li>
-                  </ul>
-                </div>
-              </div>
             </div>
 
             <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
@@ -485,7 +541,10 @@ export default function LowEndTheoryChapter() {
         </section>
 
         {/* 2. UNDERSTANDING LOW FREQUENCIES */}
-        <section className="space-y-6">
+        <section
+          id="understanding-low-frequencies"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 2
@@ -625,7 +684,10 @@ export default function LowEndTheoryChapter() {
         </section>
 
         {/* 3. TYPES OF LOW-END INSTRUMENTS */}
-        <section className="space-y-6">
+        <section
+          id="types-of-low-end"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 3
@@ -751,7 +813,10 @@ export default function LowEndTheoryChapter() {
         </section>
 
         {/* 4. WRITING BASSLINES */}
-        <section className="space-y-6">
+        <section
+          id="writing-basslines"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 4
@@ -833,7 +898,10 @@ export default function LowEndTheoryChapter() {
         </section>
 
         {/* 5. KICK + BASS RELATIONSHIP */}
-        <section className="space-y-6">
+        <section
+          id="kick-bass-relationship"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 5
@@ -1112,7 +1180,10 @@ export default function LowEndTheoryChapter() {
         </section>
 
         {/* 6. 808 DESIGN & CONTROL */}
-        <section className="space-y-6">
+        <section
+          id="design-808"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 6
@@ -1217,7 +1288,10 @@ export default function LowEndTheoryChapter() {
         </section>
 
         {/* 7. BASS SOUND SELECTION */}
-        <section className="space-y-6">
+        <section
+          id="bass-selection"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 7
@@ -1311,7 +1385,10 @@ export default function LowEndTheoryChapter() {
         </section>
 
         {/* 8. BASS DYNAMICS & CONTROL */}
-        <section className="space-y-6">
+        <section
+          id="bass-dynamics"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 8
@@ -1402,7 +1479,10 @@ export default function LowEndTheoryChapter() {
         </section>
 
         {/* 9. LOW END IN VERSE VS HOOK */}
-        <section className="space-y-6">
+        <section
+          id="verse-vs-hook"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 9

@@ -44,7 +44,7 @@ const CHAPTERS: ChapterMeta[] = [
   },
   {
     id: "daw-signal-flow",
-    title: "DAW Signal Flow & Session Setup",
+    title: "DAW Signal Flow",
     label: "Chapter 1",
     description:
       "Understand how audio moves through your DAW and how to set up clean, efficient sessions.",

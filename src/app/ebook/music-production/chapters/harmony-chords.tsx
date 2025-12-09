@@ -57,6 +57,18 @@ const harmonySoundCards: {
   },
 ];
 
+const sections = [
+  { id: "intro-harmony", label: "1. Introduction: Harmony as Emotion" },
+  { id: "cheat-codes", label: "2. Harmony Cheat Codes" },
+  { id: "emotional-categories", label: "3. Emotional Categories" },
+  { id: "progressions", label: "4. Progressions" },
+  { id: "verse-hook-progressions", label: "5. Verse vs Hook Progressions" },
+  { id: "voicings-texture", label: "6. Voicings & Texture" },
+  { id: "harmony-sound-selection", label: "7. Harmony Sound Selection" },
+  { id: "harmony-bass-melody", label: "8. Harmony + Bass + Melody" },
+  { id: "harmonic-problems", label: "9. Common Harmonic Problems" },
+];
+
 export default function HarmonyChordsChapter() {
   const [zoomedImage, setZoomedImage] = useState<ZoomedImage>(null);
   const [activeHarmonySound, setActiveHarmonySound] =
@@ -94,13 +106,20 @@ export default function HarmonyChordsChapter() {
     }
   };
 
+  const scrollToSection = (id: string) => {
+    if (typeof document === "undefined") return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <div className="relative">
       <article className="space-y-10 text-sm text-slate-200">
         {/* HERO */}
-        <section className="space-y-6">
-          <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-black/80">
-            <div className="relative h-52 w-full sm:h-64 md:h-72">
+        <section id="intro-harmony" className="space-y-6 scroll-mt-24">
+          <header className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-black/80 shadow-lg shadow-black/40">
+            <div className="absolute inset-0">
               <Image
                 src="/assets/music-production/harm-chord/images/harm-bkgrnd.jpg"
                 alt="Studio with keyboard, guitar, and harmonic instruments"
@@ -108,20 +127,76 @@ export default function HarmonyChordsChapter() {
                 priority
                 className="object-cover brightness-[0.45]"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/70 to-black/95" />
-              <div className="relative z-10 flex h-full flex-col justify-end gap-2 p-5 md:p-8">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-                  Chapter 6
-                </p>
-                <h1 className="text-2xl font-semibold text-emerald-50 md:text-3xl">
-                  HARMONY &amp; CHORD PROGRESSIONS
-                </h1>
-                <p className="text-[11px] text-emerald-100/80">
-                  The Emotional DNA of Your Song
-                </p>
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/50" />
+            </div>
+
+            <div className="relative z-10 space-y-6 p-6 sm:p-8">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="space-y-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
+                    Chapter 6
+                  </p>
+                  <h1 className="text-2xl font-semibold text-emerald-50 sm:text-3xl">
+                    HARMONY &amp; CHORD PROGRESSIONS
+                  </h1>
+                  <p className="text-xs text-emerald-100/80">
+                    The Emotional DNA of Your Song
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50 md:max-w-xs">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                    Big Idea
+                  </p>
+                  <p className="mt-2">
+                    Harmony is the emotional code of your track. Simple, intentional progressions unlock powerful movement without theory overload.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 md:items-start">
+                <aside className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    Chapter Map
+                  </p>
+                  <p className="mt-2 text-[12px] text-slate-300">
+                    Jump to any section.
+                  </p>
+                  <ol className="mt-3 space-y-1.5 text-left">
+                    {sections.map((section) => (
+                      <li key={section.id}>
+                        <button
+                          type="button"
+                          onClick={() => scrollToSection(section.id)}
+                          className="hover:text-emerald-300"
+                        >
+                          {section.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ol>
+                </aside>
+
+                <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200 backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    You&apos;ll Learn
+                  </p>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Create verse and hook chord progressions</li>
+                      <li>Use the Nashville Number System</li>
+                      <li>Choose modern, emotional voicings</li>
+                    </ul>
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Select the right harmonic sounds</li>
+                      <li>Align harmony with bass and melody</li>
+                      <li>Build the emotional foundation for vocals</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </header>
 
           {/* 1. INTRODUCTION */}
           <section className="grid gap-6 md:grid-cols-[minmax(0,1.6fr),minmax(0,1fr)] md:items-start">
@@ -182,7 +257,10 @@ export default function HarmonyChordsChapter() {
         </section>
 
         {/* 2. MUSIC THEORY CHEAT CODES */}
-        <section className="space-y-6">
+        <section
+          id="cheat-codes"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 2
@@ -350,7 +428,10 @@ export default function HarmonyChordsChapter() {
         </section>
 
         {/* 3. EMOTIONAL CATEGORIES OF CHORDS */}
-        <section className="space-y-6">
+        <section
+          id="emotional-categories"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 3
@@ -402,7 +483,10 @@ export default function HarmonyChordsChapter() {
         </section>
 
         {/* 4. CREATING CHORD PROGRESSIONS */}
-        <section className="space-y-6">
+        <section
+          id="progressions"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 4
@@ -547,7 +631,10 @@ export default function HarmonyChordsChapter() {
         </section>
 
         {/* 5. VERSE vs HOOK PROGRESSIONS */}
-        <section className="space-y-6">
+        <section
+          id="verse-hook-progressions"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 5
@@ -675,7 +762,10 @@ export default function HarmonyChordsChapter() {
         </section>
 
         {/* 6. CHORD VOICINGS, SPREAD & TEXTURE */}
-        <section className="space-y-6">
+        <section
+          id="voicings-texture"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 6
@@ -813,7 +903,10 @@ export default function HarmonyChordsChapter() {
         </section>
 
         {/* 7. SOUND SELECTION FOR HARMONY */}
-        <section className="space-y-6">
+        <section
+          id="harmony-sound-selection"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 7
@@ -886,7 +979,10 @@ export default function HarmonyChordsChapter() {
         </section>
 
         {/* 8. HARMONY + BASS + MELODY */}
-        <section className="space-y-6">
+        <section
+          id="harmony-bass-melody"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 8
@@ -1039,7 +1135,10 @@ export default function HarmonyChordsChapter() {
         </section>
 
         {/* 9. COMMON HARMONIC PROBLEMS */}
-        <section className="space-y-6">
+        <section
+          id="harmonic-problems"
+          className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6"
+        >
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 9
@@ -1206,7 +1305,6 @@ export default function HarmonyChordsChapter() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative h-full w-full">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={zoomedImage.src}
                 alt={zoomedImage.alt}

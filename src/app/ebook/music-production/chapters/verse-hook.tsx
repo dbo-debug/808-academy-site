@@ -17,9 +17,10 @@ const sections = [
   { id: "harmonic-foundation", label: "4" },
   { id: "arrangement-ab", label: "5" },
   { id: "contrast-sound-design", label: "6" },
-  { id: "writing-in-session", label: "7" },
-  { id: "loops-groove", label: "8" },
-  { id: "homework", label: "9" },
+  { id: "loops-groove", label: "7" },
+  { id: "writing-in-session", label: "8" },
+  { id: "apply-project", label: "9" },
+  { id: "homework", label: "10" },
 ];
 
 const HOOK_TYPES = [
@@ -85,6 +86,27 @@ const HOOK_TYPES = [
   },
 ];
 
+const LISTENING_LAB_SONGS = [
+  {
+    title: "Don't Start Now",
+    artist: "Dua Lipa",
+    notes:
+      "Clean A/B lift with disco bass movement, bright hook layers, and clear automation into choruses.",
+  },
+  {
+    title: "Sunflower",
+    artist: "Post Malone & Swae Lee",
+    notes:
+      "Sparse, intimate verses that bloom into a wide, melodic hook; great for studying contrast and space.",
+  },
+  {
+    title: "Goosebumps",
+    artist: "Travis Scott",
+    notes:
+      "Minimal verses with filtered drums that explode into a wider, bass-forward hook — strong mood shift.",
+  },
+];
+
 export default function VerseHookChapter() {
   return (
     <article className="relative space-y-10 text-sm text-slate-200">
@@ -92,70 +114,167 @@ export default function VerseHookChapter() {
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-slate-950 via-slate-950 to-black" />
 
       {/* Header */}
-      <header className="space-y-6 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6 shadow-lg shadow-black/40">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-              Chapter 3
-            </p>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-50">
-              VERSE &amp; HOOK DEVELOPMENT: The core ideas for your track
-            </h1>
-            <p className="text-xs text-slate-300">
-              Crafting the Core Ideas of Your Track
-            </p>
-          </div>
-
-          {/* Big Idea card */}
-          <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50 md:max-w-xs">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-              Big Idea
-            </p>
-            <p className="mt-2">
-              The hook is the destination; the verse is the road. Build
-              whichever one you feel first.
-            </p>
-          </div>
+      <header className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-black/80 shadow-lg shadow-black/40">
+        <div className="absolute inset-0">
+          <Image
+            src="/assets/music-production/verse-hook/images/arrangement.jpg"
+            alt="Arrangement view background"
+            fill
+            className="object-cover brightness-[0.45]"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-black/40" />
         </div>
 
-        {/* Chapter map + You’ll Learn */}
-        <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1.1fr),minmax(0,1.3fr)]">
-          {/* Chapter map */}
-          <div className="rounded-2xl border border-slate-800/80 bg-black/60 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Chapter Map
-            </p>
-            <p className="mt-2 text-xs text-slate-300">
-              Jump to any major section as you draft your verse and hook.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {sections.map((section) => (
-                <button
-                  key={section.id}
-                  type="button"
-                  onClick={() => scrollToSection(section.id)}
-                  className="rounded-full border border-slate-700/80 bg-slate-900/80 px-3 py-1 text-xs font-semibold text-slate-200 transition hover:border-emerald-400 hover:text-emerald-200"
-                >
-                  Section {section.label}
-                </button>
-              ))}
+        <div className="relative z-10 space-y-8 p-6 sm:p-8 md:p-12">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-3">
+              <p className="inline-flex items-center rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200">
+                Chapter 3
+              </p>
+              <h1 className="text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl">
+                Verse &amp; Hook Development: The Core Ideas for Your Track
+              </h1>
+              <p className="max-w-2xl text-sm text-slate-200 sm:text-base">
+                Crafting the core ideas of your track — hooks that land, verses
+                that lift them, and a clear A/B roadmap.
+              </p>
+            </div>
+
+            {/* Big Idea card */}
+            <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50 md:max-w-xs">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                Big Idea
+              </p>
+              <p className="mt-2">
+                The hook is the destination; the verse is the road. Build
+                whichever one you feel first.
+              </p>
             </div>
           </div>
 
-          {/* You'll Learn card */}
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              You&apos;ll Learn
-            </p>
-            <ul className="mt-2 space-y-1.5">
-              <li>By the end of this chapter, you’ll be able to:</li>
-              <li>• Create a memorable hook motif</li>
-              <li>• Develop a verse idea that supports the hook</li>
-              <li>• Build your first A/B section in your project session</li>
-              <li>• Use contrast to create dynamic movement</li>
-              <li>• Start forming the emotional “center” of your track</li>
-              <li>Your project track begins to come alive here.</li>
-            </ul>
+          {/* Chapter map + You’ll Learn */}
+          <div className="grid gap-4 md:grid-cols-2 md:items-start">
+            {/* Chapter map */}
+            <aside className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 backdrop-blur">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                Chapter Map
+              </p>
+              <p className="mt-2 text-[12px] text-slate-300">
+                Jump to any major section as you draft your verse and hook.
+              </p>
+              <ol className="mt-3 space-y-1.5 text-left">
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("intro-no-rules")}
+                    className="hover:text-emerald-300"
+                  >
+                    1. Introduction: There Are No Rules
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("understanding-hook")}
+                    className="hover:text-emerald-300"
+                  >
+                    2. Understanding the Hook
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("developing-verse")}
+                    className="hover:text-emerald-300"
+                  >
+                    3. Developing the Verse
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("harmonic-foundation")}
+                    className="hover:text-emerald-300"
+                  >
+                    4. Harmonic Foundation
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("arrangement-ab")}
+                    className="hover:text-emerald-300"
+                  >
+                    5. Arrangement: Verse vs Hook
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("contrast-sound-design")}
+                    className="hover:text-emerald-300"
+                  >
+                    6. Contrast Through Sound Design
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("loops-groove")}
+                    className="hover:text-emerald-300"
+                  >
+                    7. Using Loops to Find the Groove
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("writing-in-session")}
+                    className="hover:text-emerald-300"
+                  >
+                    8. Writing Inside Your Project Session
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("apply-project")}
+                    className="hover:text-emerald-300"
+                  >
+                    9. Apply to Your Project
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("homework")}
+                    className="hover:text-emerald-300"
+                  >
+                    10. Homework
+                  </button>
+                </li>
+              </ol>
+            </aside>
+
+            {/* You'll Learn card */}
+            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200 backdrop-blur">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                You&apos;ll Learn
+              </p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>Create a memorable hook motif</li>
+                  <li>Develop a verse that lifts the hook</li>
+                  <li>Build your first A/B structure</li>
+                </ul>
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>Use contrast for energy shifts</li>
+                  <li>Shape palettes for verse vs hook</li>
+                  <li>Apply ideas inside your session</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -165,8 +284,8 @@ export default function VerseHookChapter() {
         id="intro-no-rules"
         className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/90 p-6"
       >
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1.4fr),minmax(0,1fr)] md:items-center">
-          <div className="space-y-3">
+        <div className="grid gap-6 md:grid-cols-[minmax(0,1.2fr),minmax(0,1fr)] md:items-center">
+          <div className="space-y-4">
             <h2 className="text-xl font-semibold tracking-tight text-slate-50">
               1. Introduction: There Are No Rules
             </h2>
@@ -208,32 +327,18 @@ export default function VerseHookChapter() {
           </figure>
         </div>
 
-        {/* Smaller No Rules graphic + intro YouTube */}
-        <div className="grid gap-4 md:grid-cols-2 md:items-start">
-          <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-            <div className="relative aspect-[16/9] w-full">
-              <Image
-                src="/assets/verse-hook/diagrams/no-rules-diagram.jpg"
-                alt="Diagram illustrating that there is no single correct starting point for a song"
-                fill
-                className="rounded-xl object-cover"
-              />
-            </div>
-          </figure>
-
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
-            <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Watch • Verse &amp; Hook Development Overview
-            </div>
-            <div className="aspect-video w-full">
-              <iframe
-                src="https://www.youtube.com/embed/25v_GWFcjNY"
-                className="h-full w-full rounded-b-2xl"
-                title="Verse & Hook Development Overview"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
+        <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+          <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+            Watch • Verse &amp; Hook Development Overview
+          </div>
+          <div className="aspect-video w-full">
+            <iframe
+              src="https://www.youtube.com/embed/25v_GWFcjNY"
+              className="h-full w-full rounded-b-2xl"
+              title="Verse & Hook Development Overview"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
         </div>
       </section>
@@ -306,21 +411,21 @@ export default function VerseHookChapter() {
     Tap any card to study the hook type and watch a real-world example.
   </p>
 
-  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+  <div className="flex flex-wrap justify-center gap-4">
     {HOOK_TYPES.map((type) => (
       <article
         key={type.id}
-        className="rounded-2xl border border-slate-800/80 bg-slate-950/90 p-4 text-xs text-slate-200"
+        className="flex-1 min-w-[280px] max-w-sm rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50"
       >
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
           {type.name}
         </p>
-        <p className="mt-1 text-[12px] leading-relaxed">
+        <p className="mt-1 text-[12px] leading-relaxed text-emerald-50/90">
           {type.description}
         </p>
 
-        <div className="mt-3 rounded-2xl border border-slate-800/80 bg-slate-950/80 p-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+        <div className="mt-3 rounded-2xl border border-emerald-500/40 bg-black/50 p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
             What to Listen For
           </p>
           <ul className="mt-2 ml-4 list-disc space-y-1">
@@ -330,8 +435,8 @@ export default function VerseHookChapter() {
           </ul>
         </div>
 
-        <div className="mt-3 rounded-2xl border border-slate-800/80 bg-slate-950/80">
-          <div className="border-b border-slate-800/80 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+        <div className="mt-3 rounded-2xl border border-emerald-500/40 bg-black/50">
+          <div className="border-b border-emerald-500/40 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
             Watch • {type.name} Example
           </div>
           <div className="aspect-video w-full">
@@ -405,150 +510,150 @@ export default function VerseHookChapter() {
         </section>
       </section>
 
-      {/* 3. Developing the Verse */}
-      <section
-        id="developing-verse"
-        className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/90 p-6"
-      >
-        <div className="flex flex-col gap-6 md:flex-row md:items-center">
-          <div className="space-y-3 md:w-3/5">
-            <h2 className="text-xl font-semibold tracking-tight text-slate-50">
-              3. Developing the Verse
-            </h2>
-            <p>
-              If the hook is the emotional climax, the verse is the narrative.
-              It invites the listener in, sets the mood, and slowly builds
-              tension.
-            </p>
-          </div>
+{/* 3. Developing the Verse */}
+<section
+  id="developing-verse"
+  className="space-y-8 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/90 p-6"
+>
+  {/* 3.0 Intro */}
+  <div className="space-y-3">
+    <h2 className="text-xl font-semibold tracking-tight text-slate-50">
+      3. Developing the Verse
+    </h2>
+    <p>
+      If the hook is the emotional climax, the verse is the narrative. It invites
+      the listener in, sets the mood, and slowly builds tension.
+    </p>
+  </div>
 
-          <figure className="md:w-2/5 rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-            <div className="relative aspect-[4/3] w-full">
-              <Image
-                src="/assets/music-production/verse-hook/images/verse.jpg"
-                alt="Session view focused on building verse sections"
-                fill
-                className="rounded-xl object-cover"
-              />
-            </div>
-          </figure>
-        </div>
+  {/* 3.1 Verse’s Purpose + Verse Image */}
+  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
+    {/* 3.1 The Verse’s Purpose */}
+    <section className="space-y-3">
+      <h3 className="text-lg font-semibold tracking-tight text-slate-50">
+        3.1 The Verse’s Purpose
+      </h3>
+      <p>The verse:</p>
+      <ul className="ml-4 list-disc space-y-1">
+        <li>Introduces the world of your song</li>
+        <li>Establishes the tone</li>
+        <li>Creates space</li>
+        <li>Leads toward the hook</li>
+        <li>Provides contrast</li>
+      </ul>
+      <p>Without contrast, the hook cannot lift.</p>
+    </section>
 
-        {/* 3.1 Verse’s Purpose */}
-        <section className="space-y-3">
-          <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-            3.1 The Verse’s Purpose
-          </h3>
-          <p>The verse:</p>
-          <ul className="ml-4 list-disc space-y-1">
-            <li>Introduces the world of your song</li>
-            <li>Establishes the tone</li>
-            <li>Creates space</li>
-            <li>Leads toward the hook</li>
-            <li>Provides contrast</li>
-          </ul>
-          <p>Without contrast, the hook cannot lift.</p>
-        </section>
+    {/* Supporting image – Verse */}
+    <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3 md:justify-self-end">
+      <div className="overflow-hidden rounded-xl">
+        <Image
+          src="/assets/music-production/verse-hook/images/verse.jpg"
+          alt="Session view focused on building verse sections"
+          width={1200}
+          height={800}
+          className="h-auto w-full object-cover"
+        />
+      </div>
+    </figure>
+  </div>
 
-        {/* 3.2 Good Verse Idea */}
-        <section className="space-y-3">
-          <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-            3.2 What Makes a Good Verse Idea
-          </h3>
-          <p>Verses typically:</p>
-          <ul className="ml-4 list-disc space-y-1">
-            <li>Use fewer notes</li>
-            <li>Have a narrower melodic range</li>
-            <li>Leave more rhythmic space</li>
-            <li>Use fewer layers in the arrangement</li>
-            <li>Build anticipation</li>
-          </ul>
-          <p>
-            Think of the verse as a conversation—friendly, intimate, drawing you
-            in.
-          </p>
-        </section>
-
-        {/* 3.3 Verse Motif + video */}
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1.4fr),minmax(0,1fr)] md:items-start">
-          <section className="space-y-3">
-            <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-              3.3 Building a Verse Motif
-            </h3>
-            <p>
-              Start simple. Sometimes a 2–note idea, a rhythmic phrase, or even
-              a near-spoken line can define a verse.
-            </p>
-            <p>Consider:</p>
-            <ul className="ml-4 list-disc space-y-1">
-              <li>A repeating rhythmic pattern</li>
-              <li>A low-energy melodic phrase</li>
-              <li>A call-and-response motif</li>
-              <li>An instrumental riff that complements the hook</li>
-            </ul>
-            <p>Verses don’t need fireworks—they need direction.</p>
-          </section>
-
-          <div className="space-y-2">
-            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
-              <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Watch • Verse Motif &amp; Setup
-              </div>
-              <div className="aspect-video w-full">
-                <iframe
-                  src="https://www.youtube.com/embed/UsdPTA7p3WU"
-                  className="h-full w-full rounded-b-2xl"
-                  title="Building a verse motif"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 3.4 Emotional Setup */}
-        <section className="space-y-4">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center">
-            <div className="space-y-3 md:w-1/2">
-              <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-                3.4 Emotional Setup
-              </h3>
-              <p>
-                Even before lyrics exist, every section of a song carries an
-                emotional intention. The verse is where that intention begins.
-                Ask yourself: What feeling does this verse create? Is it
-                reflective, dark, confident, intimate, mysterious, or calm? The
-                verse usually sets the tone by introducing tension, mood, or
-                atmosphere that naturally leads the listener toward the hook.
-                This doesn’t have to be dramatic—sometimes the emotional setup
-                is as subtle as a quieter drum groove, a sparse chord, or a more
-                restrained melody.
-              </p>
-              <p>
-                Producers shape emotion long before a singer steps into the
-                booth. You can suggest mood through the choice of instruments,
-                the density of the arrangement, the rhythm of the melody, or the
-                contrast between harmony and space. Think of the verse as the
-                “slow inhale” before the hook delivers the release. Your job at
-                this stage is to create a musical environment that primes the
-                listener—emotionally and sonically—for what’s coming next.
-              </p>
-            </div>
-
-            <figure className="md:w-1/2 rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative aspect-[4/3] w-full">
-                <Image
-                  src="/assets/music-production/verse-hook/images/emo-setup.jpg"
-                  alt="Visual mood board representing different emotional tones for verses"
-                  fill
-                  className="rounded-xl object-cover"
-                />
-              </div>
-            </figure>
-          </div>
-        </section>
+  {/* 3.2 + 3.3 grid, with 3.4 image under 3.2 */}
+  <div className="grid gap-6 md:grid-cols-2 md:items-start">
+    {/* Left column: 3.2 text + 3.4 image */}
+    <div className="space-y-6">
+      {/* 3.2 What Makes a Good Verse Idea */}
+      <section className="space-y-3">
+        <h3 className="text-lg font-semibold tracking-tight text-slate-50">
+          3.2 What Makes a Good Verse Idea
+        </h3>
+        <p>Verses typically:</p>
+        <ul className="ml-4 list-disc space-y-1">
+          <li>Use fewer notes</li>
+          <li>Have a narrower melodic range</li>
+          <li>Leave more rhythmic space</li>
+          <li>Use fewer layers in the arrangement</li>
+          <li>Build anticipation</li>
+        </ul>
+        <p>
+          Think of the verse as a conversation—friendly, intimate, drawing you in.
+        </p>
       </section>
+
+      {/* 3.4 Emotional Setup – IMAGE ONLY here */}
+      <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+        <div className="overflow-hidden rounded-xl">
+          <Image
+            src="/assets/music-production/verse-hook/images/emo-setup.jpg"
+            alt="Visual mood board representing different emotional tones for verses"
+            width={1200}
+            height={800}
+            className="h-auto w-full object-cover"
+          />
+        </div>
+      </figure>
+    </div>
+
+    {/* Right column: 3.3 Verse Motif card + video */}
+    <section className="space-y-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-emerald-50">
+      <h3 className="text-lg font-semibold tracking-tight text-emerald-50">
+        3.3 Building a Verse Motif
+      </h3>
+      <p>
+        Start simple. Sometimes a 2–note idea, a rhythmic phrase, or even
+        a near-spoken line can define a verse.
+      </p>
+      <p>Consider:</p>
+      <ul className="ml-4 list-disc space-y-1">
+        <li>A repeating rhythmic pattern</li>
+        <li>A low-energy melodic phrase</li>
+        <li>A call-and-response motif</li>
+        <li>An instrumental riff that complements the hook</li>
+      </ul>
+      <p>Verses don’t need fireworks—they need direction.</p>
+
+      <div className="mt-3 rounded-2xl border border-emerald-500/40 bg-black/60">
+        <div className="border-b border-emerald-500/40 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+          Watch • Verse Motif &amp; Setup
+        </div>
+        <div className="aspect-video w-full">
+          <iframe
+            src="https://www.youtube.com/embed/UsdPTA7p3WU"
+            className="h-full w-full rounded-b-2xl"
+            title="Building a verse motif"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {/* 3.4 Emotional Setup – TEXT ONLY, full width at the end */}
+  <section className="space-y-3">
+    <h3 className="text-lg font-semibold tracking-tight text-slate-50">
+      3.4 Emotional Setup
+    </h3>
+    <p>
+      Even before lyrics exist, every section of a song carries an emotional
+      intention. The verse is where that intention begins. Ask yourself: What
+      feeling does this verse create? Is it reflective, dark, confident,
+      intimate, mysterious, or calm? The verse usually sets the tone by
+      introducing tension, mood, or atmosphere that naturally leads the listener
+      toward the hook. This doesn’t have to be dramatic—sometimes the emotional
+      setup is as subtle as a quieter drum groove, a sparse chord, or a more
+      restrained melody.
+    </p>
+    <p>
+      Producers shape emotion long before a singer steps into the booth. You can
+      suggest mood through the choice of instruments, the density of the
+      arrangement, the rhythm of the melody, or the contrast between harmony and
+      space. Think of the verse as the “slow inhale” before the hook delivers the
+      release. Your job at this stage is to create a musical environment that
+      primes the listener—emotionally and sonically—for what’s coming next.
+    </p>
+  </section>
+</section>
 
       {/* 4. Harmonic Foundation */}
       <section
@@ -852,9 +957,9 @@ export default function VerseHookChapter() {
             5.4 Listening Lab: Verse vs. Hook (Real Song Analysis)
           </h3>
           <p>
-            To truly understand contrast, we’ll analyze five iconic songs across
-            different genres. You’ll load them into your DAW, mark the verse and
-            hook sections, and listen critically for differences in:
+            To truly understand contrast, analyze three iconic songs across
+            different genres. Load them into your DAW, mark verse and hook
+            sections, and listen critically for differences in:
           </p>
           <ul className="ml-4 list-disc space-y-1">
             <li>Energy</li>
@@ -869,6 +974,33 @@ export default function VerseHookChapter() {
             <li>Automation</li>
             <li>Width &amp; brightness</li>
           </ul>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {LISTENING_LAB_SONGS.map((song) => (
+              <article
+                key={song.title}
+                className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      Listening Lab
+                    </p>
+                <p className="text-sm font-semibold text-slate-50">
+                  {song.title}
+                </p>
+                <p className="text-xs text-slate-300">{song.artist}</p>
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-slate-300">{song.notes}</p>
+            <p className="mt-3 text-[11px] text-slate-400">
+              Tip: Load into your DAW, mark verse/hook, and solo stems to study
+              contrast.
+            </p>
+          </article>
+        ))}
+      </div>
+
           <p>Tutorial:</p>
 
           <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
@@ -903,20 +1035,17 @@ export default function VerseHookChapter() {
         <div className="flex flex-col gap-6 md:flex-row md:items-start">
           <div className="space-y-4 md:w-3/5">
             <p>
-              Before you write your verse or hook, it helps to prepare your
-              sonic palette — the same way a painter lays out colors before
-              beginning a canvas. Great producers don’t wait until the middle of
-              the songwriting process to hunt for sounds; they set aside time
-              for sound exploration sessions where they experiment, design,
-              tweak, and organize materials they’ll draw from later.
+              You already started a sound palette in Chapter 1. This section
+              tightens that palette for verse and hook contrast so you can write
+              quickly instead of hunting for sounds mid-session.
             </p>
-            <p>This is where you build your identity.</p>
             <p>
               Think of it as prepping a “sound shelf” for the track: synth
               patches, pads, bass tones, drum textures, transitions, fills, FX,
               risers, downlifters — everything you might reach for once
               inspiration hits.
             </p>
+            <p>This is where you build your identity.</p>
             <p>
               You’ll have accompanying tutorials showing how to do these in each
               major DAW.
@@ -934,48 +1063,51 @@ export default function VerseHookChapter() {
                 />
               </div>
             </figure>
-            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative aspect-[4/3] w-full">
-                <Image
-                  src="/assets/music-production/verse-hook/images/sound-design.jpg"
-                  alt="Sound design session in a DAW with multiple layers and effects"
-                  fill
-                  className="rounded-xl object-cover"
-                />
-              </div>
-            </figure>
           </div>
         </div>
 
         {/* 6.1 Palette */}
-        <section className="space-y-3">
-          <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-            6.1 Preparing Your Sonic Palette (Before Writing)
-          </h3>
-          <p>
-            Before writing a melody, chord progression, verse, or hook, spend
-            time:
-          </p>
-          <ul className="ml-4 list-disc space-y-1">
-            <li>Browsing presets and tweaking synths</li>
-            <li>Layering pads or leads for tone-shaping</li>
-            <li>Creating custom drum kits</li>
-            <li>Preparing one-shot folders</li>
-            <li>Loading samplers with interesting hits</li>
-            <li>Testing 808s or bass patches</li>
-            <li>Saving risers, impacts, uplifters &amp; downlifters</li>
-            <li>Building transition FX</li>
-            <li>Pre-mixing elements so writing feels fast</li>
-            <li>Setting up buses for reverb, delay, and parallel FX</li>
-          </ul>
-          <p>
-            This is your experimental session — no pressure, no songwriting.
-            Just listening, shaping, and discovering.
-          </p>
-          <p>
-            When you start writing, you’ll already have tools that spark ideas
-            instead of slow you down.
-          </p>
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold tracking-tight text-slate-50">
+              6.1 Preparing Your Sonic Palette (Before Writing)
+            </h3>
+            <p>
+              Before writing a melody, chord progression, verse, or hook, spend
+              time:
+            </p>
+            <ul className="ml-4 list-disc space-y-1">
+              <li>Browsing presets and tweaking synths</li>
+              <li>Layering pads or leads for tone-shaping</li>
+              <li>Creating custom drum kits</li>
+              <li>Preparing one-shot folders</li>
+              <li>Loading samplers with interesting hits</li>
+              <li>Testing 808s or bass patches</li>
+              <li>Saving risers, impacts, uplifters &amp; downlifters</li>
+              <li>Building transition FX</li>
+              <li>Pre-mixing elements so writing feels fast</li>
+              <li>Setting up buses for reverb, delay, and parallel FX</li>
+            </ul>
+            <p className="md:col-span-2">
+              This is your experimental session — no pressure, no songwriting.
+              Just listening, shaping, and discovering.
+            </p>
+            <p className="md:col-span-2">
+              When you start writing, you’ll already have tools that spark ideas
+              instead of slow you down.
+            </p>
+          </div>
+
+          <figure className="w-full rounded-2xl border border-slate-800/80 bg-black/80 p-3 md:max-w-2xl md:justify-self-end">
+            <div className="relative h-full w-full min-h-[16rem] md:min-h-[20rem]">
+              <Image
+                src="/assets/music-production/verse-hook/images/sound-design.jpg"
+                alt="Sound design session in a DAW with multiple layers and effects"
+                fill
+                className="rounded-xl object-cover"
+              />
+            </div>
+          </figure>
         </section>
 
         {/* 6.2 Hook sound choices */}
@@ -1064,84 +1196,35 @@ export default function VerseHookChapter() {
             </figure>
           </div>
         </section>
+
+        <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+          <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+            Watch • Automation for Transitions
+          </div>
+          <div className="aspect-video w-full">
+            <div className="flex h-full w-full items-center justify-center rounded-b-2xl border-t border-slate-800/80 bg-black/60 px-4 text-center text-xs text-slate-300">
+              Placeholder: Automation tutorial video
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* 7. Writing Inside Your Project Session */}
-      <section
-        id="writing-in-session"
-        className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/90 p-6"
-      >
-        <h2 className="text-xl font-semibold tracking-tight text-slate-50">
-          7. Writing Inside Your Project Session
-        </h2>
-
-        {/* 7.1 Start with the Hook */}
-        <section className="space-y-3">
-          <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-            7.1 Start With the Hook (If You Want)
-          </h3>
-          <p>Open your session and:</p>
-          <ul className="ml-4 list-disc space-y-1">
-            <li>Pick your main sound</li>
-            <li>Lay down a short motif</li>
-            <li>Experiment with chords</li>
-            <li>Try a rough rhythm track</li>
-            <li>Add placeholder vocals or synth lines</li>
-          </ul>
-          <p>Keep your session messy. It’s fine.</p>
-        </section>
-
-        {/* 7.2 Build the Verse */}
-        <section className="space-y-3">
-          <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-            7.2 Build the Verse
-          </h3>
-          <p>Duplicate your hook → strip it back:</p>
-          <ul className="ml-4 list-disc space-y-1">
-            <li>Remove layers</li>
-            <li>Change chord rhythm</li>
-            <li>Use fewer notes</li>
-            <li>Reduce energy</li>
-          </ul>
-          <p>Simplicity = intentionality.</p>
-        </section>
-
-        {/* 7.3 Avoid Loop Hell */}
-        <section className="space-y-3">
-          <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-            7.3 Avoid Loop Hell
-          </h3>
-          <p>
-            Producers often get trapped in an 8-bar loop, endlessly tweaking.
-          </p>
-          <p>Avoid this by:</p>
-          <ul className="ml-4 list-disc space-y-1">
-            <li>Copying the 8 bars across the timeline</li>
-            <li>Creating actual sections</li>
-            <li>Automating differences</li>
-            <li>Changing a drum pattern</li>
-            <li>Muting elements between sections</li>
-          </ul>
-          <p>Songwriting is movement—not a static loop.</p>
-        </section>
-      </section>
-
-      {/* 8. Using Loops to Find the Groove */}
+      {/* 7. Using Loops to Find the Groove */}
       <section
         id="loops-groove"
         className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/90 p-6"
       >
         <h2 className="text-xl font-semibold tracking-tight text-slate-50">
-          8. Using Loops to Find the Groove (Lead-In to Drum Production)
+          7. Using Loops to Find the Groove (Lead-In to Drum Production)
         </h2>
         <p>
           Loops are tools. Not a cheat code, not a crutch — simply ingredients.
         </p>
 
-        {/* 8.1 Loops as Inspiration */}
+        {/* 7.1 Loops as Inspiration */}
         <section className="space-y-3">
           <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-            8.1 Loops as Inspiration
+            7.1 Loops as Inspiration
           </h3>
           <p>Browse loops that match:</p>
           <ul className="ml-4 list-disc space-y-1">
@@ -1153,10 +1236,10 @@ export default function VerseHookChapter() {
           <p>Preview until something sparks movement.</p>
         </section>
 
-        {/* 8.2 Loop-Based Workflow Example */}
+        {/* 7.2 Loop-Based Workflow Example */}
         <section className="space-y-3">
           <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-            8.2 Loop-Based Workflow Example
+            7.2 Loop-Based Workflow Example
           </h3>
           <p>Try:</p>
           <ul className="ml-4 list-disc space-y-1">
@@ -1168,10 +1251,10 @@ export default function VerseHookChapter() {
           <p>Loops accelerate creativity.</p>
         </section>
 
-        {/* 8.3 Verse/Hook Contrast Using Loops */}
+        {/* 7.3 Verse/Hook Contrast Using Loops */}
         <section className="space-y-3">
           <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-            8.3 Verse/Hook Contrast Using Loops
+            7.3 Verse/Hook Contrast Using Loops
           </h3>
           <ul className="ml-4 list-disc space-y-1">
             <li>Use a busy loop in the hook</li>
@@ -1196,10 +1279,10 @@ export default function VerseHookChapter() {
           </div>
         </section>
 
-        {/* 8.4 Preparing for Next Chapter */}
+        {/* 7.4 Preparing for Next Chapter */}
         <section className="space-y-3">
           <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-            8.4 Preparing for Next Chapter
+            7.4 Preparing for Next Chapter
           </h3>
           <p>Next chapter: Drum Production You’ll learn:</p>
           <ul className="ml-4 list-disc space-y-1">
@@ -1215,13 +1298,139 @@ export default function VerseHookChapter() {
         </section>
       </section>
 
-      {/* 9. Homework */}
+      {/* 8. Writing Inside Your Project Session */}
+      <section
+        id="writing-in-session"
+        className="space-y-6 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/90 p-6"
+      >
+        <h2 className="text-xl font-semibold tracking-tight text-slate-50">
+          8. Writing Inside Your Project Session
+        </h2>
+
+        {/* 8.1 Start with the Hook */}
+        <section className="space-y-3">
+          <h3 className="text-lg font-semibold tracking-tight text-slate-50">
+            8.1 Start With the Hook (If You Want)
+          </h3>
+          <p>Open your session and:</p>
+          <ul className="ml-4 list-disc space-y-1">
+            <li>Pick your main sound</li>
+            <li>Lay down a short motif</li>
+            <li>Experiment with chords</li>
+            <li>Try a rough rhythm track</li>
+            <li>Add placeholder vocals or synth lines</li>
+          </ul>
+          <p>Keep your session messy. It’s fine.</p>
+        </section>
+
+        {/* 8.2 Build the Verse */}
+        <section className="space-y-3">
+          <h3 className="text-lg font-semibold tracking-tight text-slate-50">
+            8.2 Build the Verse
+          </h3>
+          <p>Duplicate your hook → strip it back:</p>
+          <ul className="ml-4 list-disc space-y-1">
+            <li>Remove layers</li>
+            <li>Change chord rhythm</li>
+            <li>Use fewer notes</li>
+            <li>Reduce energy</li>
+          </ul>
+          <p>Simplicity = intentionality.</p>
+        </section>
+
+        {/* 8.3 Avoid Loop Hell */}
+        <section className="space-y-3">
+          <h3 className="text-lg font-semibold tracking-tight text-slate-50">
+            8.3 Avoid Loop Hell
+          </h3>
+          <p>
+            Producers often get trapped in an 8-bar loop, endlessly tweaking.
+          </p>
+          <p>Avoid this by:</p>
+          <ul className="ml-4 list-disc space-y-1">
+            <li>Copying the 8 bars across the timeline</li>
+            <li>Creating actual sections</li>
+            <li>Automating differences</li>
+            <li>Changing a drum pattern</li>
+            <li>Muting elements between sections</li>
+          </ul>
+          <p>Songwriting is movement—not a static loop.</p>
+        </section>
+      </section>
+
+      {/* 9. APPLY TO YOUR PROJECT */}
+      <section id="apply-project" className="space-y-5 scroll-mt-24 rounded-3xl border border-slate-800/80 bg-slate-950/90 p-6">
+        <h3 className="text-xl font-semibold tracking-tight text-slate-50">
+          9. Apply to Your Project — Inspiration Sprint
+        </h3>
+        <p className="text-sm text-slate-200">
+          Use this week to collect sparks for your class project. The goal is a small,
+          intentional palette and clear direction before you open the DAW.
+        </p>
+
+        <div className="grid gap-6 md:grid-cols-[minmax(0,1.3fr),minmax(0,1.05fr)]">
+          <div className="space-y-3 text-sm text-slate-200">
+            <ul className="space-y-2 pl-4 list-disc">
+              <li>Listen to 2–3 reference tracks that match your vibe.</li>
+              <li>Pick one artist/producer to emulate for arrangement or sonics.</li>
+              <li>Scan loops/samples for inspiration; save only 5–10 favorites.</li>
+              <li>Record rough voice memos (melodies, rhythms, lyric sparks).</li>
+              <li>Jam on an instrument or synth patch and save anything promising.</li>
+              <li>Start a notes doc with adjectives, moods, and story ideas.</li>
+            </ul>
+            <p className="text-xs text-slate-300">
+              The aim is direction, not perfection. Capture options now so the next
+              chapter can move fast.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+            <div className="border-b border-slate-800/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Tutorial • Palette Setup
+            </div>
+            <div className="aspect-video w-full">
+              <video
+                className="h-full w-full rounded-b-2xl"
+                controls
+                src="/assets/music-production/verse-hook/tutorials/groove-loops.mp4"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 text-sm text-slate-200">
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+              Palette Checklist
+            </p>
+            <ul className="mt-2 space-y-1 pl-4">
+              <li>1–2 kicks, 1–2 snares/claps, hats</li>
+              <li>1–2 bass options</li>
+              <li>1–2 lead voices + 1 pad/texture</li>
+              <li>Reference list + mood adjectives</li>
+            </ul>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+              Keep It Organized
+            </p>
+            <ul className="mt-2 space-y-1 pl-4">
+              <li>Name and color-code tracks.</li>
+              <li>Save presets for repeat use.</li>
+              <li>Limit choices so you move faster.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* 10. Homework */}
       <section
         id="homework"
         className="space-y-4 scroll-mt-24 rounded-3xl border border-emerald-500/40 bg-emerald-500/10 p-6 text-emerald-50"
       >
         <h2 className="text-xl font-semibold tracking-tight text-emerald-50">
-          9. Homework: Create a Rough Verse + Hook
+          10. Homework: Create a Rough Verse + Hook
         </h2>
         <p>Your track officially begins here.</p>
 

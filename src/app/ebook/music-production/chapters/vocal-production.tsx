@@ -9,6 +9,17 @@ type ZoomedImage = {
   alt: string;
 } | null;
 
+const sections = [
+  "1. Introduction: The Art of Vocal Production",
+  "2. Preparing the Vocalist",
+  "3. Studio Setup & Signal Flow",
+  "4. Vocal Tone, Mic Choice & Technique",
+  "5. Recording Takes & Comping",
+  "6. Tuning & Timing",
+  "7. Creative FX & Layering",
+  "8. Apply to Your Project / Homework",
+];
+
 export default function VocalProductionChapter() {
   const [zoomedImage, setZoomedImage] = useState<ZoomedImage>(null);
 
@@ -23,29 +34,79 @@ export default function VocalProductionChapter() {
       <article className="space-y-10 text-sm text-slate-200">
         {/* HERO */}
         <section className="space-y-6">
-          <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-black/80">
-            <div className="relative h-52 w-full sm:h-64 md:h-72">
+          <header className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-black/80 shadow-lg shadow-black/40">
+            <div className="absolute inset-0">
               <Image
                 src="/assets/music-production/vocal-production/images/vocals-bkgrnd.jpg"
                 alt="Vocalist recording in a studio"
                 fill
                 priority
-                className="object-cover brightness-[0.4]"
+                className="object-cover brightness-[0.42]"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/70 to-black/95" />
-              <div className="relative z-10 flex h-full flex-col justify-end gap-2 p-5 md:p-8">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-                  Chapter 7
-                </p>
-                <h1 className="text-2xl font-semibold text-emerald-50 md:text-3xl">
-                  VOCAL PRODUCTION
-                </h1>
-                <p className="text-[11px] text-emerald-100/80">
-                  Capturing Emotion, Character &amp; Performance
-                </p>
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/45" />
+            </div>
+
+            <div className="relative z-10 space-y-8 p-6 sm:p-8 md:p-12">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="space-y-3">
+                  <p className="inline-flex items-center rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200">
+                    Chapter 7
+                  </p>
+                  <h1 className="text-3xl font-semibold tracking-tight text-emerald-50 sm:text-4xl">
+                    Vocal Production
+                  </h1>
+                  <p className="max-w-2xl text-sm text-emerald-50/90 sm:text-base">
+                    Capturing emotion, character, and performance — from setup to creative effects.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50 md:max-w-xs">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                    Big Idea
+                  </p>
+                  <p className="mt-2">
+                    Great vocals are about feeling, not perfection. Build the environment, capture authentic takes, then refine with intention.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 md:items-start">
+                <aside className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    Chapter Map
+                  </p>
+                  <p className="mt-2 text-[12px] text-slate-300">
+                    Jump to any section.
+                  </p>
+                  <ol className="mt-3 space-y-1.5 text-left">
+                    {sections.map((label) => (
+                      <li key={label}>
+                        <span className="text-slate-200">{label}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </aside>
+
+                <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200 backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    You&apos;ll Learn
+                  </p>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Prep the vocalist &amp; studio chain</li>
+                      <li>Pick the right mic &amp; tone</li>
+                      <li>Record takes and comp with intention</li>
+                    </ul>
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Tuning &amp; timing workflows</li>
+                      <li>Layering, doubles, and harmonies</li>
+                      <li>Creative FX to shape character</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </header>
 
           {/* 1. INTRODUCTION */}
           <section className="grid gap-6 md:grid-cols-[minmax(0,1.6fr),minmax(0,1fr)] md:items-start">
@@ -201,7 +262,7 @@ export default function VocalProductionChapter() {
           </h3>
 
           {/* Condenser */}
-          <div className="grid gap-6 md:grid-cols-2 md:items-start">
+          <div className="grid gap-8 md:grid-cols-2 md:items-start">
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
                 Condenser Microphones — Detailed, Bright, Modern
@@ -261,7 +322,7 @@ export default function VocalProductionChapter() {
           </div>
 
           {/* Dynamic */}
-          <div className="grid gap-6 md:grid-cols-2 md:items-start">
+          <div className="grid gap-8 md:grid-cols-2 md:items-start">
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
                 Dynamic Microphones — Rugged, Upfront, Great for Rap
@@ -321,7 +382,7 @@ export default function VocalProductionChapter() {
           </div>
 
           {/* Ribbon */}
-          <div className="grid gap-6 md:grid-cols-2 md:items-start">
+          <div className="grid gap-8 md:grid-cols-2 md:items-start">
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
                 Ribbon Microphones — Smooth, Vintage, Warm
@@ -448,7 +509,7 @@ export default function VocalProductionChapter() {
           </p>
 
           {/* Distance & shield image */}
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 md:items-center">
             <div className="space-y-2">
               <p className="text-xs font-semibold text-emerald-100">
                 Distance &amp; Tone
@@ -508,7 +569,7 @@ export default function VocalProductionChapter() {
           </div>
 
           {/* Shields vs pop filters */}
-          <div className="grid gap-4 md:grid-cols-2 md:items-center">
+          <div className="grid gap-6 md:grid-cols-2 md:items-center">
             <div className="space-y-2">
               <p className="text-xs font-semibold text-emerald-100">
                 Mic Shields — Your Portable Vocal Booth
@@ -825,9 +886,8 @@ export default function VocalProductionChapter() {
         </p>
       </div>
       <div className="relative aspect-video w-full">
-        {/* Use the same YouTube video you already had for this section */}
         <iframe
-          src="https://www.youtube.com/embed/VIDEO_ID_61"
+          src="https://www.youtube.com/embed/X2H6fUhtixg"
           title="Mumble track demo"
           className="h-full w-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -847,9 +907,8 @@ export default function VocalProductionChapter() {
         </p>
       </div>
       <div className="relative aspect-video w-full">
-        {/* Use the same melody-writing YouTube video you already had */}
         <iframe
-          src="https://www.youtube.com/embed/VIDEO_ID_62"
+          src="https://www.youtube.com/embed/WMTV-HVDq9Q"
           title="How to write a vocal melody"
           className="h-full w-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -904,9 +963,8 @@ export default function VocalProductionChapter() {
         </p>
       </div>
       <div className="relative aspect-video w-full">
-        {/* Use the same rhythm-writing YouTube video you already had */}
         <iframe
-          src="https://www.youtube.com/embed/VIDEO_ID_63"
+          src="https://www.youtube.com/embed/wpJli1hFdGk"
           title="Rhythm-first songwriting"
           className="h-full w-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -926,9 +984,8 @@ export default function VocalProductionChapter() {
         </p>
       </div>
       <div className="relative aspect-video w-full">
-        {/* Use the same lyric-brainstorming YouTube video you already had */}
         <iframe
-          src="https://www.youtube.com/embed/VIDEO_ID_64"
+          src="https://www.youtube.com/embed/uLpE6jESeMc"
           title="Lyric brainstorming exercises"
           className="h-full w-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -957,11 +1014,11 @@ export default function VocalProductionChapter() {
 
   {/* --- Your 6.5 section (if you have one) can stay here as-is --- */}
 
-  {/* 6.6 AI-ASSISTED WRITING */}
-  <section className="grid gap-6 md:grid-cols-[minmax(0,1.4fr),minmax(0,1.3fr)] md:items-start">
+  {/* 6.5 AI-ASSISTED WRITING */}
+  <section className="grid gap-6 md:grid-cols-2 md:items-start">
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-emerald-100">
-        6.6 AI-Assisted Writing (Ethical, Creative, Helpful)
+        6.5 AI-Assisted Writing (Ethical, Creative, Helpful)
       </h3>
       <p>
         AI can be a powerful writing partner when you treat it like a
@@ -986,34 +1043,23 @@ export default function VocalProductionChapter() {
       </ul>
     </div>
 
-    <figure className="overflow-hidden rounded-2xl border border-slate-800/80 bg-black/80">
-      <div className="relative aspect-[4/3] w-full">
-        <Image
-          src="/assets/music-production/vocal-production/images/ai-writing.jpg"
-          alt="Producer collaborating with an AI assistant"
-          fill
-          className="object-cover"
-        />
-      </div>
+    <figure className="overflow-hidden rounded-2xl border border-slate-800/80 bg-black/80 md:justify-self-end self-start">
+      <Image
+        src="/assets/music-production/vocal-production/images/ai-help.jpg"
+        alt="Producer collaborating with an AI assistant"
+        width={1200}
+        height={900}
+        className="h-60 w-full rounded-xl object-cover sm:h-72 md:h-80"
+        sizes="(min-width: 768px) 360px, 100vw"
+      />
     </figure>
   </section>
 
-  {/* 6.7 AI VOICE TOOLS & CLONES */}
-  <section className="grid gap-6 md:grid-cols-[minmax(0,1.3fr),minmax(0,1.4fr)] md:items-start">
-    <figure className="overflow-hidden rounded-2xl border border-slate-800/80 bg-black/80 md:order-1">
-      <div className="relative aspect-[4/3] w-full">
-        <Image
-          src="/assets/music-production/vocal-production/images/ai-voice-lab.jpg"
-          alt="Abstract AI vocal lab artwork"
-          fill
-          className="object-cover"
-        />
-      </div>
-    </figure>
-
-    <div className="space-y-3 md:order-2">
+  {/* 6.6 AI VOICE TOOLS & CLONES */}
+  <section className="space-y-3">
+    <div className="space-y-3">
       <h3 className="text-sm font-semibold text-emerald-100">
-        6.7 AI Voice Tools &amp; Clones (Optional / Experimental)
+        6.6 AI Voice Tools &amp; Clones (Optional / Experimental)
       </h3>
       <p>
         AI voice tools are evolving quickly — voice models, clones, and
@@ -1073,89 +1119,153 @@ export default function VocalProductionChapter() {
             </h2>
           </header>
 
-          <p>
-            A vocal session is as much about emotion and trust as it is about
-            microphones and plugins. As the producer — even if you&apos;re
-            self-producing — your job is to protect the vibe and keep the
-            artist in a creative headspace.
-          </p>
+          <div className="grid gap-6 md:grid-cols-2 md:items-start">
+            <div className="space-y-4">
+              <p>
+                A vocal session is as much about emotion and trust as it is about
+                microphones and plugins. As the producer — even if you&apos;re
+                self-producing — your job is to protect the vibe and keep the
+                artist in a creative headspace.
+              </p>
 
-          {/* 7.1 */}
-          <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-emerald-100">
-              7.1 Mindset for Singers
-            </h3>
-            <ul className="ml-4 list-disc space-y-1">
-              <li>
-                Aim for <span className="font-semibold">emotion first</span>,
-                then clarity.
-              </li>
-              <li>Treat takes as experiments, not pass/fail tests.</li>
-              <li>Normalize mistakes — they&apos;re part of the process.</li>
-              <li>Celebrate small wins: great phrases, lines, or moments.</li>
-            </ul>
-            <p className="text-xs font-semibold text-emerald-100">
-              Helpful phrases:
-            </p>
-            <ul className="ml-4 list-disc space-y-1 text-xs">
-              <li>&quot;That one had the emotion — let&apos;s get one more.&quot;</li>
-              <li>
-                &quot;Keep that same feeling, just lean a little closer to the
-                mic.&quot;
-              </li>
-              <li>&quot;We&apos;re just exploring options, nothing has to be perfect.&quot;</li>
-            </ul>
-          </section>
+              {/* 7.1 */}
+              <section className="space-y-3">
+                <h3 className="text-sm font-semibold text-emerald-100">
+                  7.1 Mindset for Singers
+                </h3>
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>
+                    Aim for <span className="font-semibold">emotion first</span>,
+                    then clarity.
+                  </li>
+                  <li>Treat takes as experiments, not pass/fail tests.</li>
+                  <li>Normalize mistakes — they&apos;re part of the process.</li>
+                  <li>Celebrate small wins: great phrases, lines, or moments.</li>
+                </ul>
+                <p className="text-xs font-semibold text-emerald-100">
+                  Helpful phrases:
+                </p>
+                <ul className="ml-4 list-disc space-y-1 text-xs">
+                  <li>&quot;That one had the emotion — let&apos;s get one more.&quot;</li>
+                  <li>
+                    &quot;Keep that same feeling, just lean a little closer to the
+                    mic.&quot;
+                  </li>
+                  <li>&quot;We&apos;re just exploring options, nothing has to be perfect.&quot;</li>
+                </ul>
+              </section>
+            </div>
 
-          {/* 7.2 */}
-          <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-emerald-100">
-              7.2 Coaching Non-Singers &amp; Rappers
-            </h3>
-            <p>
-              Many artists say, &quot;I&apos;m not really a singer.&quot; You can
-              still capture powerful performances by reducing pressure and
-              breaking the process into tiny steps.
-            </p>
-            <ul className="ml-4 list-disc space-y-1">
-              <li>Record one line at a time or even half-lines.</li>
-              <li>Let them speak phrases in rhythm before worrying about pitch.</li>
-              <li>Use call-and-response: you sing or play it, they copy it.</li>
-              <li>
-                Focus on character, phrasing, and attitude more than perfect
-                notes.
-              </li>
-            </ul>
-          </section>
+            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3 md:max-w-sm md:ml-auto">
+              <div className="relative aspect-[4/3] w-full">
+                <Image
+                  src="/assets/music-production/vocal-production/images/psy-vocals.jpg"
+                  alt="Vocalist focusing in the booth"
+                  fill
+                  className="rounded-xl object-cover"
+                />
+              </div>
+              <figcaption className="mt-2 text-[11px] text-slate-400">
+                Psychology and vibe shape performance as much as the mic chain.
+              </figcaption>
+            </figure>
+          </div>
 
-          {/* 7.3 */}
-          <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-emerald-100">
-              7.3 Body Language &amp; Taking Up Space
-            </h3>
-            <p>
-              The body is part of the instrument. A stiff body usually equals a
-              stiff vocal.
-            </p>
-            <ul className="ml-4 list-disc space-y-1">
-              <li>Encourage grounded feet and open posture.</li>
-              <li>Allow light movement, gestures, and dancing between phrases.</li>
-              <li>
-                Adjust the room: lighting, number of people, reverb in the
-                headphones.
-              </li>
-            </ul>
-          </section>
+          <div className="grid gap-6 md:grid-cols-2 md:items-start">
+            {/* 7.2 */}
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-emerald-100">
+                7.2 Coaching Non-Singers &amp; Rappers
+              </h3>
+              <p>
+                Many artists say, &quot;I&apos;m not really a singer.&quot; You can
+                still capture powerful performances by reducing pressure and
+                breaking the process into tiny steps.
+              </p>
+              <ul className="ml-4 list-disc space-y-1">
+                <li>Record one line at a time or even half-lines.</li>
+                <li>Let them speak phrases in rhythm before worrying about pitch.</li>
+                <li>Use call-and-response: you sing or play it, they copy it.</li>
+                <li>
+                  Focus on character, phrasing, and attitude more than perfect
+                  notes.
+                </li>
+              </ul>
+            </section>
+
+            {/* 7.3 */}
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-emerald-100">
+                7.3 Body Language &amp; Taking Up Space
+              </h3>
+              <p>
+                The body is part of the instrument. A stiff body usually equals a
+                stiff vocal.
+              </p>
+              <ul className="ml-4 list-disc space-y-1">
+                <li>Encourage grounded feet and open posture.</li>
+                <li>Allow light movement, gestures, and dancing between phrases.</li>
+                <li>
+                  Adjust the room: lighting, number of people, reverb in the
+                  headphones.
+                </li>
+              </ul>
+            </section>
+          </div>
         </section>
 
-        {/* 8. EDITING & COMPING */}
+        {/* 8. TAKE RECORDING */}
         <section className="space-y-6">
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
               Section 8
             </p>
             <h2 className="text-lg font-semibold text-emerald-50">
-              8. Editing &amp; Comping
+              8. Recording With Takes
+            </h2>
+          </header>
+
+          <div className="grid gap-6 md:grid-cols-[minmax(0,1.4fr),minmax(0,1.3fr)] md:items-start">
+            <div className="space-y-3">
+              <p>
+                Modern DAWs make it easy to record multiple takes and comp them
+                into a single, confident performance. Capture 4–8 full passes, then
+                mark standout phrases before you start comping.
+              </p>
+              <ul className="ml-4 list-disc space-y-1">
+                <li>Loop record sections that need polish.</li>
+                <li>Keep your first two takes — they&apos;re often the most honest.</li>
+                <li>Label great moments as you go so comping is faster.</li>
+                <li>Don&apos;t overthink — stay in performance mode while tracking.</li>
+              </ul>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+              <div className="border-b border-slate-800/80 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                Tutorial • Recording With Takes (Pro Tools)
+              </div>
+              <div className="aspect-video w-full">
+                <iframe
+                  src="https://www.youtube.com/embed/VIDEO_ID_TAKES"
+                  title="Recording with takes in Pro Tools"
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 9. EDITING & COMPING */}
+        <section className="space-y-6">
+          <header>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
+              Section 9
+            </p>
+            <h2 className="text-lg font-semibold text-emerald-50">
+              9. Editing &amp; Comping
             </h2>
           </header>
 
@@ -1165,10 +1275,10 @@ export default function VocalProductionChapter() {
             the takes that best tell the story.
           </p>
 
-          {/* 8.1 */}
+          {/* 9.1 */}
           <section className="space-y-3">
             <h3 className="text-sm font-semibold text-emerald-100">
-              8.1 Comping Philosophy
+              9.1 Comping Philosophy
             </h3>
             <ul className="ml-4 list-disc space-y-1">
               <li>
@@ -1180,10 +1290,10 @@ export default function VocalProductionChapter() {
             </ul>
           </section>
 
-          {/* 8.2 */}
+          {/* 9.2 */}
           <section className="space-y-3">
             <h3 className="text-sm font-semibold text-emerald-100">
-              8.2 Practical Comp Workflow
+              9.2 Practical Comp Workflow
             </h3>
             <ul className="ml-4 list-disc space-y-1">
               <li>Label or star strong takes while recording.</li>
@@ -1193,10 +1303,10 @@ export default function VocalProductionChapter() {
             </ul>
           </section>
 
-          {/* 8.3 */}
+          {/* 9.3 */}
           <section className="space-y-3">
             <h3 className="text-sm font-semibold text-emerald-100">
-              8.3 Common Comping Mistakes
+              9.3 Common Comping Mistakes
             </h3>
             <ul className="ml-4 list-disc space-y-1">
               <li>Over-comping until the performance feels robotic.</li>
@@ -1205,16 +1315,32 @@ export default function VocalProductionChapter() {
               <li>Forgetting that the &quot;messy but emotional&quot; take wins.</li>
             </ul>
           </section>
+
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+            <div className="border-b border-slate-800/80 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Tutorial • Editing &amp; Comping Vocals
+            </div>
+            <div className="aspect-video w-full">
+              <iframe
+                src="https://www.youtube.com/embed/VIDEO_ID_COMPING"
+                title="Editing and comping vocals"
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          </div>
         </section>
 
-        {/* 9. VOCAL LAYERING */}
+        {/* 10. VOCAL LAYERING */}
         <section className="space-y-6">
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-              Section 9
+              Section 10
             </p>
             <h2 className="text-lg font-semibold text-emerald-50">
-              9. Vocal Layering
+              10. Vocal Layering
             </h2>
           </header>
 
@@ -1227,7 +1353,7 @@ export default function VocalProductionChapter() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
               <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                9.1 Lead Vocal
+                10.1 Lead Vocal
               </p>
               <p className="text-xs text-slate-300">
                 The star of the show. Keep it centered, clear, and emotionally
@@ -1237,7 +1363,7 @@ export default function VocalProductionChapter() {
 
             <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
               <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                9.2 Doubles
+                10.2 Doubles
               </p>
               <ul className="ml-4 list-disc space-y-1 text-xs">
                 <li>Tight doubles for crisp, pop/trap precision.</li>
@@ -1248,7 +1374,7 @@ export default function VocalProductionChapter() {
 
             <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
               <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                9.3 Harmonies
+                10.3 Harmonies
               </p>
               <ul className="ml-4 list-disc space-y-1 text-xs">
                 <li>Start with 3rds above/below, then experiment.</li>
@@ -1259,7 +1385,7 @@ export default function VocalProductionChapter() {
 
             <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
               <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                9.4 Ad-Libs &amp; Textures
+                10.4 Ad-Libs &amp; Textures
               </p>
               <ul className="ml-4 list-disc space-y-1 text-xs">
                 <li>Ad-libs react to or emphasize key lines.</li>
@@ -1271,16 +1397,32 @@ export default function VocalProductionChapter() {
               </ul>
             </div>
           </div>
+
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+            <div className="border-b border-slate-800/80 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Tutorial • Using Vocal Layers
+            </div>
+            <div className="aspect-video w-full">
+              <iframe
+                src="https://www.youtube.com/embed/VIDEO_ID_LAYERS"
+                title="Using vocal layers"
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          </div>
         </section>
 
-        {/* 10. INTRO TO VOCAL FX CHAINS */}
+        {/* 11. INTRO TO VOCAL FX CHAINS */}
         <section className="space-y-6">
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-              Section 10
+              Section 11
             </p>
             <h2 className="text-lg font-semibold text-emerald-50">
-              10. Intro to Vocal FX Chains
+              11. Intro to Vocal FX Chains
             </h2>
           </header>
 
@@ -1290,10 +1432,10 @@ export default function VocalProductionChapter() {
             rough mix.
           </p>
 
-          {/* 10.1 */}
+          {/* 11.1 */}
           <section className="space-y-3">
             <h3 className="text-sm font-semibold text-emerald-100">
-              10.1 Basic Serial Chain
+              11.1 Basic Serial Chain
             </h3>
             <ul className="ml-4 list-disc space-y-1">
               <li>High-pass EQ to remove rumble.</li>
@@ -1304,10 +1446,10 @@ export default function VocalProductionChapter() {
             </ul>
           </section>
 
-          {/* 10.2 */}
+          {/* 11.2 */}
           <section className="space-y-3">
             <h3 className="text-sm font-semibold text-emerald-100">
-              10.2 Sends &amp; Parallels
+              11.2 Sends &amp; Parallels
             </h3>
             <p>
               Use sends instead of stacking every effect directly on the vocal
@@ -1320,10 +1462,10 @@ export default function VocalProductionChapter() {
             </ul>
           </section>
 
-          {/* 10.3 */}
+          {/* 11.3 */}
           <section className="space-y-3">
             <h3 className="text-sm font-semibold text-emerald-100">
-              10.3 Creative FX Ideas
+              11.3 Creative FX Ideas
             </h3>
             <ul className="ml-4 list-disc space-y-1">
               <li>Throw delays on the last word of a phrase.</li>
@@ -1334,16 +1476,32 @@ export default function VocalProductionChapter() {
               </li>
             </ul>
           </section>
+
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+            <div className="border-b border-slate-800/80 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Tutorial • Building a Vocal Chain
+            </div>
+            <div className="aspect-video w-full">
+              <iframe
+                src="https://www.youtube.com/embed/VIDEO_ID_VOCAL_CHAIN"
+                title="Building a vocal chain"
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          </div>
         </section>
 
-        {/* 11. PREPARING VOCALS FOR MIXING */}
+        {/* 12. PREPARING VOCALS FOR MIXING */}
         <section className="space-y-6">
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-              Section 11
+              Section 12
             </p>
             <h2 className="text-lg font-semibold text-emerald-50">
-              11. Preparing Vocals for Mixing
+              12. Preparing Vocals for Mixing
             </h2>
           </header>
 
@@ -1399,14 +1557,14 @@ export default function VocalProductionChapter() {
           </div>
         </section>
 
-        {/* 12. APPLYING TO YOUR PROJECT TRACK */}
+        {/* 13. APPLYING TO YOUR PROJECT TRACK */}
         <section className="space-y-6">
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-              Section 12
+              Section 13
             </p>
             <h2 className="text-lg font-semibold text-emerald-50">
-              12. Applying This to Your Project Track
+              13. Applying This to Your Project Track
             </h2>
           </header>
 
@@ -1436,14 +1594,14 @@ export default function VocalProductionChapter() {
           </div>
         </section>
 
-        {/* 13. HOMEWORK */}
+        {/* 14. HOMEWORK */}
         <section className="space-y-6">
           <header>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-              Section 13
+              Section 14
             </p>
             <h2 className="text-lg font-semibold text-emerald-50">
-              13. Homework: Vocal Performance &amp; Production
+              14. Homework: Vocal Performance &amp; Production
             </h2>
           </header>
 

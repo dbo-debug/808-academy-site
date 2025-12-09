@@ -30,11 +30,16 @@ export default function DawSignalFlowChapter() {
   }) => (
     <button
       type="button"
-      className={`relative h-full w-full cursor-zoom-in ${className ?? ""}`}
+      className="relative h-full w-full cursor-zoom-in"
       onClick={() => setZoomImage({ src, alt })}
       aria-label={`Zoom image: ${alt}`}
     >
-      <Image src={src} alt={alt} fill className="rounded-xl object-contain" />
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className={`rounded-xl object-contain ${className ?? ""}`}
+      />
     </button>
   );
 
@@ -44,161 +49,154 @@ export default function DawSignalFlowChapter() {
       <div className="space-y-10">
         {/* HERO / TITLE */}
         <section className="space-y-6">
-          {/* Heading */}
-          <header className="space-y-3">
-            <p className="inline-flex items-center rounded-full border border-slate-600/60 bg-slate-900/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-300">
-              Chapter 1
-            </p>
-            <h2 className="text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl">
-              DAW Signal Flow &amp; Session Setup
-            </h2>
-            <p className="max-w-2xl text-sm text-slate-200 sm:text-base">
-              Before we talk plug-ins, templates, or track counts, you need a
-              rock-solid mental map of how audio travels: from the microphone,
-              to the console, into the interface and DAW, through plug-ins, and
-              back out to the speakers. In other words:{" "}
-              <span className="font-semibold text-emerald-300">
-                signal flow
-              </span>
-              .
-            </p>
-          </header>
-
-          {/* Card rows – tight layout like your mockup */}
-          <div className="space-y-4">
-            {/* Row 1: You'll Learn + Big Idea */}
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  You&apos;ll Learn
-                </p>
-                <ul className="mt-2 space-y-1.5">
-                  <li>• What &quot;signal flow&quot; really means</li>
-                  <li>• Analog console vs DAW channel strip</li>
-                  <li>• Inserts, sends, buses &amp; subgroups</li>
-                  <li>• A/D &amp; D/A conversion basics</li>
-                  <li>• Track types, I/O &amp; naming</li>
-                </ul>
-              </div>
-
-              <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                  Big Idea
-                </p>
-                <p className="mt-2">
-                  Once you understand signal flow, a &quot;complex&quot; session
-                  becomes a bunch of simple paths stacked together. This chapter
-                  is about making those paths feel obvious.
-                </p>
-              </div>
+          <div className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-black/80">
+            <div className="relative h-[28rem] w-full sm:h-[32rem]">
+              <Image
+                src="/assets/music-production/daw-signal-flow/images/neve.jpg"
+                alt="Analog Neve console"
+                fill
+                priority
+                className="object-cover brightness-[0.35]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-black/35" />
             </div>
 
-            {/* Row 2: Neve console hero + compact chapter map */}
-            <div className="grid gap-4 md:grid-cols-3 md:items-stretch">
-              {/* Neve console image – big on the left (2/3 width on ≥ md) */}
-              <figure className="md:col-span-2 rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative h-60 w-full sm:h-72 md:h-80">
-                  <ZoomableImage
-                    src="/assets/music-production/daw-signal-flow/images/neve.jpg"
-                    alt="Analog console with glowing VU meters"
-                  />
+            <div className="absolute inset-0 flex flex-col justify-center gap-8 p-6 sm:p-9 md:p-14">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="space-y-3">
+                  <p className="inline-flex items-center rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-200">
+                    Chapter 1
+                  </p>
+                  <h2 className="text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl">
+                    DAW Signal Flow
+                  </h2>
+                  <p className="max-w-2xl text-sm text-slate-200 sm:text-base">
+                    Build a mental map for how audio moves: mic → console →
+                    interface → DAW → plug-ins → buses → speakers. Once you see the
+                    path, every routing problem becomes solvable.
+                  </p>
                 </div>
-                <figcaption className="mt-2 text-[11px] text-slate-400">
-                  Modern DAWs are modeled after consoles like this. If you
-                  understand one channel strip here, you can understand your DAW.
-                </figcaption>
-              </figure>
 
-              {/* Compact chapter map on the right – clickable */}
-              <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  Chapter Map
-                </p>
-                <ol className="mt-2 space-y-1.5 text-left">
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection("what-is-signal-flow")}
-                      className="hover:text-emerald-300"
-                    >
-                      1. What Is Signal Flow?
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        scrollToSection("analog-console-channel-strip")
-                      }
-                      className="hover:text-emerald-300"
-                    >
-                      2. Analog Console Channel Strip
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection("di-vs-mic")}
-                      className="hover:text-emerald-300"
-                    >
-                      3. DI vs Mic Paths
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection("inserts-sends")}
-                      className="hover:text-emerald-300"
-                    >
-                      4. Inserts, Sends, Subgroups &amp; Mix Bus
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection("conversion")}
-                      className="hover:text-emerald-300"
-                    >
-                      5. A/D &amp; D/A Conversion
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection("daw-flow")}
-                      className="hover:text-emerald-300"
-                    >
-                      6. DAW / Pro Tools Signal Flow
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection("track-types")}
-                      className="hover:text-emerald-300"
-                    >
-                      7. Track Types &amp; Naming
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection("applied-practice")}
-                      className="hover:text-emerald-300"
-                    >
-                      8. Applied Practice
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection("summary")}
-                      className="hover:text-emerald-300"
-                    >
-                      9. Summary &amp; Master Diagram
-                    </button>
-                  </li>
-                </ol>
+                <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50 md:max-w-xs">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                    Big Idea
+                  </p>
+                  <p className="mt-2">
+                    Complex sessions are just simple signal paths stacked together.
+                    Master the path once and you can troubleshoot anything.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 md:items-start md:pr-6">
+                <aside className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 text-xs text-slate-200 backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    Chapter Map
+                  </p>
+                  <ol className="mt-2 space-y-1.5 text-left">
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection("what-is-signal-flow")}
+                        className="hover:text-emerald-300"
+                      >
+                        1. What Is Signal Flow?
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection("analog-console-channel-strip")}
+                        className="hover:text-emerald-300"
+                      >
+                        2. Analog Console Channel Strip
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection("di-vs-mic")}
+                        className="hover:text-emerald-300"
+                      >
+                        3. DI vs Mic Paths
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection("inserts-sends")}
+                        className="hover:text-emerald-300"
+                      >
+                        4. Inserts, Sends, Subgroups &amp; Mix Bus
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection("conversion")}
+                        className="hover:text-emerald-300"
+                      >
+                        5. A/D &amp; D/A Conversion
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection("daw-flow")}
+                        className="hover:text-emerald-300"
+                      >
+                        6. DAW / Pro Tools Signal Flow
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection("track-types")}
+                        className="hover:text-emerald-300"
+                      >
+                        7. Track Types &amp; Naming
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection("applied-practice")}
+                        className="hover:text-emerald-300"
+                      >
+                        8. Apply to Your Project
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection("summary")}
+                        className="hover:text-emerald-300"
+                      >
+                        9. Homework &amp; Summary
+                      </button>
+                    </li>
+                  </ol>
+                </aside>
+
+                <div className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 text-xs text-slate-200 backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    You&apos;ll Learn
+                  </p>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Signal flow fundamentals</li>
+                      <li>Console channel strip → DAW</li>
+                      <li>Inserts, sends, buses, subgroups</li>
+                      <li>A/D &amp; D/A conversion basics</li>
+                    </ul>
+                    <ul className="ml-4 list-disc space-y-1">
+                      <li>Track types, I/O, and naming</li>
+                      <li>Routing templates for speed</li>
+                      <li>Troubleshooting paths</li>
+                      <li>Building your project session</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -210,9 +208,9 @@ export default function DawSignalFlowChapter() {
             1. What Is Signal Flow?
           </h3>
 
-          {/* Tight text + image split (space-saving layout) */}
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1.4fr),minmax(0,1fr)] md:items-center">
-            <div className="space-y-3 text-sm text-slate-200">
+          <div className="grid gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] md:items-start">
+            {/* Text + path bubble right */}
+            <div className="order-2 flex h-full flex-col gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-sm text-slate-200 md:order-2">
               <div className="rounded-xl border border-slate-800/80 bg-slate-950/80 px-4 py-3 text-xs text-slate-200">
                 <span className="font-mono text-[11px]">
                   Mic → Preamp → Interface → DAW → Plug-ins / Buses → Mix Bus →
@@ -247,17 +245,17 @@ export default function DawSignalFlowChapter() {
               </p>
             </div>
 
-            {/* Correct analog signal diagram, tighter layout */}
-            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative h-56 w-full sm:h-64">
+            {/* Large diagram left, fuller width */}
+            <figure className="order-1 rounded-2xl border border-slate-800/80 bg-black/80 p-4 md:order-1">
+              <div className="relative h-[36rem] w-full">
                 <ZoomableImage
                   src="/assets/music-production/daw-signal-flow/diagrams/analog-sig.jpg"
                   alt="Simplified mic to preamp to interface to DAW to speakers signal flow diagram"
                 />
               </div>
-              <figcaption className="mt-2 text-[11px] text-slate-400">
-                Big picture: one clean path in, one clean path out. Everything
-                else is detail.
+              <figcaption className="mt-3 text-center text-[11px] text-slate-400">
+                Big picture: one clean path in, one clean path out. Everything else
+                is detail.
               </figcaption>
             </figure>
           </div>
@@ -269,7 +267,7 @@ export default function DawSignalFlowChapter() {
             </div>
             <div className="aspect-video w-full">
               <iframe
-                src="https://www.youtube.com/embed/_uZK8Zx7c4I"
+                src="https://www.youtube.com/embed/_55VqPSSwV0"
                 className="h-full w-full"
                 title="Signal flow explained"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -288,133 +286,74 @@ export default function DawSignalFlowChapter() {
     2. Analog Console Channel Strip
   </h2>
 
-  <p className="text-sm text-slate-200">
-    Before DAWs, engineers learned signal flow on large-format analog
-    consoles. Each vertical strip is one channel, and the layout repeats
-    across the desk. Once you understand one strip from top to bottom, a
-    DAW like Pro Tools stops being mysterious and just feels like a
-    virtual console.
-  </p>
-
-  <p className="text-sm text-slate-200">
-    The strip below is based on an{" "}
-    <span className="font-medium">SSL 4000-series</span> console — a classic
-    desk behind a huge amount of hit records. Nearly every modern DAW mixer
-    is modeled on this basic idea: start at the input, shape and control the
-    signal as it moves downward, then send it out to a bus or your mix.
-  </p>
-
-  {/* FIXED 3-COLUMN RESPONSIVE LAYOUT */}
-  <div className="mt-6 grid gap-6 lg:grid-cols-3 lg:items-start">
-
-    {/* LEFT COLUMN: STATIC SSL STRIP */}
-    <figure className="rounded-2xl border border-slate-800/80 bg-black/90 p-4 mx-auto lg:mx-0">
-      <div className="w-[260px] mx-auto">
-        <Image
+  <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
+    <figure className="rounded-2xl border border-slate-800/80 bg-black/90 p-4">
+      <div className="relative mx-auto h-[900px] w-full max-w-4xl">
+        <ZoomableImage
           src="/assets/music-production/daw-signal-flow/images/ssl-9000.jpg"
-          alt="SSL 4000 analog console channel strip"
-          width={180}
-          height={1100}
-          className="h-auto w-full rounded-xl"
+          alt="SSL 9000K analog console channel strip"
+          className="object-cover"
         />
       </div>
+      <figcaption className="mt-2 text-[11px] text-slate-400">
+        SSL 9000K: labeled blocks for routing, gain, dynamics, EQ, sends, pan, and fader/output.
+      </figcaption>
     </figure>
 
-    {/* MIDDLE COLUMN: ROADMAP */}
-    <aside className="space-y-3 text-xs text-slate-200">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-        Channel Strip Roadmap
-      </p>
-
-      <div className="space-y-2">
-        <div className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-3">
-          <p className="text-sm font-semibold text-slate-50">Input Section</p>
-          <p className="mt-1 text-[11px] text-slate-300">
-            Mic / line / tape input selector, pad, polarity (phase) flip, and a high-pass filter.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-3">
-          <p className="text-sm font-semibold text-slate-50">Preamp / Gain</p>
-          <p className="mt-1 text-[11px] text-slate-300">
-            Brings the incoming signal up to working level. Too low = noise. Too high = distortion.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-3">
-          <p className="text-sm font-semibold text-slate-50">Dynamics</p>
-          <p className="mt-1 text-[11px] text-slate-300">
-            Compression, gating, and expansion live here.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-3">
-          <p className="text-sm font-semibold text-slate-50">EQ Section</p>
-          <p className="mt-1 text-[11px] text-slate-300">
-            Multiple bands for carving, boosting, and tone shaping.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-3">
-          <p className="text-sm font-semibold text-slate-50">Sends / Cue Mixes</p>
-          <p className="mt-1 text-[11px] text-slate-300">
-            Sends feed reverbs, delays, headphones, and more.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-3">
-          <p className="text-sm font-semibold text-slate-50">Pan & Fader</p>
-          <p className="mt-1 text-[11px] text-slate-300">
-            Pan places the sound in the stereo field; the fader sets level.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-3">
-          <p className="text-sm font-semibold text-slate-50">Bus / Output Routing</p>
-          <p className="mt-1 text-[11px] text-slate-300">
-            Routes the channel to groups, mix bus, or interface.
-          </p>
-        </div>
-      </div>
-    </aside>
-
-    {/* RIGHT COLUMN: TEXT + DAW VERSION */}
-    <div className="space-y-4 text-sm text-slate-200">
+    <div className="flex h-full flex-col gap-4 rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-sm text-slate-200">
       <p>
-        The key idea is that the signal always travels{" "}
-        <span className="font-medium">top → bottom</span>.
+        Before DAWs, engineers learned signal flow on large-format analog consoles.
+        Each vertical strip is one channel, and the layout repeats across the desk.
+        Once you understand one strip from top to bottom, a DAW like Pro Tools
+        stops being mysterious and just feels like a virtual console.
       </p>
       <p>
-        When troubleshooting, engineers “walk down the strip” checking each
-        stage in order.
+        This strip is based on an <span className="font-medium">SSL 9000K</span>
+        — a classic desk behind a huge number of hit records. The labeled blocks
+        show routing/input selection, gain, dynamics, EQ, sends/cues, pan, and
+        fader/output.
       </p>
       <p>
-        DAWs copy this exact layout — just in software instead of hardware.
+        Routing sits near the top because that’s where you decide where the signal
+        enters and where it can be sent. Processing blocks (dynamics, EQ, filters)
+        live through the middle. The fader/output block controls level and where the
+        channel feeds next (bus, interface, print track); it isn’t a “bus section”
+        by itself.
       </p>
+      <p>
+        When troubleshooting, “walk down the strip” in order. If the signal
+        disappears, you know exactly which stage to inspect. The digital mixer in
+        your DAW mirrors this same path: one clean path in, one clean path out.
+      </p>
+      <p className="text-xs text-slate-300">
+        Start at the top, shape and control the signal as it moves through each
+        block, then feed the fader to the right destination. Once you recognize the
+        order, every channel strip—hardware or software—feels predictable.
+      </p>
+    </div>
+  </div>
 
-      <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs text-emerald-50">
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-          DAW Version • Same Flow, Virtual Knobs
-        </h3>
-
-        <div className="mt-2 grid gap-3 sm:grid-cols-2 sm:items-center">
-          <figure className="rounded-xl border border-emerald-500/40 bg-black/80 p-3">
-            <div className="relative h-32 w-full">
-              <Image
-                src="/assets/music-production/daw-signal-flow/images/pt-ssl.jpg"
-                alt="SSL-style channel strip plug-in"
-                width={400}
-                height={130}
-                className="h-full w-full rounded-lg object-cover"
-              />
-            </div>
-          </figure>
-
-          <p>
-            The Pro Tools mixer is just a digital version of this same strip — repeated 50 times.
-          </p>
+  <div className="mt-6 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-50">
+    <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+      DAW Version • Same Flow, Virtual Knobs
+    </h3>
+    <div className="mt-2 space-y-3">
+      <figure className="rounded-xl border border-emerald-500/40 bg-black/80 p-2">
+        <div className="relative w-full">
+          <Image
+            src="/assets/music-production/daw-signal-flow/images/pt-ssl.jpg"
+            alt="SSL-style channel strip plug-in"
+            width={1600}
+            height={800}
+            className="h-full w-full rounded-lg object-contain"
+          />
         </div>
-      </div>
+      </figure>
+      <p className="text-sm">
+        The Pro Tools mixer is just a digital version of this same strip — repeated
+        50 times. Once you know the order on hardware, every DAW channel strip
+        feels familiar.
+      </p>
     </div>
   </div>
 </section>
@@ -425,8 +364,8 @@ export default function DawSignalFlowChapter() {
             3. DI vs Mic Paths (Instrument Level vs Mic Level)
           </h3>
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr),minmax(0,1fr)]">
-            <div className="space-y-3 text-sm text-slate-200">
+          <div className="grid gap-6 md:grid-cols-2 md:items-center">
+            <div className="space-y-3 text-sm text-slate-200 md:order-1">
               <p>
                 Not every source hits the console the same way. A vocal mic, a bass
                 guitar, and a synth all show up at different levels and impedances.
@@ -450,8 +389,8 @@ export default function DawSignalFlowChapter() {
               </p>
             </div>
 
-            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative h-64 w-full">
+            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-2 md:order-2">
+              <div className="relative h-[22rem] w-full">
                 <ZoomableImage
                   src="/assets/music-production/daw-signal-flow/diagrams/di-diagram.jpg"
                   alt="Diagram of DI vs mic signal path for guitar"
@@ -475,6 +414,10 @@ export default function DawSignalFlowChapter() {
                 <li>• Long cable runs on stage</li>
                 <li>• Keyboards / synths into the console</li>
               </ul>
+              <p className="mt-3 text-[11px] text-slate-300">
+                Many sessions capture both a close mic and a clean DI for safety and
+                re-amping later.
+              </p>
             </div>
             <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
@@ -485,10 +428,6 @@ export default function DawSignalFlowChapter() {
                 <li>• For room / cabinet character</li>
                 <li>• When the performer interacts with the room</li>
               </ul>
-              <p className="mt-2 text-[11px] text-slate-300">
-                Many modern sessions capture both: a close mic on the cab plus a
-                clean DI as insurance.
-              </p>
             </div>
           </div>
         </section>
@@ -499,92 +438,68 @@ export default function DawSignalFlowChapter() {
             4. Inserts, Sends, Subgroups &amp; Mix Bus
           </h3>
 
-          {/* Inserts / Sends tight split */}
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr),minmax(0,1fr)]">
-            <div className="space-y-4 text-sm text-slate-200">
-              <div>
-                <h4 className="text-sm font-semibold text-slate-50">
-                  Inserts: In-Line Processing
-                </h4>
-                <p className="mt-1 text-sm text-slate-300">
-                  An insert sits directly in the signal path. 100% of the signal
-                  passes through it, then continues down the chain. Compressors,
-                  EQs, de-essers, noise gates, and many saturation plug-ins are most
-                  often used as inserts.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="text-sm font-semibold text-slate-50">
-                  Sends: Parallel / Shared Processing
-                </h4>
-                <p className="mt-1 text-sm text-slate-300">
-                  A send creates a copy of the signal and routes it to another
-                  destination at a level you choose. That copy is processed on an{" "}
-                  <span className="font-medium">aux return</span> and then blended
-                  back into the mix.
-                </p>
-                <p className="mt-1 text-sm text-slate-300">
-                  Classic examples: reverb and delay buses, headphone mixes, and
-                  parallel compression.
-                </p>
-              </div>
-
-              <p className="text-xs text-slate-300">
-                Think of inserts as effects pedals wired in series, and sends as a
-                side road that rejoins the main highway.
-              </p>
-            </div>
-
-            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative h-56 w-full">
+          {/* Inserts / Sends: image left, text right */}
+          <div className="grid gap-6 md:grid-cols-2 md:items-center">
+            <figure className="order-1 rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+              <div className="relative h-72 w-full">
                 <ZoomableImage
                   src="/assets/music-production/daw-signal-flow/diagrams/insert-vs-send.jpg"
-                  alt="Diagram comparing insert path and send/return path"
+                  alt="Diagram explaining inserts versus sends"
                 />
               </div>
               <figcaption className="mt-2 text-[11px] text-slate-400">
-                Insert path: the whole signal passes through the processor in
-                series. Send path: a copy of the signal goes to a shared effect and
-                is blended back in.
+                Inserts: in-line. Sends: a copy to a return, blended back in.
               </figcaption>
             </figure>
+
+            <div className="order-2 space-y-4 text-sm text-slate-200">
+              <div>
+                <h4 className="text-sm font-semibold text-slate-50">4.1 Inserts: In-Line Processing</h4>
+                <p className="mt-1 text-sm text-slate-300">
+                  An insert sits directly in the signal path. 100% of the signal passes through it, then continues down the chain. Compressors, EQs, de-essers, noise gates, and many saturation plug-ins are most often used as inserts.
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-semibold text-slate-50">4.2 Sends: Parallel / Shared Processing</h4>
+                <p className="mt-1 text-sm text-slate-300">
+                  A send creates a copy of the signal and routes it to another destination at a level you choose. That copy is processed on an <span className="font-medium">aux return</span> and then blended back into the mix.
+                </p>
+                <p className="mt-1 text-sm text-slate-300">
+                  Classic examples: reverb and delay buses, headphone mixes, and parallel compression.
+                </p>
+              </div>
+
+              <p className="text-xs text-slate-300">
+                Think of inserts as effects pedals wired in series, and sends as a side road that rejoins the main highway.
+              </p>
+            </div>
           </div>
 
-          {/* Subgroups */}
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr),minmax(0,1fr)]">
-            <div className="space-y-3 text-sm text-slate-200">
-              <h4 className="text-sm font-semibold text-slate-50">
-                Subgroups &amp; Mix Bus
-              </h4>
+          {/* Subgroup + mix bus: text left, image right */}
+          <div className="grid gap-6 md:grid-cols-2 md:items-center">
+            <div className="order-1 space-y-3 text-sm text-slate-200">
+              <h4 className="text-sm font-semibold text-slate-50">4.3 Subgroups &amp; Mix Bus</h4>
               <p>
-                A <span className="font-medium">subgroup</span> (or bus) is a
-                fader that controls multiple channels at once. Drums, background
-                vocals, guitars — each can have its own subgroup for shared
-                processing and level control.
+                A <span className="font-medium">subgroup</span> (or bus) routes multiple channels to a shared fader. Drum bus, guitar bus, and vocal bus are common examples. This lets you compress, EQ, or automate a whole group at once.
               </p>
               <p>
-                Subgroups are where glue compression, group EQ, and broad moves
-                happen. They also make automation way easier: ride one fader instead
-                of twelve.
+                The <span className="font-medium">mix bus</span> is the final stereo (or surround) sum. Everything eventually passes through it—often hitting light compression or limiting for glue before export.
               </p>
               <p className="text-xs text-slate-300">
-                At the end of the chain, everything feeds the{" "}
-                <span className="font-semibold">mix bus</span>. Treat that like the
-                “master lens” for your entire record.
+                In Pro Tools, use aux tracks for subgroups and the built-in Master Fader for the mix bus.
               </p>
             </div>
 
-            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative h-56 w-full">
+            <figure className="order-2 rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+              <div className="relative h-64 w-full">
                 <ZoomableImage
                   src="/assets/music-production/daw-signal-flow/diagrams/sub-group-diagram.jpg"
-                  alt="Subgroup routing diagram"
+                  alt="Diagram showing subgroup and mix bus routing"
                 />
               </div>
               <figcaption className="mt-2 text-[11px] text-slate-400">
-                Multiple channels feeding a drum subgroup, then the mix bus. Same
-                idea in hardware and in your DAW.
+                Subgroups combine related channels. Mix bus is the final stereo sum.
               </figcaption>
             </figure>
           </div>
@@ -596,52 +511,7 @@ export default function DawSignalFlowChapter() {
             5. A/D &amp; D/A Conversion
           </h3>
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr),minmax(0,1.2fr)] lg:items-start">
-            {/* Left: digital diagrams stacked, scrollable on smaller screens */}
-            <div className="space-y-3">
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative h-28 w-full">
-                  <ZoomableImage
-                    src="/assets/music-production/daw-signal-flow/diagrams/digital/digital1.jpg"
-                    alt="Sine wave entering digital system"
-                  />
-                </div>
-              </figure>
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative h-28 w-full">
-                  <ZoomableImage
-                    src="/assets/music-production/daw-signal-flow/diagrams/digital/digital2.jpg"
-                    alt="Sine wave being sampled at discrete points"
-                  />
-                </div>
-              </figure>
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative h-28 w-full">
-                  <ZoomableImage
-                    src="/assets/music-production/daw-signal-flow/diagrams/digital/digital3.jpg"
-                    alt="Sample points only view"
-                  />
-                </div>
-              </figure>
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative h-28 w-full">
-                  <ZoomableImage
-                    src="/assets/music-production/daw-signal-flow/diagrams/digital/digital4.jpg"
-                    alt="Blocky reconstruction with few samples"
-                  />
-                </div>
-              </figure>
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative h-28 w-full">
-                  <ZoomableImage
-                    src="/assets/music-production/daw-signal-flow/diagrams/digital/digital5.jpg"
-                    alt="Smooth waveform after interpolation"
-                  />
-                </div>
-              </figure>
-            </div>
-
-            {/* Right: explanation + listening test */}
+          <div className="space-y-4">
             <div className="space-y-4 text-sm text-slate-200">
               <p>
                 Your converters are the doorway between the analog world and the
@@ -700,6 +570,30 @@ export default function DawSignalFlowChapter() {
                 </div>
               </div>
             </div>
+
+            <div className="rounded-2xl border border-slate-800/80 bg-black/80 p-6">
+              <div className="mx-auto flex max-w-6xl flex-wrap justify-center gap-6">
+                {[
+                  { src: "digital1.jpg", alt: "Sine wave entering digital system" },
+                  { src: "digital2.jpg", alt: "Sine wave being sampled at discrete points" },
+                  { src: "digital3.jpg", alt: "Sample points only view" },
+                  { src: "digital4.jpg", alt: "Blocky reconstruction with few samples" },
+                  { src: "digital5.jpg", alt: "Smooth waveform after interpolation" },
+                ].map((img) => (
+                  <figure
+                    key={img.src}
+                    className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-4"
+                  >
+                    <div className="relative h-64 w-72 sm:h-72 sm:w-80">
+                      <ZoomableImage
+                        src={`/assets/music-production/daw-signal-flow/diagrams/digital/${img.src}`}
+                        alt={img.alt}
+                      />
+                    </div>
+                  </figure>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -709,27 +603,34 @@ export default function DawSignalFlowChapter() {
             6. DAW / Pro Tools Signal Flow
           </h3>
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr),minmax(0,1fr)]">
-            <div className="space-y-3 text-sm text-slate-200">
-              <p>
-                Now we connect everything: how audio moves from input, through your
-                DAW, into plug-ins, buses, and the mix bus, and back out your
-                interface to the speakers.
-              </p>
-              <p>
-                The diagram on the right is your roadmap. Any time you&apos;re
-                stuck, find where the signal should be, then trace the path until
-                you find where it stops.
-              </p>
-              <p className="text-xs text-slate-300">
-                Your homework later in the course will be to redraw a simplified
-                version of this from memory. Once you can do that, routing will feel
-                second-nature.
-              </p>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:items-stretch">
+            <div>
+              <div className="h-full rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-sm text-slate-200">
+                <p>
+                  Now we connect everything: how audio moves from input, through
+                  your DAW, into plug-ins, buses, and the mix bus, and back out your
+                  interface to the speakers. Every troubleshooting moment comes back
+                  to this single chain: if something goes quiet or distorts, one
+                  hop in the path is broken or misrouted.
+                </p>
+                <p className="mt-3">
+                  The diagram on the right is your roadmap. Any time you&apos;re
+                  stuck, find where the signal should be, then trace the path until
+                  you find where it stops. Inputs feed channels, inserts process,
+                  sends branch to effects, buses collect groups, and the mix bus
+                  feeds your monitor path.
+                </p>
+                <p className="mt-3 text-xs text-slate-300">
+                  Your homework later in the course will be to redraw a simplified
+                  version of this from memory. Once you can do that, routing will
+                  feel second-nature. Keep this mental checklist nearby and you can
+                  solve nearly any DAW routing problem under pressure.
+                </p>
+              </div>
             </div>
 
             <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <div className="relative h-[420px] w-full">
+              <div className="relative h-full min-h-[620px] w-full">
                 <ZoomableImage
                   src="/assets/music-production/daw-signal-flow/diagrams/daw-sig-flow.jpg"
                   alt="808 Academy Pro Tools signal flow master diagram"
@@ -764,7 +665,7 @@ export default function DawSignalFlowChapter() {
             </p>
             <div className="mt-2 aspect-video w-full rounded-xl border border-slate-800/80 bg-black/80">
               <iframe
-                src="https://www.youtube.com/embed/BBfKJHkFj0w"
+                src="https://www.youtube.com/embed/ADHHEGI_S9Y"
                 className="h-full w-full rounded-xl"
                 title="Pro Tools track types overview"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -815,27 +716,29 @@ export default function DawSignalFlowChapter() {
                   Clear naming makes every future decision easier — especially when
                   you reopen a session weeks later or collaborate with someone else.
                 </p>
-                <div className="mt-3 grid gap-3 md:grid-cols-2">
-                  <figure className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-3">
-                    <div className="relative h-40 w-full">
+                <div className="mt-3 grid gap-4 md:grid-cols-2">
+                  <figure className="flex flex-col items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/80 p-3">
+                    <div className="relative h-[28rem] w-full max-w-[400px] sm:h-[30rem]">
                       <ZoomableImage
                         src="/assets/music-production/daw-signal-flow/images/naming-donts.png"
                         alt="Messy track naming example"
+                        className="object-contain"
                       />
                     </div>
-                    <figcaption className="mt-2 text-[11px] text-slate-400">
+                    <figcaption className="mt-1 text-[11px] text-slate-400 text-center">
                       &quot;Audio 1, Audio 2, New Track 3&quot; — this gets
                       unmanageable fast.
                     </figcaption>
                   </figure>
-                  <figure className="rounded-xl border border-slate-800/80 bg-slate-950/80 p-3">
-                    <div className="relative h-40 w-full">
+                  <figure className="flex flex-col items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/80 p-3">
+                    <div className="relative h-[28rem] w-full max-w-[400px] sm:h-[30rem]">
                       <ZoomableImage
                         src="/assets/music-production/daw-signal-flow/images/naming-dos.png"
                         alt="Clean track naming example"
+                        className="object-contain"
                       />
                     </div>
-                    <figcaption className="mt-2 text-[11px] text-slate-400">
+                    <figcaption className="mt-1 text-[11px] text-slate-400 text-center">
                       Clear, consistent names (Kick_In, LV_Lead, GTR_Chorus_L) make
                       routing and editing effortless.
                     </figcaption>
@@ -843,7 +746,7 @@ export default function DawSignalFlowChapter() {
                 </div>
               </div>
 
-              {/* Pro Tools setup tutorial + checklist CTA */}
+              {/* Pro Tools setup tutorial */}
               <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
                   Tutorial • Pro Tools Session Setup
@@ -862,79 +765,76 @@ export default function DawSignalFlowChapter() {
                     allowFullScreen
                   />
                 </div>
-                <div className="mt-3 rounded-xl border border-emerald-500/40 bg-black/70 p-3 text-[11px] text-emerald-50">
-                  <p className="font-semibold">
-                    Download • Pro Tools Setup Checklist (PDF)
-                  </p>
-                  <p className="mt-1 opacity-80">
-                    When the downloads section is live, this bubble will link to a
-                    printable checklist so you can mirror the exact settings used in
-                    class.
-                  </p>
-                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 8. APPLIED PRACTICE (kept simple for now) */}
+        {/* 8. APPLY TO YOUR PROJECT */}
         <section id="applied-practice" className="space-y-4">
           <h3 className="text-xl font-semibold tracking-tight text-slate-50">
-            8. Applied Practice
+            8. Apply to Your Project — Sound Palette &amp; Routing Plan
           </h3>
           <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-sm text-slate-200">
             <p>
-              In class we&apos;ll walk through building a session from scratch:
-              creating tracks, assigning I/O, building subgroups, and setting up
-              headphone mixes. The goal is that you can close your eyes and still
-              &quot;see&quot; where the audio is flowing.
+              This week is about planning the session you&apos;ll build for the class
+              project. Start assembling a <span className="font-semibold">sound palette</span>
+              and a simple routing template you can reuse.
             </p>
-            <p className="mt-2 text-xs text-slate-300">
-              You&apos;ll also get a troubleshooting worksheet that gives you
-              real-world &quot;no sound&quot; scenarios to solve using signal-flow
-              thinking.
-            </p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <div className="rounded-xl border border-slate-800/80 bg-black/80 p-3 text-xs">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                  Sound Palette (Exploration)
+                </p>
+                <ul className="mt-2 ml-4 list-disc space-y-1">
+                  <li>Collect 10–15 drum, bass, and melodic sounds you love.</li>
+                  <li>Tag 2–3 reference tracks for tone and space.</li>
+                  <li>Note which sounds are mono vs. stereo and why.</li>
+                  <li>Save presets/patches so you can recall them later.</li>
+                </ul>
+              </div>
+              <div className="rounded-xl border border-slate-800/80 bg-black/80 p-3 text-xs">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                  Routing Template (Draft)
+                </p>
+                <ul className="mt-2 ml-4 list-disc space-y-1">
+                  <li>Create buses: Drums, Music/Instr, FX, Vox (even if empty).</li>
+                  <li>Label I/O clearly; color-code groups.</li>
+                  <li>Add 2–3 go-to sends (plate verb, short delay, slap).</li>
+                  <li>Save as a template for reuse in later chapters.</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* 9. SUMMARY */}
+        {/* 9. HOMEWORK */}
         <section id="summary" className="space-y-4">
           <h3 className="text-xl font-semibold tracking-tight text-slate-50">
-            9. Summary &amp; Master Diagram
+            9. Homework — Templates &amp; Sound Palette Prep
           </h3>
-          <div className="space-y-3 text-sm text-slate-200">
-            <p>
-              Signal flow is the skeleton of every studio, from bedroom to
-              world-class facility. Once you can describe how audio moves from{" "}
-              <span className="font-medium">source → preamp → A/D → DAW → plug-ins
-              / buses → mix bus → D/A → monitors</span>, everything else in this
-              course will feel easier.
+          <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-sm text-emerald-50">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+              Deliverables
             </p>
-            <p>
-              Consoles and DAWs may look different on the surface, but under the
-              hood they share the same building blocks: inputs, processing, sends,
-              subgroups, and a mix bus. Learn those once and you can walk into almost
-              any studio and feel at home.
+            <ul className="mt-2 ml-4 list-disc space-y-1 text-emerald-100">
+              <li>One genre-specific template (session with buses, sends, I/O labeled).</li>
+              <li>Optional: a second template in another genre to compare routing.</li>
+              <li>A documented sound palette list with at least 10 core sounds.</li>
+            </ul>
+            <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+              Notes
             </p>
-            <p className="text-xs text-slate-300">
-              Later we&apos;ll hook this chapter up to a short quiz and a couple of
-              interactive questions powered by Supabase so you can test yourself
-              before moving on.
+            <ul className="mt-1 ml-4 list-disc space-y-1 text-emerald-100">
+              <li>Keep templates simple: fewer tracks, clear groups, no plug-in bloat.</li>
+              <li>Mark which sounds are “must use” vs. “maybe” for the project.</li>
+              <li>Bring the template to the next chapter — we’ll build on it.</li>
+            </ul>
+            <p className="mt-3 text-xs text-emerald-100">
+              Keep the master signal-flow diagram handy while you work. When something
+              breaks, walk the path until you find the missing link.
             </p>
           </div>
-
-          <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-            <div className="relative h-[420px] w-full">
-              <ZoomableImage
-                src="/assets/music-production/daw-signal-flow/diagrams/daw-sig-flow.jpg"
-                alt="Full DAW signal flow master diagram"
-              />
-            </div>
-            <figcaption className="mt-2 text-[11px] text-slate-400">
-              Keep this diagram handy while you work. When something breaks, walk
-              the path until you find the missing link.
-            </figcaption>
-          </figure>
         </section>
       </div>
 

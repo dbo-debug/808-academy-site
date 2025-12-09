@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 
 type ZoomedImage = {
@@ -11,6 +11,8 @@ type ZoomedImage = {
 
 export default function MixingFundamentalsChapter() {
   const [zoomedImage, setZoomedImage] = useState<ZoomedImage>(null);
+  const [activeSample, setActiveSample] = useState<string | null>(null);
+  const sampleAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleZoom = (src: string, alt: string) => {
     setZoomedImage({ src, alt });
@@ -18,31 +20,139 @@ export default function MixingFundamentalsChapter() {
 
   const closeZoom = () => setZoomedImage(null);
 
+  const playSample = (src: string) => {
+    try {
+      if (sampleAudioRef.current) {
+        sampleAudioRef.current.pause();
+      }
+      const audio = new Audio(src);
+      sampleAudioRef.current = audio;
+      setActiveSample(src);
+      audio.onended = () => setActiveSample((current) =>
+        current === src ? null : current
+      );
+      void audio.play().catch(() => {});
+    } catch {
+      // ignore playback errors
+    }
+  };
+
+  const reverbSamples = [
+    {
+      title: "Plate",
+      desc: "Bright, smooth, dense — a classic choice for vocals.",
+      src: "/assets/music-production/mixing/samples/reverb-plate.mp3",
+    },
+    {
+      title: "Room",
+      desc: "Natural, small, intimate — feels like a band in a room.",
+      src: "/assets/music-production/mixing/samples/reverb-room.mp3",
+    },
+    {
+      title: "Hall",
+      desc: "Large, lush, cinematic — perfect for emotional moments.",
+      src: "/assets/music-production/mixing/samples/reverb-hall.mp3",
+    },
+  ];
+
+  const delaySamples = [
+    {
+      title: "Slapback",
+      desc: "Thickens rap and pop vocals without obvious echoes.",
+      src: "/assets/music-production/mixing/samples/delay-slap.mp3",
+    },
+    {
+      title: "Quarter Note",
+      desc: "Adds space and groove that locks to the tempo.",
+      src: "/assets/music-production/mixing/samples/delay-quarter.mp3",
+    },
+    {
+      title: "Dotted Eighth",
+      desc: "Creates rhythmic movement around the beat.",
+      src: "/assets/music-production/mixing/samples/delay-dotted.mp3",
+    },
+    {
+      title: "Long Tail",
+      desc: "Use sparingly for dramatic words and emotional phrases.",
+      src: "/assets/music-production/mixing/samples/delay-long.mp3",
+    },
+  ];
+
   return (
     <div className="relative">
       <article className="space-y-10 text-sm text-slate-200">
         {/* HERO */}
         <section className="space-y-6">
-          <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-black/80">
-            <div className="relative h-52 w-full sm:h-64 md:h-72">
+          <div className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-black/80">
+            <div className="absolute inset-0">
               <Image
                 src="/assets/music-production/mixing/images/mixing-bkgrnd.jpg"
                 alt="Mix engineer at a console"
-                fill
+                width={1600}
+                height={1000}
                 priority
-                className="object-cover brightness-[0.35]"
+                className="h-full w-full object-cover brightness-[0.32]"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/70 to-black/95" />
-              <div className="relative z-10 flex h-full flex-col justify-end gap-2 p-5 md:p-8">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-black/40" />
+            </div>
+
+            <div className="relative z-10 flex flex-col justify-between gap-4 p-5 sm:p-7 md:p-10">
+              <div className="space-y-2">
+                <p className="inline-flex items-center rounded-full border border-emerald-500/40 bg-black/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
                   Chapter 8
                 </p>
-                <h1 className="text-2xl font-semibold text-emerald-50 md:text-3xl">
-                  MIXING FUNDAMENTALS
+                <h1 className="text-3xl font-semibold text-emerald-50 sm:text-4xl">
+                  Mixing Fundamentals
                 </h1>
-                <p className="text-[11px] text-emerald-100/80">
-                  Shaping Your Track Into a Professional, Balanced Record
+                <p className="max-w-2xl text-sm text-emerald-100/90 sm:text-base">
+                  Shaping your track into a balanced, emotional record with EQ,
+                  compression, space, and automation.
                 </p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
+                <aside className="rounded-2xl border border-slate-800/80 bg-black/70 p-4 text-xs text-slate-200 backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    Chapter Map
+                  </p>
+                  <ol className="mt-3 ml-4 list-decimal space-y-1.5 text-left">
+                    <li>Introduction: What Mixing Really Is</li>
+                    <li>Session Preparation &amp; Organization</li>
+                    <li>The Rough Balance (The Heart of Mixing)</li>
+                    <li>EQ Basics — Tone Shaping 101</li>
+                    <li>Compression Basics — Controlling Dynamics</li>
+                    <li>Understanding Space: Reverb, Delay &amp; Depth</li>
+                    <li>Bus Processing &amp; Group Control</li>
+                    <li>Automation — Bringing the Mix to Life</li>
+                    <li>Mixing the Low End</li>
+                    <li>Mix Translation: Making It Sound Good Everywhere</li>
+                    <li>Putting It All Together — Your Mix Workflow</li>
+                    <li>Homework — Mix Your Track</li>
+                  </ol>
+                </aside>
+
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-800/80 bg-black/70 p-3 text-xs text-slate-200 backdrop-blur">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      You&apos;ll Learn
+                    </p>
+                    <ul className="mt-1 ml-3 list-disc space-y-1">
+                      <li>Session prep &amp; routing</li>
+                      <li>EQ &amp; compression fundamentals</li>
+                      <li>Space with reverb &amp; delay</li>
+                      <li>Bus processing &amp; automation</li>
+                    </ul>
+                  </div>
+                  <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs text-emerald-50 backdrop-blur">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                      Big Idea
+                    </p>
+                    <p className="mt-1">
+                      Mixing is storytelling with levels, tone, and space. Every
+                      move should push emotion forward — not just technical polish.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -193,7 +303,7 @@ export default function MixingFundamentalsChapter() {
           </section>
 
           {/* 2.2 Routing & Foldering */}
-          <section className="grid gap-6 md:grid-cols-[minmax(0,1.3fr),minmax(0,1.5fr)] md:items-center">
+          <section className="grid gap-6 md:grid-cols-[minmax(0,1.2fr),minmax(0,1.4fr)] md:items-center">
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-emerald-100">
                 2.2 Routing &amp; Foldering
@@ -226,11 +336,11 @@ export default function MixingFundamentalsChapter() {
                 }
                 className="block w-full"
               >
-                <div className="relative aspect-[4/3] w-full">
+                <div className="overflow-hidden rounded-xl border border-slate-800/70 bg-black">
                   <img
                     src="/assets/music-production/mixing/images/folders.png"
                     alt="Folder routing example"
-                    className="h-auto w-full rounded-xl object-contain"
+                    className="block h-auto w-full object-contain"
                   />
                 </div>
               </button>
@@ -389,7 +499,7 @@ export default function MixingFundamentalsChapter() {
             </h2>
           </header>
 
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1.6fr),minmax(0,1.1fr)] md:items-start">
+          <div className="grid gap-6 md:grid-cols-[minmax(0,1.25fr),minmax(0,1fr)] md:items-start">
             <div className="space-y-3">
               <p>
                 EQ (equalization) is one of your most powerful tools. It lets
@@ -413,76 +523,70 @@ export default function MixingFundamentalsChapter() {
               </ul>
             </div>
 
-            <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-              <button
-                type="button"
-                onClick={() =>
-                  handleZoom(
-                    "/assets/music-production/mixing/images/EQ.png",
-                    "EQ curve screenshot"
-                  )
-                }
-                className="block w-full"
-              >
-                <div className="relative aspect-[4/3] w-full">
-                  <img
-                    src="/assets/music-production/mixing/images/EQ.png"
-                    alt="EQ plugin interface"
-                    className="h-auto w-full rounded-xl object-contain"
-                  />
-                </div>
-              </button>
-              <figcaption className="mt-2 text-[11px] text-slate-400">
-                EQ is about fitting all the sounds together, not solo perfection.
-              </figcaption>
-            </figure>
-          </div>
+            <div className="grid gap-4 md:grid-cols-[minmax(0,1.2fr),minmax(0,0.9fr)] md:items-start">
+              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleZoom(
+                      "/assets/music-production/mixing/images/EQ.png",
+                      "EQ curve screenshot"
+                    )
+                  }
+                  className="block w-full"
+                >
+                  <div className="relative aspect-[4/3] w-full">
+                    <img
+                      src="/assets/music-production/mixing/images/EQ.png"
+                      alt="EQ plugin interface"
+                      className="h-auto w-full rounded-xl object-contain"
+                    />
+                  </div>
+                </button>
+                <figcaption className="mt-2 text-[11px] text-slate-400">
+                  EQ is about fitting all the sounds together, not solo perfection.
+                </figcaption>
+              </figure>
 
-          {/* EQ TIP CARDS */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                Removing Mud
-              </p>
-              <p className="text-xs">
-                The “mud zone” lives roughly between 200–500 Hz. A small dip
-                here can bring clarity to almost any track.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                Controlling Harshness
-              </p>
-              <p className="text-xs">
-                Harshness usually shows up around 2–5 kHz. A gentle dip can
-                soften unpleasant edges, especially on vocals and synths.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                Adding Air
-              </p>
-              <p className="text-xs">
-                A gentle boost above 10 kHz can create sparkle, sheen, and
-                openness — especially on vocals, cymbals, and pads.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                Subtractive First, Additive Last
-              </p>
-              <p className="text-xs">
-                Subtracting problem frequencies generally sounds more natural
-                than boosting. Cut before you add.
-              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  {
+                    title: "Removing Mud",
+                    body:
+                      "The “mud zone” lives roughly between 200–500 Hz. A small dip here can bring clarity to almost any track.",
+                  },
+                  {
+                    title: "Controlling Harshness",
+                    body:
+                      "Harshness usually shows up around 2–5 kHz. A gentle dip can soften unpleasant edges, especially on vocals and synths.",
+                  },
+                  {
+                    title: "Adding Air",
+                    body:
+                      "A gentle boost above 10 kHz can create sparkle, sheen, and openness — especially on vocals, cymbals, and pads.",
+                  },
+                  {
+                    title: "Subtract First",
+                    body:
+                      "Subtracting problem frequencies generally sounds more natural than boosting. Cut before you add.",
+                  },
+                ].map((card) => (
+                  <div
+                    key={card.title}
+                    className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-3 text-xs"
+                  >
+                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                      {card.title}
+                    </p>
+                    <p>{card.body}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* 4.6 EQ for Different Elements */}
-          <section className="space-y-3">
+          <section className="space-y-4">
             <h3 className="text-sm font-semibold text-emerald-100">
               4.6 EQ for Different Elements
             </h3>
@@ -490,103 +594,94 @@ export default function MixingFundamentalsChapter() {
               Use these as starting points, then trust your ears and the song.
             </p>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              {/* Vocals */}
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative aspect-[4/3] w-full">
-                  <Image
-                    src="/assets/music-production/mixing/images/vocals.jpg"
-                    alt="Singer in the studio"
-                    fill
-                    className="rounded-xl object-cover"
-                  />
-                </div>
-                <figcaption className="mt-2 text-[11px] font-semibold text-emerald-100">
-                  Vocals
-                </figcaption>
-                <p className="mt-1 text-[11px] text-slate-300">
-                  HPF, remove mud, tame harshness, then add a bit of air if
-                  needed.
-                </p>
-              </figure>
+            <div className="grid gap-6 md:grid-cols-[minmax(0,1.2fr),minmax(0,1fr)] md:items-start">
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  {
+                    title: "Vocals",
+                    img: "/assets/music-production/mixing/images/vocals.jpg",
+                    desc:
+                      "HPF, remove mud, tame harshness, then add a bit of air if needed.",
+                  },
+                  {
+                    title: "Drums",
+                    img: "/assets/music-production/mixing/images/drums.jpg",
+                    desc:
+                      "Shape punch and brightness. Let the kick and snare lead, clean up low-mid mud.",
+                  },
+                  {
+                    title: "Synths & Pads",
+                    img: "/assets/music-production/mixing/images/synth.jpg",
+                    desc:
+                      "Carve space around the vocal. High-pass generously and remove clashing mids.",
+                  },
+                  {
+                    title: "Bass",
+                    img: "/assets/music-production/mixing/images/bass.jpg",
+                    desc:
+                      "Control low-mid mud, define the fundamental, and keep it out of the vocal’s way.",
+                  },
+                ].map((card) => (
+                  <figure
+                    key={card.title}
+                    className="flex flex-col gap-2 rounded-2xl border border-slate-800/80 bg-black/80 p-3"
+                  >
+                    <div className="relative aspect-[4/3] w-full">
+                      <Image
+                        src={card.img}
+                        alt={card.title}
+                        fill
+                        className="rounded-xl object-cover"
+                      />
+                    </div>
+                    <figcaption className="text-[11px] font-semibold text-emerald-100">
+                      {card.title}
+                    </figcaption>
+                    <p className="text-[11px] text-slate-300">{card.desc}</p>
+                  </figure>
+                ))}
+              </div>
 
-              {/* Drums */}
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative aspect-[4/3] w-full">
-                  <Image
-                    src="/assets/music-production/mixing/images/drums.jpg"
-                    alt="Drum kit"
-                    fill
-                    className="rounded-xl object-cover"
-                  />
-                </div>
-                <figcaption className="mt-2 text-[11px] font-semibold text-emerald-100">
-                  Drums
-                </figcaption>
-                <p className="mt-1 text-[11px] text-slate-300">
-                  Shape punch and brightness. Let the kick and snare lead, clean
-                  up low-mid mud.
+              <div className="space-y-3 rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                  Kick &amp; Low End
                 </p>
-              </figure>
-
-              {/* Synths / Pads */}
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative aspect-[4/3] w-full">
-                  <Image
-                    src="/assets/music-production/mixing/images/synth.jpg"
-                    alt="Synthesizer"
-                    fill
-                    className="rounded-xl object-cover"
-                  />
-                </div>
-                <figcaption className="mt-2 text-[11px] font-semibold text-emerald-100">
-                  Synths &amp; Pads
-                </figcaption>
-                <p className="mt-1 text-[11px] text-slate-300">
-                  Carve space around the vocal. High-pass generously and remove
-                  clashing mids.
+                <p className="text-xs text-slate-300">
+                  Boost lows for weight, dip boxiness, and shape the click for
+                  clarity in the mix. Keep the kick and bass out of each other’s
+                  way with small EQ moves and sidechain if needed.
                 </p>
-              </figure>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                  Midrange Clarity
+                </p>
+                <p className="text-xs text-slate-300">
+                  Reduce mud (200–500 Hz) and harshness (2–5 kHz) before boosting
+                  highs. Small, intentional cuts keep the mix open.
+                </p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                  Air &amp; Presence
+                </p>
+                <p className="text-xs text-slate-300">
+                  Add gentle air above 10 kHz on vocals and cymbals for sparkle.
+                  Don’t over-brighten; reference against your favorite mixes.
+                </p>
+              </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* Bass */}
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative aspect-[4/3] w-full">
-                  <Image
-                    src="/assets/music-production/mixing/images/bass.jpg"
-                    alt="Bass instrument"
-                    fill
-                    className="rounded-xl object-cover"
-                  />
-                </div>
-                <figcaption className="mt-2 text-[11px] font-semibold text-emerald-100">
-                  Bass
-                </figcaption>
-                <p className="mt-1 text-[11px] text-slate-300">
-                  Control low-mid mud, define the fundamental, and keep it out
-                  of the vocal’s way.
-                </p>
-              </figure>
-
-              {/* Kick */}
-              <figure className="rounded-2xl border border-slate-800/80 bg-black/80 p-3">
-                <div className="relative aspect-[4/3] w-full">
-                  <Image
-                    src="/assets/music-production/mixing/images/kick.jpg"
-                    alt="Kick drum"
-                    fill
-                    className="rounded-xl object-cover"
-                  />
-                </div>
-                <figcaption className="mt-2 text-[11px] font-semibold text-emerald-100">
-                  Kick
-                </figcaption>
-                <p className="mt-1 text-[11px] text-slate-300">
-                  Boost lows for weight, dip boxiness, and shape the click for
-                  clarity in the mix.
-                </p>
-              </figure>
+            <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+              <div className="border-b border-slate-800/80 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                Tutorial • EQ Basics
+              </div>
+              <div className="aspect-video w-full">
+                <iframe
+                  src="https://www.youtube.com/embed/VIDEO_ID_EQ"
+                  title="EQ basics tutorial"
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
             </div>
           </section>
         </section>
@@ -602,7 +697,7 @@ export default function MixingFundamentalsChapter() {
             </h2>
           </header>
 
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1.6fr),minmax(0,1.1fr)] md:items-start">
+          <div className="grid gap-6 md:grid-cols-[minmax(0,1.3fr),minmax(0,1fr)] md:items-start">
             <div className="space-y-3">
               <p>
                 Compression controls dynamics — how loud or soft a sound is over
@@ -650,6 +745,22 @@ export default function MixingFundamentalsChapter() {
                 Compression shapes the feel and stability of your tracks.
               </figcaption>
             </figure>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80">
+            <div className="border-b border-slate-800/80 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Tutorial • Compression Basics
+            </div>
+            <div className="aspect-video w-full">
+              <iframe
+                src="https://www.youtube.com/embed/VIDEO_ID_COMPRESSION"
+                title="Compression basics tutorial"
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
           </div>
 
           {/* Compression diagram */}
@@ -767,29 +878,21 @@ export default function MixingFundamentalsChapter() {
               6.1 Reverb Types
             </h3>
             <div className="grid gap-4 md:grid-cols-3">
-              {[
-                {
-                  title: "Plate",
-                  desc: "Bright, smooth, and dense — a classic choice for vocals.",
-                },
-                {
-                  title: "Room",
-                  desc: "Natural, small, intimate — feels like a band in a room.",
-                },
-                {
-                  title: "Hall",
-                  desc: "Large, lush, cinematic — perfect for big, emotional moments.",
-                },
-              ].map((card) => (
-                <div
+              {reverbSamples.map((card) => (
+                <button
                   key={card.title}
-                  className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4"
+                  type="button"
+                  onClick={() => playSample(card.src)}
+                  className={`text-left transition ${activeSample === card.src ? "border-emerald-500/70 bg-emerald-500/10" : "bg-slate-950/80"} rounded-2xl border border-slate-800/80 p-4 hover:border-emerald-400/60`}
                 >
                   <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
                     {card.title}
                   </p>
-                  <p className="text-xs">{card.desc}</p>
-                </div>
+                  <p className="text-xs text-slate-200">{card.desc}</p>
+                  <p className="mt-2 text-[11px] text-emerald-200">
+                    {activeSample === card.src ? "Playing…" : "Tap to hear example"}
+                  </p>
+                </button>
               ))}
             </div>
           </section>
@@ -800,33 +903,21 @@ export default function MixingFundamentalsChapter() {
               6.2 Delay Types
             </h3>
             <div className="grid gap-4 md:grid-cols-4">
-              {[
-                {
-                  title: "Slapback",
-                  desc: "Thickens rap and pop vocals without sounding like an obvious echo.",
-                },
-                {
-                  title: "Quarter Note",
-                  desc: "Adds space and groove that locks to the tempo.",
-                },
-                {
-                  title: "Dotted Eighth",
-                  desc: "Creates rhythmic movement around the beat.",
-                },
-                {
-                  title: "Long Tails",
-                  desc: "Use sparingly for dramatic words and emotional phrases.",
-                },
-              ].map((card) => (
-                <div
+              {delaySamples.map((card) => (
+                <button
                   key={card.title}
-                  className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4"
+                  type="button"
+                  onClick={() => playSample(card.src)}
+                  className={`text-left transition ${activeSample === card.src ? "border-emerald-500/70 bg-emerald-500/10" : "bg-slate-950/80"} rounded-2xl border border-slate-800/80 p-4 hover:border-emerald-400/60`}
                 >
                   <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
                     {card.title}
                   </p>
-                  <p className="text-xs">{card.desc}</p>
-                </div>
+                  <p className="text-xs text-slate-200">{card.desc}</p>
+                  <p className="mt-2 text-[11px] text-emerald-200">
+                    {activeSample === card.src ? "Playing…" : "Tap to hear example"}
+                  </p>
+                </button>
               ))}
             </div>
           </section>
@@ -986,11 +1077,11 @@ export default function MixingFundamentalsChapter() {
                 }
                 className="block w-full"
               >
-                <div className="relative aspect-[4/3] w-full">
+                <div className="overflow-hidden rounded-xl border border-slate-800/70 bg-black">
                   <img
                     src="/assets/music-production/mixing/images/automation.png"
                     alt="Automation curves"
-                    className="h-auto w-full rounded-xl object-contain"
+                    className="block h-auto w-full object-contain"
                   />
                 </div>
               </button>
