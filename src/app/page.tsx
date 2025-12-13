@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { JoinDemoCohortButton } from "../components/JoinDemoCohortButton";
 
 /**
  * Home / Landing
@@ -31,7 +32,7 @@ export default function HomePage() {
           />
 
           <h1 className="max-w-3xl text-left text-5xl md:text-6xl font-semibold leading-tight">
-            Learn to Produce, mix, master, and release{" "}
+            Learn to produce, mix, master, and release{" "}
             <span className="text-[#00FFF7]">radio-ready</span> music from your
             home studio.
           </h1>
@@ -42,7 +43,7 @@ export default function HomePage() {
             included.
           </p>
 
-          <div className="mt-8 flex gap-4">
+          <div className="mt-8 flex flex-wrap gap-4">
             <Link
               href="/courses"
               className="rounded-xl bg-[#00FFF7] px-6 py-3 font-semibold text-black hover:opacity-90 transition"
@@ -55,6 +56,7 @@ export default function HomePage() {
             >
               Apply Now
             </Link>
+            <JoinDemoCohortButton />
           </div>
         </div>
       </section>
@@ -134,10 +136,13 @@ export default function HomePage() {
               price="$399"
               cadence="per 4-week cohort"
               bullets={[
-                "Streamer-style live classroom (2× / week, 90 min)",
-                "Homework with feedback",
-                "15–30 min office hours weekly",
-                "Replays, templates & sample packs",
+                "Live, streamer-style classroom (2x per week, 90 min each)",
+                "Structured curriculum from fundamentals to release-ready tracks",
+                "Weekly homework with detailed feedback and revisions",
+                "15–30 min live office hours for direct questions and troubleshooting",
+                "Real-world workflows for production, arrangement, and mixing",
+                "Replays, templates, project files, and curated sample packs",
+                "Accountability, deadlines, and progress tracking to keep you moving",
               ]}
               image="/courses.jpg"
               ctaLabel="View Cohorts"
@@ -147,34 +152,40 @@ export default function HomePage() {
             {/* Tutoring */}
             <PricingCard
               name="Tutoring"
-              price="$99"
+              price="$49"
               cadence="per 55-min session"
               bullets={[
-                "Screen-share 1:1 with a working engineer",
-                "Open-topic: production, mixing, mastering, workflow",
-                "Add-on coaching for any course",
-                "Custom 4-week crash courses available",
+                "1:1 screen-share sessions with a working producer/engineer",
+                "Hands-on help inside your actual DAW and projects",
+                "Open-topic coaching: production, mixing, mastering, workflow",
+                "Fix stuck tracks, bad habits, and creative blocks in real time",
+                "Personalized feedback tailored to your goals and skill level",
+                "Add-on support for course students who want extra guidance",
+                "Custom 4-week crash courses available on request",
               ]}
               image="/tutoring.jpg"
               ctaLabel="Book Tutoring"
               href="/tutoring"
             />
 
-            {/* VIP */}
+              {/* Membership */}
             <PricingCard
-              name="VIP"
-              price="$1,499"
-              cadence="complete package"
+              name="Membership"
+              price="$15"
+              cadence="per month"
               bullets={[
-                "Private ‘classroom’ + personalized tutoring",
-                "Priority session scheduling",
-                "Custom curriculum & accountability",
-                "All templates, packs, & bonus assets",
+                "Access to 808 sample packs and presets",
+                "Member-only plugin and gear discounts",
+                "Live mix events and Q&A sessions",
+                "Produce With The Pros style sessions",
+                "Private Discord access and practice sessions",
+                "Unlimited entries to 808 remix contests",
+                "Sync submission opportunities and more",
               ]}
-              image="/vip.png"
-              ctaLabel="Apply for VIP"
-              href="/apply"
-            />
+              image="/vip.png"              // keep the same image
+              ctaLabel="Explore Membership"
+              href="/membership"            // points to the new membership page
+/>
           </div>
         </div>
       </section>

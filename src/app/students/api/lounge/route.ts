@@ -19,13 +19,34 @@ function sb(token: string): SupabaseClient {
 const toTitle = (slug: string): string =>
   slug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
 
+type MembershipTier = "membership" | "tutoring" | "cohort";
+
 type LoungeResponse = {
+  // ✅ explicit gates
+  hasLoungeAccess: boolean;
+  hasCurriculumAccess: boolean;
+
+  membershipTier: MembershipTier; // only returned when hasLoungeAccess=true
+  displayName: string;
+  avatarUrl: string | null;
+
   course: { slug: string; title: string };
-  progress: { done: number; total: number; percent: number };
+  progress: {
+    done: number;
+    total: number;
+    percent: number;
+    currentLessonSlug?: string | null;
+  };
   gpa: { percent: number };
   links: Array<{ label: string; href: string }>;
   announcements: Array<{ id: string; title: string; body?: string }>;
 };
+
+function isExpired(expiresAt?: string | null) {
+  if (!expiresAt) return false;
+  const d = new Date(expiresAt);
+  return Number.isFinite(d.getTime()) ? d.getTime() < Date.now() : false;
+}
 
 /**
  * GET /students/api/lounge
@@ -47,52 +68,135 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    // Which course? query param takes precedence, else active enrollment, else default
+    // ---------- PROFILE (name/avatar + legacy flags) ----------
+    const { data: profile, error: profErr } = await supabase
+      .from("profiles")
+      .select("full_name, avatar_url, has_lounge_access, has_music_prod_ebook")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profErr) {
+      console.warn("[students/api/lounge] profiles select error", profErr);
+    }
+
+    const displayName =
+      profile?.full_name ||
+      (user.user_metadata as any)?.full_name ||
+      user.email?.split("@")[0] ||
+      "Student";
+
+    const avatarUrl = profile?.avatar_url ?? null;
+
+    const legacyHasLounge = profile?.has_lounge_access === true;
+    const legacyHasEbook = profile?.has_music_prod_ebook === true;
+
+    // ---------- MEMBERSHIP (paid membership/tutoring/cohort in user_memberships) ----------
+    const { data: membershipRow, error: memErr } = await supabase
+      .from("user_memberships")
+      .select("tier, expires_at")
+      .eq("user_id", user.id)
+      .order("expires_at", { ascending: false, nullsFirst: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (memErr) {
+      console.warn("[students/api/lounge] user_memberships select error", memErr);
+    }
+
+    const membershipTierFromRow =
+      membershipRow?.tier === "membership" ||
+      membershipRow?.tier === "tutoring" ||
+      membershipRow?.tier === "cohort"
+        ? (membershipRow.tier as MembershipTier)
+        : null;
+
+    const membershipActive =
+      !!membershipTierFromRow && !isExpired(membershipRow?.expires_at ?? null);
+
+    // ---------- ENROLLMENTS (cohort / lifetime etc.) ----------
+    // If you still use enrollments as a cohort “entitlement”, treat any active row as paid access.
+    const { data: enr, error: enrErr } = await supabase
+      .from("enrollments")
+      .select("course_slug, is_active")
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
+
+    if (enrErr) {
+      console.warn("[students/api/lounge] enrollments select error", enrErr);
+    }
+
+    const hasEnrollment = !!enr?.course_slug;
+
+    // ---------- ACCESS GATES ----------
+    // Lounge access = any paid membership OR any active enrollment OR legacy override flag.
+    const hasLoungeAccess = membershipActive || hasEnrollment || legacyHasLounge;
+
+    if (!hasLoungeAccess) {
+      // logged in, but not paid: block lounge
+      return NextResponse.json(
+        { error: "No active membership or enrollment", hasLoungeAccess: false },
+        { status: 403 }
+      );
+    }
+
+    // Curriculum access = cohort tier OR enrollment OR legacy ebook flag
+    // (membership + tutoring should NOT unlock curriculum)
+    const inferredTier: MembershipTier =
+      membershipActive && membershipTierFromRow
+        ? membershipTierFromRow
+        : hasEnrollment
+        ? "cohort"
+        : "membership"; // fallback if only legacy flag gave lounge access
+
+    const hasCurriculumAccess =
+      inferredTier === "cohort" || hasEnrollment || legacyHasEbook;
+
+    // ---------- COURSE CHOICE ----------
     const url = new URL(req.url);
     const qCourse = url.searchParams.get("course") ?? undefined;
 
-    // Try to read active enrollment
-    let course_slug: string | undefined = qCourse;
-    if (!course_slug) {
-      const { data: enr, error: enrErr } = await supabase
-        .from("enrollments")
-        .select("course_slug, is_active")
-        .eq("user_id", user.id)
-        .order("is_active", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+    // If they don’t have curriculum access, we still pick a default slug for consistency
+    // (UI will hide course cards anyway)
+    let course_slug: string = qCourse || (enr?.course_slug as string) || "music-production";
 
-      if (!enrErr && enr?.course_slug) course_slug = enr.course_slug;
-    }
-    if (!course_slug) course_slug = "music-production";
-
-    // Progress summary (best-effort; if tables are empty, fall back to zeros)
+    // ---------- PROGRESS (only compute if curriculum is unlocked) ----------
     let done = 0;
     let total = 0;
+    let currentLessonSlug: string | null = null;
 
-    // total lessons from our lessons table (optional)
-    const { data: lessons } = await supabase
-      .from("lessons")
-      .select("id")
-      .eq("course_slug", course_slug);
+    if (hasCurriculumAccess) {
+      const { data: lessons } = await supabase
+        .from("lessons")
+        .select("id, slug")
+        .eq("course_slug", course_slug);
 
-    total = Array.isArray(lessons) ? lessons.length : 8; // fallback to 8
+      total = Array.isArray(lessons) && lessons.length > 0 ? lessons.length : 10;
 
-    // completed from progress table (optional)
-    const { data: prog } = await supabase
-      .from("progress")
-      .select("lesson_id")
-      .eq("user_id", user.id)
-      .eq("course_slug", course_slug)
-      .eq("completed", true);
+      const { data: prog } = await supabase
+        .from("progress")
+        .select("lesson_id, lesson_slug, completed_at")
+        .eq("user_id", user.id)
+        .eq("course_slug", course_slug)
+        .eq("completed", true)
+        .order("completed_at", { ascending: false });
 
-    done = Array.isArray(prog) ? prog.length : 0;
+      if (Array.isArray(prog)) {
+        done = prog.length;
+        currentLessonSlug = prog[0]?.lesson_slug ?? null;
+      }
+    } else {
+      // membership/tutoring: no curriculum
+      total = 10;
+      done = 0;
+      currentLessonSlug = null;
+    }
 
     const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+    const gpaPct = percent; // proxy for now
 
-    // simple GPA proxy for now: equal to progress percent
-    const gpaPct = percent;
-
+    // ---------- LINKS / ANNOUNCEMENTS ----------
     const links: LoungeResponse["links"] = [
       { label: "Student Discord", href: "/students/discord" },
       { label: "Contact Teacher", href: "mailto:teacher@the808academy.com" },
@@ -105,8 +209,15 @@ export async function GET(req: NextRequest) {
     ];
 
     const body: LoungeResponse = {
+      hasLoungeAccess,
+      hasCurriculumAccess,
+
+      membershipTier: inferredTier,
+      displayName,
+      avatarUrl,
+
       course: { slug: course_slug, title: toTitle(course_slug) },
-      progress: { done, total, percent },
+      progress: { done, total, percent, currentLessonSlug },
       gpa: { percent: gpaPct },
       links,
       announcements,
@@ -115,6 +226,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(body);
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Unknown error";
+    console.error("[students/api/lounge] error", e);
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
