@@ -1,6 +1,7 @@
 import React from "react";
 import BookLayout from "./components/BookLayout";
 import ChapterNav from "./components/ChapterNav";
+export const dynamic = "force-dynamic";
 
 import SoundHearingChapter from "./chapters/sound-hearing";
 import DawSignalFlowChapter from "./chapters/daw-signal-flow";

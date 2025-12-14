@@ -559,8 +559,8 @@ function SyncLibraryCard() {
 function RemixContestCard() {
   return (
     <section className="rounded-2xl border border-white/10 bg-gradient-to-r from-pink-500/30 via-purple-500/30 to-cyan-400/30 p-6 backdrop-blur">
-      <h3 className="mb-3 text-lg font-semibold">Monthly Remix Contest</h3>
-      <p className="text-sm">Flip the 808 Academy Remix of the Month and win $100.</p>
+      <h3 className="mb-3 text-lg font-semibold">Bi-Weekly Remix Contest</h3>
+      <p className="text-sm">Flip the 808 Academy contest pack, submit, and win $100 + a feature.</p>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <Link
@@ -575,9 +575,15 @@ function RemixContestCard() {
         >
           Submit Remix
         </Link>
+        <Link
+          href="/remix-contest"
+          className="rounded-lg border border-white/20 px-4 py-2 text-sm transition hover:border-white/60 hover:text-white"
+        >
+          Contest details
+        </Link>
       </div>
 
-      <p className="mt-2 text-xs text-white/60">One contest per month. Winners featured in class + socials.</p>
+      <p className="mt-2 text-xs text-white/60">New brief drops every two weeks. Winners featured in class + socials.</p>
     </section>
   );
 }
