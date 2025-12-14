@@ -6,13 +6,7 @@ export const runtime = "nodejs";
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 
-if (!stripeSecret) {
-  console.error(
-    "[checkout] STRIPE_SECRET_KEY is not set in .env.local. Checkout will fail."
-  );
-}
-
-const stripe = new Stripe(stripeSecret as string);
+const stripe = stripeSecret ? new Stripe(stripeSecret) : null;
 
 type CheckoutBody = {
   mode?: "demo" | "paid" | "payment" | "membership" | "subscription";
@@ -22,32 +16,47 @@ type CheckoutBody = {
 };
 
 export async function POST(req: NextRequest) {
+  if (!stripe) {
+    console.error("[checkout] STRIPE_SECRET_KEY is missing.");
+    return NextResponse.json(
+      { error: "Stripe not configured. Missing STRIPE_SECRET_KEY." },
+      { status: 500 }
+    );
+  }
+
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const origin =
+      process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || req.nextUrl.origin;
 
     const body = (await req.json().catch(() => ({}))) as CheckoutBody;
     const { priceId, quantity = 1, source } = body;
+
+    const log = (msg: string, payload: Record<string, unknown>) =>
+      console.log("[checkout]", msg, JSON.stringify(payload, null, 2));
 
     /**
      * 1) MERCH / GENERIC CHECKOUT (explicit priceId from client)
      *    - One-time payment
      */
     if (priceId) {
-      console.log("[checkout] merch / generic checkout", {
-        priceId,
-        quantity,
-        source,
-      });
-
-      const session = await stripe.checkout.sessions.create({
+      const sessionParams: Stripe.Checkout.SessionCreateParams = {
         mode: "payment",
         line_items: [{ price: priceId, quantity }],
-        success_url: `${baseUrl}/students/store/merch?status=success`,
-        cancel_url: `${baseUrl}/students/store/merch?status=cancelled`,
+        success_url: `${origin}/store/merch?status=success&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/store/merch?status=cancelled`,
         allow_promotion_codes: true,
         metadata: {
+          flow: "merch",
           source: source ?? "merch",
         },
+      };
+
+      log("merch/generic checkout start", { body, sessionParams });
+      const session = await stripe.checkout.sessions.create(sessionParams);
+      log("merch/generic checkout session created", {
+        id: session.id,
+        url: session.url,
+        customer: session.customer,
       });
 
       return NextResponse.json({ url: session.url });
@@ -74,17 +83,24 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      console.log("[checkout] membership checkout", { membershipPriceId });
-
-      const session = await stripe.checkout.sessions.create({
+      const sessionParams: Stripe.Checkout.SessionCreateParams = {
         mode: "subscription",
         line_items: [{ price: membershipPriceId, quantity: 1 }],
-        success_url: `${baseUrl}/students?status=member_success`,
-        cancel_url: `${baseUrl}/membership?status=cancelled`,
+        success_url: `${origin}/api/checkout/success?flow=membership&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/membership?status=cancelled`,
         allow_promotion_codes: true,
         metadata: {
-          source: "membership",
+          flow: "membership",
+          source: source ?? "membership",
         },
+      };
+
+      log("membership checkout start", { body, sessionParams });
+      const session = await stripe.checkout.sessions.create(sessionParams);
+      log("membership checkout session created", {
+        id: session.id,
+        url: session.url,
+        customer: session.customer,
       });
 
       return NextResponse.json({ url: session.url });
@@ -111,16 +127,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       line_items: [{ price: cohortPriceId, quantity: 1 }],
-      success_url: `${baseUrl}/api/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/api/checkout/cancel`,
+      success_url: `${origin}/api/checkout/success?flow=cohort&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/apply?status=cancelled`,
       allow_promotion_codes: true,
       metadata: {
+        flow: "cohort",
         source: "cohort",
         cohortMode: mode,
       },
+    };
+
+    log("cohort checkout start", { body, sessionParams });
+    const session = await stripe.checkout.sessions.create(sessionParams);
+    log("cohort checkout session created", {
+      id: session.id,
+      url: session.url,
+      customer: session.customer,
     });
 
     return NextResponse.json({ url: session.url });
