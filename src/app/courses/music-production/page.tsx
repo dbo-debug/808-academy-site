@@ -127,7 +127,7 @@ export default function MusicProductionPage() {
           <div className="mt-8 flex flex-wrap gap-3">
             {/* ✅ Courses flow = PAID cohort */}
             <Link
-              href="/apply?program=Course&course=music-production&cohort=paid"
+              href="/apply?program=Course&course=Music+Production"
               className="rounded-full bg-[#00FFF7] px-6 py-3 text-sm font-semibold text-black shadow-lg shadow-cyan-500/30 transition hover:translate-y-[1px] hover:shadow-cyan-400/40"
             >
               Apply Now
@@ -135,7 +135,7 @@ export default function MusicProductionPage() {
 
             {/* Keep this as intro call (Calendly) if you want */}
             <Link
-              href="/apply?program=Course&course=music-production&cohort=paid"
+              href="/apply?program=Course&course=Music+Production"
               className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white/90 hover:bg-white/10 transition"
             >
               Schedule a Call
@@ -255,7 +255,7 @@ export default function MusicProductionPage() {
 
         <div className="mx-auto max-w-5xl px-6 mt-10">
           <Link
-            href="/apply?program=Course&course=music-production&cohort=paid"
+            href="/apply?program=Course&course=Music+Production"
             className="inline-flex items-center justify-center rounded-full bg-[#00FFF7] px-7 py-3 text-sm font-semibold text-black shadow-lg shadow-cyan-500/30 transition hover:translate-y-[1px]"
           >
             Apply for the cohort

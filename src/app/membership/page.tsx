@@ -1,7 +1,6 @@
 // src/app/membership/page.tsx
 import type { Metadata } from "next";
 import Link from "next/link";
-import MembershipCheckoutButton from "./MembershipCheckoutButton";
 
 export const metadata: Metadata = {
   title: "Membership | The 808 Academy",
@@ -40,7 +39,12 @@ export default function MembershipPage() {
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <MembershipCheckoutButton />
+            <Link
+              href="/apply?program=Membership"
+              className="rounded-full bg-[#00FFF7] px-6 py-2.5 text-sm font-semibold text-black shadow-lg shadow-fuchsia-500/30 transition hover:translate-y-[1px] hover:shadow-fuchsia-400/40"
+            >
+              Join Membership — $15/mo
+            </Link>
 
             <Link
               href="mailto:support@the808academy.com?subject=Membership%20Question"
@@ -71,7 +75,12 @@ export default function MembershipPage() {
           </ul>
 
           <div className="mt-8">
-            <MembershipCheckoutButton />
+            <Link
+              href="/apply?program=Membership"
+              className="inline-flex rounded-full bg-[#00FFF7] px-6 py-2.5 text-sm font-semibold text-black shadow-lg shadow-fuchsia-500/30 transition hover:translate-y-[1px] hover:shadow-fuchsia-400/40"
+            >
+              Continue to Apply
+            </Link>
           </div>
         </div>
       </section>

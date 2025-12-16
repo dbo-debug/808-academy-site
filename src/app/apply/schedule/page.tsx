@@ -5,6 +5,7 @@ import * as React from "react";
 
 type Program = "Course" | "Tutoring" | "Membership";
 type TutoringPackage = "block4" | "single";
+type CohortMode = "demo" | "paid";
 
 function Stepper({ current }: { current: 1 | 2 | 3 }) {
   const steps = [
@@ -126,6 +127,17 @@ function getParam(key: string) {
   return new URLSearchParams(window.location.search).get(key);
 }
 
+function normalizeProgram(raw: string | null): Program {
+  if (raw === "Membership") return "Membership";
+  if (raw === "Tutoring") return "Tutoring";
+  return "Course";
+}
+
+function normalizeCohort(raw: string | null): CohortMode {
+  // default is ALWAYS paid unless explicitly demo
+  return raw === "demo" ? "demo" : "paid";
+}
+
 function Card({
   title,
   subtitle,
@@ -171,12 +183,8 @@ export default function SchedulePage() {
   const [course, setCourse] = React.useState("Music Production");
   const [classTime, setClassTime] = React.useState<string | null>(null);
 
-  // cohort offering selector (demo vs paid)
-  const [cohortMode, setCohortMode] = React.useState<"demo" | "paid">("demo");
-
-  // NEW: lock paid if URL says cohort=paid, allow free only if cohort=free
-  const [lockPaid, setLockPaid] = React.useState(false);
-  const [allowFree, setAllowFree] = React.useState(false);
+  // Cohort mode is derived ONLY from URL, never selectable
+  const [cohortMode, setCohortMode] = React.useState<CohortMode>("paid");
 
   // tutoring package selector (defaults to block4 per your preference)
   const [tutoringPackage, setTutoringPackage] =
@@ -185,15 +193,7 @@ export default function SchedulePage() {
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    const raw = (getParam("program") || "Course") as string;
-
-    const normalized: Program =
-      raw === "Membership"
-        ? "Membership"
-        : raw === "Tutoring"
-        ? "Tutoring"
-        : "Course";
-
+    const normalized = normalizeProgram(getParam("program"));
     setProgram(normalized);
 
     const c = getParam("course");
@@ -202,30 +202,13 @@ export default function SchedulePage() {
     const ct = getParam("classTime");
     if (ct) setClassTime(ct);
 
-    // read tutoringPackage from URL so Apply step controls default selection
     const tp = getParam("tutoringPackage");
-    if (tp === "single" || tp === "block4") {
-      setTutoringPackage(tp);
-    }
+    if (tp === "single" || tp === "block4") setTutoringPackage(tp);
 
     // cohort gate:
-    // - cohort=paid => force paid + lock UI
-    // - cohort=free => allow free option
-    const cohort = getParam("cohort"); // "paid" | "free" | null
-
-    if (cohort === "paid") {
-      setCohortMode("paid");
-      setLockPaid(true);
-      setAllowFree(false);
-    } else if (cohort === "free") {
-      setCohortMode("demo");
-      setAllowFree(true);
-      setLockPaid(false);
-    } else {
-      // default: keep existing behavior (free visible, default demo)
-      setAllowFree(true);
-      setLockPaid(false);
-    }
+    // - cohort=demo => free demo cohort
+    // - else => paid cohort
+    setCohortMode(normalizeCohort(getParam("cohort")));
   }, []);
 
   const isCourse = program === "Course";
@@ -238,7 +221,9 @@ export default function SchedulePage() {
     ? "Membership checkout"
     : isTutoring
     ? "Tutoring — schedule first, then checkout"
-    : "Onboarding call — then checkout";
+    : cohortMode === "demo"
+    ? "Free demo cohort — onboarding call"
+    : "Paid cohort — onboarding call";
 
   const subhead = isMembership
     ? "Membership goes straight to checkout."
@@ -264,14 +249,14 @@ export default function SchedulePage() {
               <>
                 <div className="grid gap-4 sm:grid-cols-2 mb-6">
                   <Card
-                    title={`${TUTORING.block4.label}`}
+                    title={TUTORING.block4.label}
                     subtitle={TUTORING.block4.priceLabel}
                     body={TUTORING.block4.description}
                     selected={tutoringPackage === "block4"}
                     onClick={() => setTutoringPackage("block4")}
                   />
                   <Card
-                    title={`${TUTORING.single.label}`}
+                    title={TUTORING.single.label}
                     subtitle={TUTORING.single.priceLabel}
                     body={TUTORING.single.description}
                     selected={tutoringPackage === "single"}
@@ -368,33 +353,16 @@ export default function SchedulePage() {
                     </span>
                   </div>
 
-                  <div>
-                    <label className="block text-sm text-white/70 mb-2">
-                      Cohort offering
-                    </label>
-
-                    {lockPaid ? (
-                      <div className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-white">
-                        Paid cohort
-                      </div>
-                    ) : (
-                      <select
-                        value={cohortMode}
-                        onChange={(e) =>
-                          setCohortMode(e.target.value as "demo" | "paid")
-                        }
-                        className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
-                      >
-                        {allowFree && (
-                          <option value="demo">Free cohort (demo)</option>
-                        )}
-                        <option value="paid">Paid cohort</option>
-                      </select>
-                    )}
-
-                    <p className="mt-2 text-xs text-white/50">
+                  <div className="rounded-lg border border-white/10 bg-black/30 p-3 text-xs text-white/60">
+                    <div className="flex justify-between gap-3">
+                      <span className="text-white/50">Cohort</span>
+                      <span className="text-white">
+                        {cohortMode === "demo" ? "Free demo cohort" : "Paid cohort"}
+                      </span>
+                    </div>
+                    <div className="mt-2">
                       Schedule onboarding first, then checkout.
-                    </p>
+                    </div>
                   </div>
                 </>
               )}
@@ -456,13 +424,13 @@ export default function SchedulePage() {
                       return;
                     }
 
-                    // Course cohort
+                    // Course cohort — derived from URL ONLY
                     await startCheckout({
-                      mode: cohortMode === "paid" ? "paid" : "demo",
+                      mode: cohortMode === "demo" ? "demo" : "paid",
                       source:
-                        cohortMode === "paid"
-                          ? "apply_cohort_paid_after_onboarding"
-                          : "apply_cohort_demo_after_onboarding",
+                        cohortMode === "demo"
+                          ? "apply_cohort_demo_after_onboarding"
+                          : "apply_cohort_paid_after_onboarding",
                     });
                   } catch (e: unknown) {
                     alert(getErrorMessage(e));

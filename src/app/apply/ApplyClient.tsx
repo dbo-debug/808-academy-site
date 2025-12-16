@@ -5,7 +5,7 @@ import * as React from "react";
 type Program = "Course" | "Tutoring" | "Membership";
 type ClassTime = "12PM" | "6PM";
 type TutoringPackage = "block4" | "single";
-
+type CohortMode = "demo" | "paid";
 
 type SubmitState =
   | { ok: false; message: string }
@@ -61,6 +61,22 @@ function Stepper({ current }: { current: 1 | 2 | 3 }) {
   );
 }
 
+function getParam(key: string) {
+  if (typeof window === "undefined") return null;
+  return new URLSearchParams(window.location.search).get(key);
+}
+
+function normalizeProgram(raw: string | null): Program {
+  if (raw === "Tutoring") return "Tutoring";
+  if (raw === "Membership") return "Membership";
+  return "Course";
+}
+
+function normalizeCohort(raw: string | null): CohortMode {
+  // default is ALWAYS paid unless explicitly demo
+  return raw === "demo" ? "demo" : "paid";
+}
+
 export default function ApplyClient() {
   // contact
   const [firstName, setFirstName] = React.useState("");
@@ -79,16 +95,14 @@ export default function ApplyClient() {
   const [program, setProgram] = React.useState<Program>("Course");
   const [course, setCourse] = React.useState("Music Production");
   const [tutoringSubject, setTutoringSubject] = React.useState("");
-  const [tutoringPackage, setTutoringPackage] = React.useState<TutoringPackage>("block4");
+  const [tutoringPackage, setTutoringPackage] =
+    React.useState<TutoringPackage>("block4");
   const [daw, setDaw] = React.useState("Pro Tools");
-  // When switching to Tutoring, default to the 4-session block
-React.useEffect(() => {
-  if (program === "Tutoring") {
-    setTutoringPackage("block4");
-  }
-}, [program]);
 
-  // NEW: class time selection for the test cohort
+  // Cohort mode: paid by default, demo only when URL explicitly sets cohort=demo
+  const [cohortMode, setCohortMode] = React.useState<CohortMode>("paid");
+
+  // class time selection
   const [classTime, setClassTime] = React.useState<ClassTime>("12PM");
 
   // background
@@ -109,6 +123,32 @@ React.useEffect(() => {
   // ui
   const [loading, setLoading] = React.useState(false);
   const [submitted, setSubmitted] = React.useState<SubmitState>(null);
+
+  // Read incoming params once (supports: /apply?program=Course&course=music-production&cohort=demo)
+  React.useEffect(() => {
+    const p = normalizeProgram(getParam("program"));
+    setProgram(p);
+
+    const c = getParam("course");
+    if (c) {
+      // keep the "slug" if you pass it (music-production), or a label if you pass that
+      setCourse(c);
+    }
+
+    const ct = getParam("classTime");
+    if (ct === "12PM" || ct === "6PM") setClassTime(ct);
+
+    const cohort = normalizeCohort(getParam("cohort"));
+    setCohortMode(cohort);
+
+    // tutoring defaults to block4 if switching
+    if (p === "Tutoring") setTutoringPackage("block4");
+  }, []);
+
+  // When switching to Tutoring, default to the 4-session block
+  React.useEffect(() => {
+    if (program === "Tutoring") setTutoringPackage("block4");
+  }, [program]);
 
   function validate(): string | null {
     if (!firstName.trim()) return "Please enter your first name.";
@@ -147,7 +187,7 @@ React.useEffect(() => {
       consentEmail,
       consentSMS,
 
-      // NEW
+      // class time
       classTime: program === "Course" ? classTime : null,
 
       // normalized address object
@@ -168,6 +208,7 @@ React.useEffect(() => {
     };
 
     setLoading(true);
+
     const getErrorMessage = (error: unknown) => {
       if (error instanceof Error) return error.message;
       if (
@@ -180,25 +221,36 @@ React.useEffect(() => {
       }
       return "Application failed.";
     };
+
     try {
       const res = await fetch("/api/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
       const data = await res.json().catch(() => ({}));
 
       if (res.ok && (data?.ok ?? true)) {
         const next = new URL("/apply/schedule", window.location.origin);
 
         next.searchParams.set("program", program);
+
+        // ONLY free when cohort=demo is present. Default is paid.
         if (program === "Course") {
           next.searchParams.set("course", course);
           next.searchParams.set("classTime", classTime);
+
+          if (cohortMode === "demo") {
+            next.searchParams.set("cohort", "demo");
+          }
         }
+
         if (program === "Tutoring") {
-        next.searchParams.set("tutoringPackage", tutoringPackage);
+          next.searchParams.set("tutoringPackage", tutoringPackage);
         }
+const cohort = new URLSearchParams(window.location.search).get("cohort");
+if (cohort === "demo") next.searchParams.set("cohort", "demo");
 
         window.location.href = next.toString();
       } else {
@@ -224,8 +276,9 @@ React.useEffect(() => {
 
       <h1 className="text-4xl font-bebas tracking-wide mb-2">Apply Now</h1>
       <p className="text-gray-300 mb-8">
-        Step 1: Pick your program and class time. Next you’ll schedule a <span className="text-white">30-minute onboarding call</span>,
-        then complete secure payment.
+        Step 1: Pick your program and class time. Next you’ll schedule a{" "}
+        <span className="text-white">30-minute onboarding call</span>, then
+        complete secure payment.
       </p>
 
       {submitted && !submitted.ok && (
@@ -239,10 +292,39 @@ React.useEffect(() => {
         <section className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold">Personal Information</h2>
           <div className="grid md:grid-cols-2 gap-4">
-            <div>{label("First name")}<input className={inputClass} value={firstName} onChange={(e) => setFirstName(e.target.value)} /></div>
-            <div>{label("Last name")}<input className={inputClass} value={lastName} onChange={(e) => setLastName(e.target.value)} /></div>
-            <div>{label("Email")}<input type="email" className={inputClass} value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-            <div>{label("Phone")}<input className={inputClass} value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
+            <div>
+              {label("First name")}
+              <input
+                className={inputClass}
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+            </div>
+            <div>
+              {label("Last name")}
+              <input
+                className={inputClass}
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </div>
+            <div>
+              {label("Email")}
+              <input
+                type="email"
+                className={inputClass}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              {label("Phone")}
+              <input
+                className={inputClass}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
           </div>
         </section>
 
@@ -253,18 +335,32 @@ React.useEffect(() => {
           <div className="grid md:grid-cols-3 gap-4">
             <div>
               {label("Choose a program")}
-              <select className={inputClass} value={program} onChange={(e) => setProgram(e.target.value as Program)}>
+              <select
+                className={inputClass}
+                value={program}
+                onChange={(e) => setProgram(e.target.value as Program)}
+              >
                 <option value="Course">Course (cohort)</option>
                 <option value="Tutoring">Tutoring (1:1)</option>
                 <option value="Membership">Membership (monthly)</option>
               </select>
+
+              {program === "Course" && cohortMode === "demo" && (
+                <div className="mt-2 text-xs text-teal-200">
+                  You’re applying via the <span className="font-semibold">free demo cohort</span>.
+                </div>
+              )}
             </div>
 
             {program === "Course" ? (
               <div className="md:col-span-2 grid md:grid-cols-2 gap-4">
                 <div>
                   {label("Course")}
-                  <select className={inputClass} value={course} onChange={(e) => setCourse(e.target.value)}>
+                  <select
+                    className={inputClass}
+                    value={course}
+                    onChange={(e) => setCourse(e.target.value)}
+                  >
                     <option>Music Production</option>
                     <option>Mixing</option>
                     <option>Remixing</option>
@@ -297,7 +393,9 @@ React.useEffect(() => {
                   <select
                     className={inputClass}
                     value={tutoringPackage}
-                    onChange={(e) => setTutoringPackage(e.target.value as TutoringPackage)}
+                    onChange={(e) =>
+                      setTutoringPackage(e.target.value as TutoringPackage)
+                    }
                   >
                     <option value="block4">4-session block — $139 (best value)</option>
                     <option value="single">Single session — $49</option>
@@ -330,11 +428,15 @@ React.useEffect(() => {
           <div className="grid md:grid-cols-3 gap-4">
             <div>
               {label("DAW")}
-              <select className={inputClass} value={daw} onChange={(e) => setDaw(e.target.value)}>
+              <select
+                className={inputClass}
+                value={daw}
+                onChange={(e) => setDaw(e.target.value)}
+              >
                 <option>Pro Tools</option>
                 <option>FL Studio</option>
                 <option>Logic Pro</option>
-                <option>Abelton Live</option>
+                <option>Ableton Live</option>
                 <option>Studio One</option>
                 <option>Reason</option>
                 <option>Other</option>
@@ -342,7 +444,11 @@ React.useEffect(() => {
             </div>
             <div>
               {label("Experience level")}
-              <select className={inputClass} value={experience} onChange={(e) => setExperience(e.target.value)}>
+              <select
+                className={inputClass}
+                value={experience}
+                onChange={(e) => setExperience(e.target.value)}
+              >
                 <option>Beginner</option>
                 <option>Intermediate</option>
                 <option>Advanced</option>
@@ -350,7 +456,12 @@ React.useEffect(() => {
             </div>
             <div>
               {label("Goals")}
-              <input className={inputClass} placeholder="What do you want to achieve?" value={goals} onChange={(e) => setGoals(e.target.value)} />
+              <input
+                className={inputClass}
+                placeholder="What do you want to achieve?"
+                value={goals}
+                onChange={(e) => setGoals(e.target.value)}
+              />
             </div>
           </div>
         </section>
@@ -363,11 +474,51 @@ React.useEffect(() => {
           </p>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <div>{label("Instagram")}<input className={inputClass} value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="@yourhandle" /></div>
-            <div>{label("TikTok")}<input className={inputClass} value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="@yourhandle" /></div>
-            <div>{label("YouTube")}<input className={inputClass} value={youtube} onChange={(e) => setYoutube(e.target.value)} placeholder="channel link" /></div>
-            <div>{label("SoundCloud")}<input className={inputClass} value={soundcloud} onChange={(e) => setSoundcloud(e.target.value)} placeholder="profile link" /></div>
-            <div className="md:col-span-2">{label("Discord (optional)")}<input className={inputClass} value={discord} onChange={(e) => setDiscord(e.target.value)} placeholder="username (optional)" /></div>
+            <div>
+              {label("Instagram")}
+              <input
+                className={inputClass}
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                placeholder="@yourhandle"
+              />
+            </div>
+            <div>
+              {label("TikTok")}
+              <input
+                className={inputClass}
+                value={tiktok}
+                onChange={(e) => setTiktok(e.target.value)}
+                placeholder="@yourhandle"
+              />
+            </div>
+            <div>
+              {label("YouTube")}
+              <input
+                className={inputClass}
+                value={youtube}
+                onChange={(e) => setYoutube(e.target.value)}
+                placeholder="channel link"
+              />
+            </div>
+            <div>
+              {label("SoundCloud")}
+              <input
+                className={inputClass}
+                value={soundcloud}
+                onChange={(e) => setSoundcloud(e.target.value)}
+                placeholder="profile link"
+              />
+            </div>
+            <div className="md:col-span-2">
+              {label("Discord (optional)")}
+              <input
+                className={inputClass}
+                value={discord}
+                onChange={(e) => setDiscord(e.target.value)}
+                placeholder="username (optional)"
+              />
+            </div>
           </div>
         </section>
 
@@ -379,13 +530,48 @@ React.useEffect(() => {
           </p>
 
           <div className="grid gap-4">
-            <div>{label("Street")}<input className={inputClass} value={street} onChange={(e) => setStreet(e.target.value)} /></div>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>{label("City")}<input className={inputClass} value={city} onChange={(e) => setCity(e.target.value)} /></div>
-              <div>{label("State / Region")}<input className={inputClass} value={stateRegion} onChange={(e) => setStateRegion(e.target.value)} /></div>
-              <div>{label("Postal code")}<input className={inputClass} value={postalCode} onChange={(e) => setPostalCode(e.target.value)} /></div>
+            <div>
+              {label("Street")}
+              <input
+                className={inputClass}
+                value={street}
+                onChange={(e) => setStreet(e.target.value)}
+              />
             </div>
-            <div className="max-w-md">{label("Country")}<input className={inputClass} value={country} onChange={(e) => setCountry(e.target.value)} /></div>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                {label("City")}
+                <input
+                  className={inputClass}
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
+              </div>
+              <div>
+                {label("State / Region")}
+                <input
+                  className={inputClass}
+                  value={stateRegion}
+                  onChange={(e) => setStateRegion(e.target.value)}
+                />
+              </div>
+              <div>
+                {label("Postal code")}
+                <input
+                  className={inputClass}
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="max-w-md">
+              {label("Country")}
+              <input
+                className={inputClass}
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+              />
+            </div>
           </div>
         </section>
 
@@ -393,13 +579,23 @@ React.useEffect(() => {
         <section className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold">Stay in the loop</h2>
           <label className="flex items-center gap-3">
-            <input type="checkbox" className="size-4 accent-teal-400" checked={consentEmail} onChange={(e) => setConsentEmail(e.target.checked)} />
+            <input
+              type="checkbox"
+              className="size-4 accent-teal-400"
+              checked={consentEmail}
+              onChange={(e) => setConsentEmail(e.target.checked)}
+            />
             <span className="text-sm text-gray-300">
               I agree to receive emails about my application and course updates.
             </span>
           </label>
           <label className="flex items-center gap-3">
-            <input type="checkbox" className="size-4 accent-teal-400" checked={consentSMS} onChange={(e) => setConsentSMS(e.target.checked)} />
+            <input
+              type="checkbox"
+              className="size-4 accent-teal-400"
+              checked={consentSMS}
+              onChange={(e) => setConsentSMS(e.target.checked)}
+            />
             <span className="text-sm text-gray-300">
               I agree to receive SMS reminders about sessions and schedules.
             </span>
