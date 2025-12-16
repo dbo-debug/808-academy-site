@@ -15,6 +15,12 @@ const PRICE_MEMBERSHIP = "price_1Sdzc8DgVrA91WNONcmRIcaK";
 const PRICE_COHORT_DEMO = "price_1SdzboDgVrA91WNOdFCDAlJe";
 const PRICE_COHORT_PAID = "price_1SdzbkDgVrA91WNOPbTM9jp7";
 
+function isRecord(
+  value: unknown
+): value is Record<string, unknown> & { message?: unknown } {
+  return typeof value === "object" && value !== null;
+}
+
 type CheckoutBody = {
   mode?: "demo" | "paid" | "payment" | "membership" | "subscription";
   priceId?: string;
@@ -143,10 +149,28 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ url: session.url });
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Stripe errors often live in err.raw.message, err.message, etc.
-    const stripeMessage =
-      err?.raw?.message || err?.message || err?.toString?.() || String(err);
+    const stripeMessage = (() => {
+      if (isRecord(err)) {
+        const raw = err.raw;
+        if (isRecord(raw) && typeof raw.message === "string") {
+          return raw.message;
+        }
+        if (typeof err.message === "string") {
+          return err.message;
+        }
+        if (typeof err.toString === "function") {
+          return err.toString();
+        }
+      }
+
+      if (typeof err === "string") {
+        return err;
+      }
+
+      return String(err);
+    })();
 
     console.error("[checkout] route error", err);
 

@@ -15,22 +15,47 @@ type Address = {
 };
 
 type ApplyBody = {
-  program?: string;        // "Course" | "Tutoring" | "VIP"
-  course?: string | null;  // required when program === "Course"
-  tutoringFocus?: string | null;
+  // Program choices (updated)
+  program?: "Course" | "Tutoring" | "Membership" | string;
 
+  // when program === "Course"
+  course?: string | null;
+  classTime?: string | null;
+  // when program === "Tutoring"
+  tutoringSubject?: string | null;
+
+  // contact
   firstName?: string;
   lastName?: string;
   email?: string;
   phone?: string;
 
+  // address (optional for digital)
   address?: Address;
 
+  // legacy flat fields (ApplyClient previously sent these)
+  street?: string;
+  city?: string;
+  state?: string;
+  stateRegion?: string;
+  postalCode?: string;
+  country?: string;
+
+  // misc
+  daw?: string;
   experience?: string;
   goals?: string;
   sessionMonth?: string;
+
   consentEmail?: boolean;
   consentSMS?: boolean;
+
+  // socials (new)
+  instagram?: string;
+  tiktok?: string;
+  youtube?: string;
+  soundcloud?: string;
+  discord?: string;
 };
 
 export async function POST(req: NextRequest) {
@@ -43,50 +68,84 @@ export async function POST(req: NextRequest) {
     const {
       program,
       course,
-      tutoringFocus,
+      classTime,
+      tutoringSubject,
       firstName,
       lastName,
       email,
       phone,
-      address,
       experience,
       goals,
       sessionMonth,
       consentEmail,
       consentSMS,
+      daw,
+      instagram,
+      tiktok,
+      youtube,
+      soundcloud,
+      discord,
     } = body;
 
-    // Basic validation
-    if (!firstName || !lastName || !email || !program) {
+    // --- Normalize address (support BOTH nested and old flat shape) ---
+    const address: Address = {
+      address1: body.address?.address1 ?? body.street ?? "",
+      address2: body.address?.address2 ?? "",
+      city: body.address?.city ?? body.city ?? "",
+      region: body.address?.region ?? body.stateRegion ?? body.state ?? "",
+      postalCode: body.address?.postalCode ?? body.postalCode ?? "",
+      country: body.address?.country ?? body.country ?? "",
+    };
+
+    // --- Basic validation (don’t hard-block on address for digital products) ---
+    if (!firstName?.trim() || !lastName?.trim() || !email?.trim() || !phone?.trim() || !program) {
       return NextResponse.json(
         { ok: false, error: "Missing required fields." },
         { status: 400 }
       );
     }
+
     if (program === "Course" && !course) {
       return NextResponse.json(
-        { ok: false, error: "Course is required for Program: Course." },
+        { ok: false, error: "Please select a course." },
         { status: 400 }
       );
     }
-    if (program === "Tutoring" && (!tutoringFocus || tutoringFocus.trim().length < 5)) {
+
+    if (program === "Tutoring" && (!tutoringSubject || tutoringSubject.trim().length < 3)) {
       return NextResponse.json(
-        { ok: false, error: "Please describe your tutoring focus." },
+        { ok: false, error: "Please describe what you’d like help with." },
         { status: 400 }
       );
     }
-    if (
-      !address?.address1 ||
-      !address?.city ||
-      !address?.region ||
-      !address?.postalCode ||
-      !address?.country
-    ) {
-      return NextResponse.json(
-        { ok: false, error: "Complete mailing address is required." },
-        { status: 400 }
-      );
-    }
+
+    // Address is OPTIONAL now.
+    // If they entered some address fields but not all, we still accept it.
+    const hasAnyAddress =
+      !!address.address1 || !!address.city || !!address.region || !!address.postalCode || !!address.country;
+
+    const addressLine = hasAnyAddress
+      ? `
+        <h3 style="margin:16px 0 8px;">Address (optional)</h3>
+        <p>
+          ${escapeHtml(address.address1 || "—")}
+          ${address.address2 ? `<br>${escapeHtml(address.address2)}` : ""}<br>
+          ${escapeHtml(address.city || "—")} , ${escapeHtml(address.region || "—")} ${escapeHtml(address.postalCode || "—")}<br>
+          ${escapeHtml(address.country || "—")}
+        </p>
+      `
+      : "";
+
+    const socialsLine = `
+      <h3 style="margin:16px 0 8px;">Socials</h3>
+      <p>
+        <strong>Instagram:</strong> ${escapeHtml(instagram || "—")}<br>
+        <strong>TikTok:</strong> ${escapeHtml(tiktok || "—")}<br>
+        <strong>YouTube:</strong> ${escapeHtml(youtube || "—")}<br>
+        <strong>SoundCloud:</strong> ${escapeHtml(soundcloud || "—")}<br>
+        <strong>Discord:</strong> ${escapeHtml(discord || "—")}
+      </p>
+    `;
 
     // Build email HTML
     const html = `
@@ -94,26 +153,34 @@ export async function POST(req: NextRequest) {
         <h2 style="margin:0 0 12px;">New Application — ${escapeHtml(program)}</h2>
         <p><strong>Name:</strong> ${escapeHtml(firstName)} ${escapeHtml(lastName)}</p>
         <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-        ${phone ? `<p><strong>Phone:</strong> ${escapeHtml(phone)}</p>` : ""}
+        <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
 
         <p><strong>Session Month:</strong> ${escapeHtml(sessionMonth || "TBD")}</p>
+
         ${
-          program === "Course"
-            ? `<p><strong>Course:</strong> ${escapeHtml(String(course))}</p>`
-            : program === "Tutoring"
-            ? `<p><strong>Tutoring Focus:</strong> ${escapeHtml(tutoringFocus || "")}</p>`
+  program === "Course"
+    ? `
+        <p><strong>Course:</strong> ${escapeHtml(String(course))}</p>
+        ${
+          classTime
+            ? `<p><strong>Class Time:</strong> ${escapeHtml(String(classTime))}</p>`
             : ""
         }
+      `
+    : program === "Tutoring"
+    ? `<p><strong>Tutoring Subject:</strong> ${escapeHtml(tutoringSubject || "")}</p>`
+    : program === "Membership"
+    ? `<p><strong>Program:</strong> Membership</p>`
+    : ""
+}
 
-        <h3 style="margin:16px 0 8px;">Address</h3>
-        <p>
-          ${escapeHtml(address.address1!)}
-          ${address.address2 ? `<br>${escapeHtml(address.address2)}` : ""}<br>
-          ${escapeHtml(address.city!)} , ${escapeHtml(address.region!)} ${escapeHtml(address.postalCode!)}<br>
-          ${escapeHtml(address.country!)}
-        </p>
+        ${daw ? `<p><strong>DAW:</strong> ${escapeHtml(daw)}</p>` : ""}
+        ${experience ? `<p><strong>Experience:</strong> ${escapeHtml(experience)}</p>` : ""}
 
-        ${experience ? `<p><strong>Experience:</strong><br>${nl2br(escapeHtml(experience))}</p>` : ""}
+        ${addressLine}
+
+        ${socialsLine}
+
         ${goals ? `<p><strong>Goals:</strong><br>${nl2br(escapeHtml(goals))}</p>` : ""}
 
         <p><strong>Consent (Email):</strong> ${consentEmail ? "Yes" : "No"}<br>
@@ -124,7 +191,7 @@ export async function POST(req: NextRequest) {
       </div>
     `;
 
-    // Send with Resend (safe: init inside handler, and only if key + inbox are configured)
+    // Send with Resend (optional)
     const resendKey = process.env.RESEND_API_KEY;
     const inbox = process.env.ENROLLMENT_INBOX;
     if (resendKey && inbox) {
@@ -137,27 +204,16 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Fire-and-forget Zapier (optional)
+    // Zapier (optional)
     const zapUrl = process.env.ZAPIER_ENROLL_WEBHOOK_URL;
     if (zapUrl) {
-      // purposely not awaited
       fetch(zapUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          program,
-          course,
-          tutoringFocus,
-          firstName,
-          lastName,
-          email,
-          phone,
+          ...body,
+          // normalized address for downstream tools
           address,
-          experience,
-          goals,
-          sessionMonth,
-          consentEmail,
-          consentSMS,
           createdAt: new Date().toISOString(),
           source: "apply-form",
         }),

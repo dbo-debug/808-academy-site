@@ -1,10 +1,10 @@
 // src/app/apply/schedule/page.tsx
 "use client";
 
-/* eslint-disable react/no-unescaped-entities */
 import * as React from "react";
 
 type Program = "Course" | "Tutoring" | "Membership";
+type TutoringPackage = "block4" | "single";
 
 function Stepper({ current }: { current: 1 | 2 | 3 }) {
   const steps = [
@@ -56,38 +56,50 @@ function Stepper({ current }: { current: 1 | 2 | 3 }) {
 }
 
 // Calendly
-const CAL_ONBOARDING =
-  "https://calendly.com/admin-the808academy/onboarding-call";
+const CAL_ONBOARDING = "https://calendly.com/admin-the808academy/onboarding-call";
 const CAL_INTRO = "https://calendly.com/admin-the808academy/30min";
 
-// Tutoring packages (Calendly + Stripe)
-const TUTORING_PACKAGES = [
+// Tutoring: Calendly + Stripe price IDs
+const TUTORING: Record<
+  TutoringPackage,
   {
-    key: "single",
-    label: "Single session — $49",
-    calendly:
-      "https://calendly.com/admin-the808academy/tutoring-session",
+    label: string;
+    priceLabel: string;
+    priceId: string;
+    calendly: string;
+    description: string;
+    fineprint: string;
+  }
+> = {
+  single: {
+    label: "Single Session",
+    priceLabel: "$49",
     priceId: "price_1Sf1RRDgVrA91WNOa7F5WqUA",
-    note: "Schedule your session now, then check out to confirm your booking.",
+    calendly: "https://calendly.com/admin-the808academy/tutoring-session",
+    description:
+      "Perfect for mix feedback, a stuck track, vocal tuning, or one focused breakthrough.",
+    fineprint: "You’ll schedule your session first, then checkout to confirm.",
   },
-  {
-    key: "block4",
-    label: "4-session block — $139 (best value)",
+  block4: {
+    label: "4-Session Block",
+    priceLabel: "$139 (best value)",
+    priceId: "price_1Sf1UEDgVrA91WNOJyDiAXnI",
     calendly:
       "https://calendly.com/admin-the808academy/4-session-tutoring-block-first-session-booking",
-    priceId: "price_1Sf1UEDgVrA91WNOJyDiAXnI",
-    note: "Schedule your first session now. The next sessions are scheduled with your tutor at the end of each session.",
+    description:
+      "Best for real momentum. We set goals, track progress, and build results over a month.",
+    fineprint:
+      "Schedule your first session now. Future sessions are scheduled with your tutor at the end of each call.",
   },
-] as const;
-
-type TutoringPackageKey = (typeof TUTORING_PACKAGES)[number]["key"];
+};
 
 // Checkout helper:
-// - For membership + cohort: use mode
-// - For tutoring: pass priceId (generic payment)
+// - membership/cohort use mode
+// - tutoring uses priceId (generic one-time payment branch in /api/checkout)
 async function startCheckout(params: {
   mode?: "demo" | "paid" | "membership" | "subscription";
   priceId?: string;
+  quantity?: number;
   source: string;
 }) {
   const res = await fetch("/api/checkout", {
@@ -96,7 +108,7 @@ async function startCheckout(params: {
     body: JSON.stringify({
       ...(params.mode ? { mode: params.mode } : {}),
       ...(params.priceId
-        ? { priceId: params.priceId, quantity: 1 }
+        ? { priceId: params.priceId, quantity: params.quantity ?? 1 }
         : {}),
       source: params.source,
     }),
@@ -106,13 +118,56 @@ async function startCheckout(params: {
   if (!res.ok || !json?.url) {
     throw new Error(json?.details || json?.error || "Checkout failed.");
   }
-
   window.location.href = json.url;
 }
 
-function getParam(name: string) {
+function getParam(key: string) {
   if (typeof window === "undefined") return null;
-  return new URLSearchParams(window.location.search).get(name);
+  return new URLSearchParams(window.location.search).get(key);
+}
+
+function Card({
+  title,
+  subtitle,
+  body,
+  selected,
+  onClick,
+}: {
+  title: string;
+  subtitle: string;
+  body: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "text-left w-full rounded-2xl border p-5 transition",
+        selected
+          ? "border-teal-400/70 bg-teal-400/10"
+          : "border-white/10 bg-white/5 hover:bg-white/10",
+      ].join(" ")}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div className="text-lg font-semibold text-white">{title}</div>
+          <div className="mt-1 text-sm text-white/70">{body}</div>
+        </div>
+
+        <div className="shrink-0 rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs text-white/80">
+          {subtitle}
+        </div>
+      </div>
+
+      {selected && (
+        <div className="mt-3 text-xs text-teal-200">
+          Selected
+        </div>
+      )}
+    </button>
+  );
 }
 
 export default function SchedulePage() {
@@ -120,48 +175,53 @@ export default function SchedulePage() {
   const [course, setCourse] = React.useState("Music Production");
   const [classTime, setClassTime] = React.useState<string | null>(null);
 
-  // Cohort type selector (demo vs paid)
+  // cohort offering selector (demo vs paid)
   const [cohortMode, setCohortMode] = React.useState<"demo" | "paid">("demo");
 
-  // Tutoring package selector
+  // tutoring package selector (defaults to block4 per your preference)
   const [tutoringPackage, setTutoringPackage] =
-    React.useState<TutoringPackageKey>("single");
+    React.useState<TutoringPackage>("block4");
 
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    const raw = getParam("program") || "Course";
+    const raw = (getParam("program") || "Course") as string;
+
     const normalized: Program =
-      raw === "Membership"
-        ? "Membership"
-        : raw === "Tutoring"
-        ? "Tutoring"
-        : "Course";
+      raw === "Membership" ? "Membership" : raw === "Tutoring" ? "Tutoring" : "Course";
 
     setProgram(normalized);
-    setCourse(getParam("course") || "Music Production");
-    setClassTime(getParam("classTime"));
+
+    const c = getParam("course");
+    if (c) setCourse(c);
+
+    const ct = getParam("classTime");
+    if (ct) setClassTime(ct);
+
+    // read tutoringPackage from URL so Apply step controls default selection
+    const tp = getParam("tutoringPackage");
+    if (tp === "single" || tp === "block4") {
+      setTutoringPackage(tp);
+    }
   }, []);
 
   const isCourse = program === "Course";
   const isTutoring = program === "Tutoring";
   const isMembership = program === "Membership";
 
-  const tutoringConfig =
-    TUTORING_PACKAGES.find((p) => p.key === tutoringPackage) ||
-    TUTORING_PACKAGES[0];
+  const tutoring = TUTORING[tutoringPackage];
 
   const headline = isMembership
     ? "Membership checkout"
     : isTutoring
-    ? "Schedule your tutoring session"
-    : "Schedule your 30-minute onboarding call";
+    ? "Tutoring — schedule first, then checkout"
+    : "Onboarding call — then checkout";
 
   const subhead = isMembership
     ? "Membership goes straight to checkout."
     : isTutoring
-    ? "Choose your tutoring option, schedule your time, then complete checkout to confirm."
-    : "You already selected your class time. This call is to confirm goals, answer questions, and get you set up before checkout.";
+    ? "Choose your tutoring option, schedule your session, then complete checkout to confirm."
+    : "You already picked your class time. This 30-minute onboarding call confirms goals, answers questions, and gets you set up before payment.";
 
   return (
     <main className="min-h-screen px-6 py-16 text-white">
@@ -176,7 +236,45 @@ export default function SchedulePage() {
             </h1>
             <p className="text-gray-300 mb-6">{subhead}</p>
 
-            {/* COURSE: embed onboarding calendly */}
+            {/* Tutoring: two cards + calendly embed */}
+            {isTutoring && (
+              <>
+                <div className="grid gap-4 sm:grid-cols-2 mb-6">
+                  <Card
+                    title={`${TUTORING.block4.label}`}
+                    subtitle={TUTORING.block4.priceLabel}
+                    body={TUTORING.block4.description}
+                    selected={tutoringPackage === "block4"}
+                    onClick={() => setTutoringPackage("block4")}
+                  />
+                  <Card
+                    title={`${TUTORING.single.label}`}
+                    subtitle={TUTORING.single.priceLabel}
+                    body={TUTORING.single.description}
+                    selected={tutoringPackage === "single"}
+                    onClick={() => setTutoringPackage("single")}
+                  />
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/70 mb-4">
+                  <div className="text-xs uppercase tracking-[0.2em] text-white/50">
+                    Next step
+                  </div>
+                  <div className="mt-1">{tutoring.fineprint}</div>
+                </div>
+
+                <div className="rounded-2xl overflow-hidden border border-white/10 bg-black">
+                  <iframe
+                    title="Tutoring Scheduler"
+                    src={`${tutoring.calendly}?hide_gdpr_banner=1`}
+                    className="w-full"
+                    style={{ height: "760px" }}
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Course: embed onboarding calendly */}
             {isCourse && (
               <div className="rounded-2xl overflow-hidden border border-white/10 bg-black">
                 <iframe
@@ -188,51 +286,7 @@ export default function SchedulePage() {
               </div>
             )}
 
-            {/* TUTORING: package selector + embed selected calendly */}
-            {isTutoring && (
-              <>
-                <div className="mb-4 rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <div className="text-sm uppercase tracking-wide text-white/60">
-                    Tutoring option
-                  </div>
-                  <div className="mt-2 grid gap-3 md:grid-cols-2">
-                    <div>
-                      <label className="block text-sm text-white/70 mb-2">
-                        Choose package
-                      </label>
-                      <select
-                        value={tutoringPackage}
-                        onChange={(e) =>
-                          setTutoringPackage(e.target.value as TutoringPackageKey)
-                        }
-                        className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
-                      >
-                        {TUTORING_PACKAGES.map((p) => (
-                          <option key={p.key} value={p.key}>
-                            {p.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-white/60">
-                      {tutoringConfig.note}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl overflow-hidden border border-white/10 bg-black">
-                  <iframe
-                    title="Tutoring Scheduler"
-                    src={`${tutoringConfig.calendly}?hide_gdpr_banner=1`}
-                    className="w-full"
-                    style={{ height: "760px" }}
-                  />
-                </div>
-              </>
-            )}
-
-            {/* MEMBERSHIP: no calendly */}
+            {/* Membership: simple note */}
             {isMembership && (
               <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
                 <p className="text-sm text-white/70">
@@ -241,8 +295,8 @@ export default function SchedulePage() {
               </div>
             )}
 
-            {/* Always available: intro call */}
-            <div className="mt-4 flex flex-wrap gap-3">
+            {/* Always available CTAs */}
+            <div className="mt-6 flex flex-wrap gap-3">
               <a
                 href={CAL_INTRO}
                 target="_blank"
@@ -268,10 +322,7 @@ export default function SchedulePage() {
           {/* RIGHT */}
           <aside className="rounded-2xl border border-white/10 bg-white/5 p-6 h-fit">
             <div className="text-sm text-gray-300 mb-2">Step 2 of 3</div>
-
-            <div className="text-xl font-semibold mb-4">
-              {isCourse ? "Confirm + checkout" : isTutoring ? "Confirm + checkout" : "Checkout"}
-            </div>
+            <div className="text-xl font-semibold mb-4">Continue</div>
 
             <div className="space-y-3 text-sm text-white/75">
               <div className="flex justify-between gap-3">
@@ -306,25 +357,24 @@ export default function SchedulePage() {
                       <option value="paid">Paid cohort</option>
                     </select>
                     <p className="mt-2 text-xs text-white/50">
-                      Schedule your onboarding call first, then continue to checkout.
+                      Schedule onboarding first, then checkout.
                     </p>
                   </div>
                 </>
               )}
 
               {isTutoring && (
-                <>
+                <div className="rounded-lg border border-white/10 bg-black/30 p-3 text-xs text-white/60">
                   <div className="flex justify-between gap-3">
-                    <span className="text-white/50">Package</span>
+                    <span className="text-white/50">Selected</span>
                     <span className="text-white">
-                      {tutoringPackage === "single" ? "Single ($49)" : "4-pack ($139)"}
+                      {tutoringPackage === "block4" ? "4-session block" : "Single session"}
                     </span>
                   </div>
-
-                  <div className="rounded-lg border border-white/10 bg-black/30 p-3 text-xs text-white/60">
-                    Schedule first, then checkout to confirm your session.
+                  <div className="mt-2">
+                    {tutoring.fineprint}
                   </div>
-                </>
+                </div>
               )}
             </div>
 
@@ -335,22 +385,35 @@ export default function SchedulePage() {
                 className="w-full rounded-full bg-teal-400 px-5 py-3 font-semibold text-black hover:bg-teal-300 transition disabled:opacity-60"
                 onClick={async () => {
                   setLoading(true);
+                  const getErrorMessage = (error: unknown) => {
+                    if (error instanceof Error) return error.message;
+                    if (
+                      error &&
+                      typeof error === "object" &&
+                      "message" in error &&
+                      typeof (error as { message: unknown }).message === "string"
+                    ) {
+                      return (error as { message: string }).message;
+                    }
+                    return "Could not start checkout.";
+                  };
                   try {
                     if (isMembership) {
                       await startCheckout({
                         mode: "membership",
-                        source: "apply_onboarding_membership",
+                        source: "apply_membership_checkout",
                       });
                       return;
                     }
 
                     if (isTutoring) {
                       await startCheckout({
-                        priceId: tutoringConfig.priceId,
+                        priceId: tutoring.priceId,
+                        quantity: 1,
                         source:
-                          tutoringPackage === "single"
-                            ? "apply_tutoring_single_after_calendly"
-                            : "apply_tutoring_4pack_after_calendly",
+                          tutoringPackage === "block4"
+                            ? "apply_tutoring_4pack_after_calendly"
+                            : "apply_tutoring_single_after_calendly",
                       });
                       return;
                     }
@@ -363,8 +426,8 @@ export default function SchedulePage() {
                           ? "apply_cohort_paid_after_onboarding"
                           : "apply_cohort_demo_after_onboarding",
                     });
-                  } catch (e: any) {
-                    alert(e?.message || "Could not start checkout.");
+                  } catch (e: unknown) {
+                    alert(getErrorMessage(e));
                   } finally {
                     setLoading(false);
                   }
@@ -374,7 +437,7 @@ export default function SchedulePage() {
               </button>
 
               <p className="mt-3 text-xs text-white/50">
-                Tip: schedule first, then return here and complete checkout.
+                Tip: schedule first, then checkout to confirm.
               </p>
             </div>
           </aside>

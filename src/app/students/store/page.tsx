@@ -45,7 +45,7 @@ export default function StoreHubPage() {
         >
           <div className="relative h-48 w-full overflow-hidden rounded-2xl bg-black/30 mb-4">
             <Image
-              src="/assets/store/merch/black-hoodie-prod.jpg"
+              src="/assets/store/merch/store-merch-cover.jpg"
               alt="808 Merch preview"
               fill
               className="object-cover opacity-80 transition duration-500 group-hover:scale-105"
