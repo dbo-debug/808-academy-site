@@ -10,6 +10,19 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getErrorMessage(err: unknown) {
+  if (isRecord(err) && "message" in err) {
+    const { message } = err as { message?: unknown };
+    return message ?? "Billing portal error";
+  }
+
+  return "Billing portal error";
+}
+
 function sbUser(token: string) {
   return createClient(SUPABASE_URL, SUPABASE_ANON, {
     global: { headers: { Authorization: `Bearer ${token}` } },
@@ -79,7 +92,7 @@ export async function POST(req: NextRequest) {
           },
           { onConflict: "user_id" }
         );
-      } catch (e) {
+      } catch (e: unknown) {
         // Not fatal
         console.warn("[billing-portal] could not persist stripe_customer_id", e);
       }
@@ -94,10 +107,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ url: session.url });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("[billing-portal] error", err);
     return NextResponse.json(
-      { error: err?.message ?? "Billing portal error" },
+      { error: getErrorMessage(err) },
       { status: 500 }
     );
   }

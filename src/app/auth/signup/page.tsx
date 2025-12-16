@@ -20,6 +20,20 @@ export default function SignUpPage() {
       return;
     }
 
+    const getErrorMessage = (error: unknown) => {
+      if (error instanceof Error) return error.message;
+      if (typeof error === "string") return error;
+      if (
+        error &&
+        typeof error === "object" &&
+        "message" in error &&
+        typeof (error as { message: unknown }).message === "string"
+      ) {
+        return (error as { message: string }).message;
+      }
+      return "Sign up failed.";
+    };
+
     try {
       setLoading(true);
 
@@ -45,8 +59,8 @@ export default function SignUpPage() {
       setMsg(
         "Account created. Check your email to confirm, then sign in."
       );
-    } catch (e: any) {
-      setMsg(e?.message || "Sign up failed.");
+    } catch (e: unknown) {
+      setMsg(getErrorMessage(e));
     } finally {
       setLoading(false);
     }
@@ -108,6 +122,11 @@ export default function SignUpPage() {
           or{" "}
           <Link className="text-white/80 underline underline-offset-2" href="/apply">
             join a cohort
+          </Link>
+          {" "}
+          or{" "}
+          <Link className="text-white/80 underline underline-offset-2" href="/tutoring">
+            book tutoring
           </Link>
           .
         </div>

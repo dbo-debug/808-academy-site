@@ -16,6 +16,20 @@ export default function ForgotPasswordPage() {
     setStatus("sending");
     setMessage("");
 
+    const getErrorMessage = (error: unknown) => {
+      if (error instanceof Error) return error.message;
+      if (typeof error === "string") return error;
+      if (
+        error &&
+        typeof error === "object" &&
+        "message" in error &&
+        typeof (error as { message: unknown }).message === "string"
+      ) {
+        return (error as { message: string }).message;
+      }
+      return "Something went wrong.";
+    };
+
     try {
       const baseUrl =
         process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
@@ -33,9 +47,9 @@ export default function ForgotPasswordPage() {
 
       setStatus("sent");
       setMessage("Check your email for a password reset link.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setStatus("error");
-      setMessage(err?.message ?? "Something went wrong.");
+      setMessage(getErrorMessage(err));
     }
   };
 

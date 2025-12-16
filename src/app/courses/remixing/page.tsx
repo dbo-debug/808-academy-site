@@ -1,101 +1,53 @@
+// src/app/courses/remixing/page.tsx
 import Link from "next/link";
 
 export const metadata = {
-  title: "Remixing Course | 808 Academy",
+  title: "Remixing Course — Coming Soon | 808 Academy",
   description:
-    "Transform existing songs into new creative works. Learn remix techniques, tempo mapping, vocal chopping, and arrangement redesign in this hands-on, 4-week course.",
-  openGraph: {
-    title: "Remixing Course | 808 Academy",
-    description:
-      "Learn creative remixing — arrangement, vocal chops, re-harmonization, and energy design.",
-    images: ["/Remixing.png"],
-  },
+    "A new Remixing course is on the way. Learn flip workflows, vocal chops, tempo mapping, and release-ready remixes with 808 Academy.",
 };
 
-export default function RemixingPage() {
+export default function RemixingComingSoonPage() {
   return (
-    <main className="text-gray-100">
-      <section
-        className="relative min-h-[80vh] flex items-center"
-        style={{
-          backgroundImage: "url('/Remixing.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/70" />
-        <div className="relative z-10 mx-auto max-w-5xl px-6">
-          <h1 className="text-5xl font-bold mb-4">Remixing</h1>
-          <p className="text-lg text-gray-300 max-w-2xl">
-            Explore creative remix production — reimagining songs with new
-            rhythms, harmonies, and energy. Learn arrangement transformation,
-            tempo mapping, vocal chops, and sound design techniques that make
-            remixes shine.
-          </p>
-          <div className="mt-8 flex gap-4">
-            <Link
-              href="/apply?course=remixing"
-              className="rounded-xl bg-[#00FFF7] px-6 py-3 font-semibold text-black hover:opacity-90"
-            >
-              Apply Now
-            </Link>
-            <Link
-              href="/contact"
-              className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10"
-            >
-              Schedule Call
-            </Link>
+    <main className="mx-auto max-w-5xl px-6 py-16 text-white">
+      <div className="rounded-3xl border border-white/10 bg-white/[0.05] p-10 backdrop-blur">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#00FFF7]">Remixing</p>
+        <h1 className="mt-3 text-4xl font-semibold">Remixing Course — Coming Soon</h1>
+        <p className="mt-3 max-w-3xl text-white/70">
+          We&apos;re finishing the new Remixing curriculum: tempo mapping, re-harmonization, vocal chopping, FX
+          design, and contest-ready workflows. Add your name to the list and get first access when it opens.
+        </p>
+
+        <div className="mt-6 flex flex-wrap gap-3 text-sm">
+          <Link
+            href="/membership"
+            className="rounded-lg bg-[#00FFF7] px-5 py-2 font-semibold text-black transition hover:bg-white"
+          >
+            Join membership for early access
+          </Link>
+          <Link
+            href="/apply?interest=remixing"
+            className="rounded-lg border border-white/20 px-5 py-2 text-white/80 transition hover:border-[#00FFF7] hover:text-[#00FFF7]"
+          >
+            Get notified
+          </Link>
+        </div>
+
+        <div className="mt-10 grid gap-4 rounded-2xl border border-white/10 bg-black/40 p-6 text-sm text-white/70">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#00FFF7]" />
+            Bi-weekly remix contests stay live for members — check the Remix Contest page.
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-white/60" />
+            Curriculum covers flip prep, stems, creative resampling, arrangement, and finishing.
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-white/60" />
+            Includes Ableton/Logic templates, stems, and A/B references.
           </div>
         </div>
-      </section>
-
-      <section className="py-12 border-b border-white/10">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold mb-3">January 2025 Schedule</h2>
-          <p className="text-gray-300">
-            Tues & Thurs · 10–11:30 AM PT · Office Hours Fri 2–6 PM
-          </p>
-        </div>
-      </section>
-
-      <section className="py-12">
-        <div className="max-w-4xl mx-auto px-6 space-y-10">
-          <h2 className="text-3xl font-semibold">Curriculum Overview</h2>
-          {[
-            ["1", "Remix Fundamentals", "Understanding stems, tempo mapping, and creative direction."],
-            ["2", "Deconstruction", "Study five professional remixes to understand structure and style."],
-            ["3", "Drum Replacement", "Designing new rhythm and energy with fresh percussion layers."],
-            ["4", "Re-Harmonization", "Creating new chord progressions that redefine emotion."],
-            ["5", "Vocal Editing", "Chopping, pitching, and time-stretching vocals for new hooks."],
-            ["6", "Arrangement Flow", "Building tension and release in new remix forms."],
-            ["7", "Creative FX", "Sound design and transitions that make remixes stand out."],
-            ["8", "Rough Mastering", "Loudness, polish, and final preparation for release."],
-          ].map(([n, t, d]) => (
-            <Lesson key={n} n={n} title={t} desc={d} />
-          ))}
-        </div>
-      </section>
-
-      <section className="py-12 border-t border-white/10">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold mb-4">You’ll Leave This Class With</h2>
-          <ul className="space-y-2 text-gray-300 list-disc pl-5">
-            <li>One completed remix ready for release</li>
-            <li>Full remix workflow and creative toolkit</li>
-            <li>Advanced vocal and arrangement skills</li>
-            <li>Experience listening and analyzing remix styles</li>
-          </ul>
-        </div>
-      </section>
+      </div>
     </main>
-  );
-}
-
-function Lesson({ n, title, desc }: any) {
-  return (
-    <div>
-      <h3 className="text-xl font-semibold mb-1">{`RX${n} — ${title}`}</h3>
-      <p className="text-gray-300">{desc}</p>
-    </div>
   );
 }

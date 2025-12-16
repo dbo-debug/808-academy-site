@@ -1,12 +1,15 @@
-/* eslint-disable react/no-unescaped-entities */
-
 import Link from "next/link";
 import Image from "next/image";
 import { COURSES } from "@/lib/courses";
 
-export default function CoursePage(props: any) {
-  const params = props?.params ?? {};
-  const slug = params?.slug as string | undefined;
+type CoursePageProps = {
+  params?: {
+    slug?: string;
+  };
+};
+
+export default function CoursePage({ params }: CoursePageProps) {
+  const slug = params?.slug;
 
   const course = COURSES.find((c) => c.slug === slug);
 
@@ -46,15 +49,21 @@ export default function CoursePage(props: any) {
 
           {course.heroImage ? (
             <div className="relative w-full h-64 md:h-80 mb-8 overflow-hidden rounded-2xl border border-white/10">
-              <Image src={course.heroImage} alt={course.title} fill className="object-cover" priority />
+              <Image
+                src={course.heroImage}
+                alt={course.title}
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
           ) : null}
 
           <div className="prose prose-invert max-w-none">
             <h2>What you’ll learn</h2>
             <ul>
-              {"bullets" in course && Array.isArray((course as any).bullets) ? (
-                (course as any).bullets.map((b: string, i: number) => <li key={i}>{b}</li>)
+              {Array.isArray(course.bullets) ? (
+                course.bullets.map((b, i) => <li key={`${course.slug}-b-${i}`}>{b}</li>)
               ) : (
                 <>
                   <li>Core concepts and repeatable workflows.</li>
@@ -69,10 +78,10 @@ export default function CoursePage(props: any) {
         <aside className="rounded-2xl border border-white/10 bg-white/5 p-6 h-fit">
           <div className="text-sm text-gray-300 mb-2">Enrollment</div>
           <div className="text-3xl font-semibold mb-4">
-            {"priceLabel" in course && (course as any).priceLabel
-              ? (course as any).priceLabel
-              : typeof (course as any).price === "number"
-              ? `$${(course as any).price.toLocaleString()}`
+            {course.priceLabel
+              ? course.priceLabel
+              : typeof course.price === "number"
+              ? `$${course.price.toLocaleString()}`
               : "TBA"}
           </div>
 

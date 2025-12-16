@@ -66,9 +66,22 @@ export default function ResetPasswordPage() {
 
       // Optional: redirect after a beat
       setTimeout(() => router.push("/auth/signin"), 900);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setStatus("error");
-      setMessage(err?.message ?? "Something went wrong.");
+      const getErrorMessage = (error: unknown) => {
+        if (error instanceof Error) return error.message;
+        if (typeof error === "string") return error;
+        if (
+          error &&
+          typeof error === "object" &&
+          "message" in error &&
+          typeof (error as { message: unknown }).message === "string"
+        ) {
+          return (error as { message: string }).message;
+        }
+        return "Something went wrong.";
+      };
+      setMessage(getErrorMessage(err));
     }
   };
 

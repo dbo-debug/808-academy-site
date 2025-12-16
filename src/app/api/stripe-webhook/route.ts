@@ -17,6 +17,34 @@ const supabaseAdmin = createClient(
 
 const PRICE_MEMBERSHIP = process.env.STRIPE_PRICE_MEMBERSHIP;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getStringProp(obj: unknown, key: string): string | null {
+  if (isRecord(obj)) {
+    const val = obj[key];
+    if (typeof val === "string") return val;
+  }
+  return null;
+}
+
+function getNumberProp(obj: unknown, key: string): number | null {
+  if (isRecord(obj)) {
+    const val = obj[key];
+    if (typeof val === "number") return val;
+  }
+  return null;
+}
+
+function getErrorMessage(err: unknown): string {
+  if (isRecord(err) && typeof err.message === "string") {
+    return err.message;
+  }
+  if (typeof err === "string") return err;
+  return "Unknown error";
+}
+
 function toIsoFromUnix(ts?: number | null) {
   if (!ts) return null;
   return new Date(ts * 1000).toISOString();
@@ -72,8 +100,11 @@ export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
-  } catch (err: any) {
-    console.error("⚠️ Webhook signature verification failed:", err.message);
+  } catch (err: unknown) {
+    console.error(
+      "⚠️ Webhook signature verification failed:",
+      getErrorMessage(err)
+    );
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -123,18 +154,16 @@ export async function POST(req: NextRequest) {
           let status: string | null = null;
           let currentPeriodEndUnix: number | null = null;
 
-          // Stripe typings mismatch fix: cast to any where needed
           if (session.subscription && typeof session.subscription !== "string") {
-            const subAny = session.subscription as any;
-            status = (subAny.status as string) ?? null;
-            currentPeriodEndUnix =
-              (subAny.current_period_end as number) ?? null;
+            status = getStringProp(session.subscription, "status");
+            currentPeriodEndUnix = getNumberProp(
+              session.subscription,
+              "current_period_end"
+            );
           } else if (subscriptionId) {
             const sub = await stripe.subscriptions.retrieve(subscriptionId);
-            const subAny = sub as any;
-            status = (subAny.status as string) ?? null;
-            currentPeriodEndUnix =
-              (subAny.current_period_end as number) ?? null;
+            status = getStringProp(sub, "status");
+            currentPeriodEndUnix = getNumberProp(sub, "current_period_end");
           }
 
           await upsertPendingMembership({
@@ -186,22 +215,20 @@ export async function POST(req: NextRequest) {
           const cust = await stripe.customers.retrieve(sub.customer);
           if (!("deleted" in cust)) email = (cust.email as string) ?? null;
         } else {
-          email = (sub.customer as any)?.email ?? null;
+          email = getStringProp(sub.customer, "email");
         }
 
         if (!email) break;
-
-        const subAny = sub as any;
 
         await upsertPendingMembership({
           email: email.toLowerCase(),
           stripeCustomerId:
             typeof sub.customer === "string"
               ? sub.customer
-              : (sub.customer as any)?.id ?? null,
+              : getStringProp(sub.customer, "id"),
           stripeSubscriptionId: sub.id,
-          status: (subAny.status as string) ?? null,
-          currentPeriodEndUnix: (subAny.current_period_end as number) ?? null,
+          status: getStringProp(sub, "status"),
+          currentPeriodEndUnix: getNumberProp(sub, "current_period_end"),
           stripePriceId: PRICE_MEMBERSHIP ?? null,
         });
 
@@ -214,7 +241,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ received: true }, { status: 200 });
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("🔥 Webhook handler error:", err);
     return NextResponse.json({ error: "Webhook handler error" }, { status: 500 });
   }

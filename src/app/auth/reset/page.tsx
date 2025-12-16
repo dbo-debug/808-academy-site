@@ -28,6 +28,20 @@ export default function ResetPasswordPage() {
       return;
     }
 
+    const getErrorMessage = (error: unknown) => {
+      if (error instanceof Error) return error.message;
+      if (typeof error === "string") return error;
+      if (
+        error &&
+        typeof error === "object" &&
+        "message" in error &&
+        typeof (error as { message: unknown }).message === "string"
+      ) {
+        return (error as { message: string }).message;
+      }
+      return "Could not update password.";
+    };
+
     try {
       setLoading(true);
       const { error } = await supabase.auth.updateUser({ password: pwd });
@@ -36,8 +50,8 @@ export default function ResetPasswordPage() {
         setMsg("Password updated. Redirecting…");
         router.push("/students");
       }
-    } catch (e: any) {
-      setMsg(e?.message || "Could not update password.");
+    } catch (e: unknown) {
+      setMsg(getErrorMessage(e));
     } finally {
       setLoading(false);
     }

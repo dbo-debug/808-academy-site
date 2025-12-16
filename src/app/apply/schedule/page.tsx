@@ -161,11 +161,7 @@ function Card({
         </div>
       </div>
 
-      {selected && (
-        <div className="mt-3 text-xs text-teal-200">
-          Selected
-        </div>
-      )}
+      {selected && <div className="mt-3 text-xs text-teal-200">Selected</div>}
     </button>
   );
 }
@@ -178,6 +174,10 @@ export default function SchedulePage() {
   // cohort offering selector (demo vs paid)
   const [cohortMode, setCohortMode] = React.useState<"demo" | "paid">("demo");
 
+  // NEW: lock paid if URL says cohort=paid, allow free only if cohort=free
+  const [lockPaid, setLockPaid] = React.useState(false);
+  const [allowFree, setAllowFree] = React.useState(false);
+
   // tutoring package selector (defaults to block4 per your preference)
   const [tutoringPackage, setTutoringPackage] =
     React.useState<TutoringPackage>("block4");
@@ -188,7 +188,11 @@ export default function SchedulePage() {
     const raw = (getParam("program") || "Course") as string;
 
     const normalized: Program =
-      raw === "Membership" ? "Membership" : raw === "Tutoring" ? "Tutoring" : "Course";
+      raw === "Membership"
+        ? "Membership"
+        : raw === "Tutoring"
+        ? "Tutoring"
+        : "Course";
 
     setProgram(normalized);
 
@@ -202,6 +206,25 @@ export default function SchedulePage() {
     const tp = getParam("tutoringPackage");
     if (tp === "single" || tp === "block4") {
       setTutoringPackage(tp);
+    }
+
+    // cohort gate:
+    // - cohort=paid => force paid + lock UI
+    // - cohort=free => allow free option
+    const cohort = getParam("cohort"); // "paid" | "free" | null
+
+    if (cohort === "paid") {
+      setCohortMode("paid");
+      setLockPaid(true);
+      setAllowFree(false);
+    } else if (cohort === "free") {
+      setCohortMode("demo");
+      setAllowFree(true);
+      setLockPaid(false);
+    } else {
+      // default: keep existing behavior (free visible, default demo)
+      setAllowFree(true);
+      setLockPaid(false);
     }
   }, []);
 
@@ -315,7 +338,8 @@ export default function SchedulePage() {
             </div>
 
             <p className="text-xs text-white/50 mt-4">
-              Cohort classes run Mon & Wed at 12pm or 6pm (you choose one). Office hours are Fridays 10am–6pm.
+              Cohort classes run Mon & Wed at 12pm or 6pm (you choose one). Office
+              hours are Fridays 10am–6pm.
             </p>
           </div>
 
@@ -348,14 +372,26 @@ export default function SchedulePage() {
                     <label className="block text-sm text-white/70 mb-2">
                       Cohort offering
                     </label>
-                    <select
-                      value={cohortMode}
-                      onChange={(e) => setCohortMode(e.target.value as "demo" | "paid")}
-                      className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
-                    >
-                      <option value="demo">Free cohort (demo)</option>
-                      <option value="paid">Paid cohort</option>
-                    </select>
+
+                    {lockPaid ? (
+                      <div className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-white">
+                        Paid cohort
+                      </div>
+                    ) : (
+                      <select
+                        value={cohortMode}
+                        onChange={(e) =>
+                          setCohortMode(e.target.value as "demo" | "paid")
+                        }
+                        className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
+                      >
+                        {allowFree && (
+                          <option value="demo">Free cohort (demo)</option>
+                        )}
+                        <option value="paid">Paid cohort</option>
+                      </select>
+                    )}
+
                     <p className="mt-2 text-xs text-white/50">
                       Schedule onboarding first, then checkout.
                     </p>
@@ -368,12 +404,12 @@ export default function SchedulePage() {
                   <div className="flex justify-between gap-3">
                     <span className="text-white/50">Selected</span>
                     <span className="text-white">
-                      {tutoringPackage === "block4" ? "4-session block" : "Single session"}
+                      {tutoringPackage === "block4"
+                        ? "4-session block"
+                        : "Single session"}
                     </span>
                   </div>
-                  <div className="mt-2">
-                    {tutoring.fineprint}
-                  </div>
+                  <div className="mt-2">{tutoring.fineprint}</div>
                 </div>
               )}
             </div>
@@ -385,6 +421,7 @@ export default function SchedulePage() {
                 className="w-full rounded-full bg-teal-400 px-5 py-3 font-semibold text-black hover:bg-teal-300 transition disabled:opacity-60"
                 onClick={async () => {
                   setLoading(true);
+
                   const getErrorMessage = (error: unknown) => {
                     if (error instanceof Error) return error.message;
                     if (
@@ -397,6 +434,7 @@ export default function SchedulePage() {
                     }
                     return "Could not start checkout.";
                   };
+
                   try {
                     if (isMembership) {
                       await startCheckout({

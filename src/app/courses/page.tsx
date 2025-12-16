@@ -17,7 +17,7 @@ export default function CoursesIndexPage() {
           <img
             src="/808logo.png"
             alt="The 808 Academy Logo"
-            className="h-20 w-auto drop-shadow-[0_0_20px_rgba(0,255,255,0.4)]"
+            className="h-20 w-auto]"
           />
         </div>
 

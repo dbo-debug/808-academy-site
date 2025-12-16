@@ -1,101 +1,53 @@
+// src/app/courses/mixing/page.tsx
 import Link from "next/link";
 
 export const metadata = {
-  title: "Mixing Course | 808 Academy",
+  title: "Mixing Course — Coming Soon | 808 Academy",
   description:
-    "Master balance, EQ, compression, and automation. 808 Academy’s Mixing course teaches modern techniques used by professional engineers to create powerful, clear mixes that translate everywhere.",
-  openGraph: {
-    title: "Mixing Course | 808 Academy",
-    description:
-      "Learn the art and science of mixing — balance, EQ, compression, and effects — in a live, instructor-led environment.",
-    images: ["/Mixing.png"],
-  },
+    "The new 808 Academy Mixing course is coming soon. Get notified for the next live cohort and member materials.",
 };
 
-export default function MixingPage() {
+export default function MixingComingSoonPage() {
   return (
-    <main className="text-gray-100">
-      <section
-        className="relative min-h-[80vh] flex items-center"
-        style={{
-          backgroundImage: "url('/Mixing.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/70" />
-        <div className="relative z-10 mx-auto max-w-5xl px-6">
-          <h1 className="text-5xl font-bold mb-4">Mixing</h1>
-          <p className="text-lg text-gray-300 max-w-2xl">
-            Learn to craft clear, balanced, and emotionally powerful mixes that
-            translate on every system. This 4-week live course focuses on
-            workflow, depth, and modern tools like Auto-Tune and Melodyne for
-            natural and creative vocal processing.
-          </p>
-          <div className="mt-8 flex gap-4">
-            <Link
-              href="/apply?course=mixing"
-              className="rounded-xl bg-[#00FFF7] px-6 py-3 font-semibold text-black hover:opacity-90"
-            >
-              Apply Now
-            </Link>
-            <Link
-              href="/contact"
-              className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10"
-            >
-              Schedule Call
-            </Link>
+    <main className="mx-auto max-w-5xl px-6 py-16 text-white">
+      <div className="rounded-3xl border border-white/10 bg-white/[0.05] p-10 backdrop-blur">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#00FFF7]">Mixing</p>
+        <h1 className="mt-3 text-4xl font-semibold">Mixing Course — Coming Soon</h1>
+        <p className="mt-3 max-w-3xl text-white/70">
+          We&apos;re updating the Mixing course with new stems, templates, and live breakdowns. You&apos;ll learn modern
+          vocal chains, low-end control, and translation that works everywhere. Join the list to get early seats.
+        </p>
+
+        <div className="mt-6 flex flex-wrap gap-3 text-sm">
+          <Link
+            href="/membership"
+            className="rounded-lg bg-[#00FFF7] px-5 py-2 font-semibold text-black transition hover:bg-white"
+          >
+            Join membership for early access
+          </Link>
+          <Link
+            href="/apply?interest=mixing"
+            className="rounded-lg border border-white/20 px-5 py-2 text-white/80 transition hover:border-[#00FFF7] hover:text-[#00FFF7]"
+          >
+            Get notified
+          </Link>
+        </div>
+
+        <div className="mt-10 grid gap-4 rounded-2xl border border-white/10 bg-black/40 p-6 text-sm text-white/70">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#00FFF7]" />
+            Live cohort schedule releases soon with replays for every class.
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-white/60" />
+            Updated Ableton/Logic mix templates and vocal chains included.
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-white/60" />
+            Office hours and feedback sessions for member mixes.
           </div>
         </div>
-      </section>
-
-      <section className="py-12 border-b border-white/10">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold mb-3">January 2025 Schedule</h2>
-          <p className="text-gray-300">
-            Mon & Wed · 11:30 AM–1 PM PT · Office Hours Fri 2–6 PM
-          </p>
-        </div>
-      </section>
-
-      <section className="py-12">
-        <div className="max-w-4xl mx-auto px-6 space-y-10">
-          <h2 className="text-3xl font-semibold">Curriculum Overview</h2>
-          {[
-            ["1", "Intro to Mixing", "Gain staging, organization, and the fundamentals of balance, EQ, and levels."],
-            ["2", "Frequency Management", "EQ techniques to separate instruments and eliminate masking."],
-            ["3", "Compression & Dynamics", "Controlling dynamics, parallel compression, and bus routing."],
-            ["4", "Space & Depth", "Using reverb, delay, and panning to create 3D soundscapes."],
-            ["5", "Vocal Mixing", "Advanced vocal chains, tuning with Auto-Tune and Melodyne — natural vs. effect."],
-            ["6", "Creative FX", "Automation, modulation, saturation, and effects for vibe and energy."],
-            ["7", "Mix Translation", "Reference tracks, monitoring environments, and listening across systems."],
-            ["8", "Final Mix", "Print your final mix, export stems, and prepare for mastering."],
-          ].map(([n, t, d]) => (
-            <Lesson key={n} n={n} title={t} desc={d} />
-          ))}
-        </div>
-      </section>
-
-      <section className="py-12 border-t border-white/10">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold mb-4">You’ll Leave This Class With</h2>
-          <ul className="space-y-2 text-gray-300 list-disc pl-5">
-            <li>A complete, radio-ready mix of your own production</li>
-            <li>Full understanding of EQ, compression, and vocal tuning</li>
-            <li>Templates and workflows used by professional engineers</li>
-            <li>Confidence mixing in any environment</li>
-          </ul>
-        </div>
-      </section>
+      </div>
     </main>
-  );
-}
-
-function Lesson({ n, title, desc }: any) {
-  return (
-    <div>
-      <h3 className="text-xl font-semibold mb-1">{`MI${n} — ${title}`}</h3>
-      <p className="text-gray-300">{desc}</p>
-    </div>
   );
 }

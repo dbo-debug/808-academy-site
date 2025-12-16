@@ -22,6 +22,20 @@ export default function SignInPage() {
       return;
     }
 
+    const getErrorMessage = (error: unknown) => {
+      if (error instanceof Error) return error.message;
+      if (typeof error === "string") return error;
+      if (
+        error &&
+        typeof error === "object" &&
+        "message" in error &&
+        typeof (error as { message: unknown }).message === "string"
+      ) {
+        return (error as { message: string }).message;
+      }
+      return "Sign-in failed.";
+    };
+
     try {
       setLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -40,8 +54,8 @@ export default function SignInPage() {
       }
 
       setMsg("Unable to sign in. Please try again.");
-    } catch (e: any) {
-      setMsg(e?.message || "Sign-in failed.");
+    } catch (e: unknown) {
+      setMsg(getErrorMessage(e));
     } finally {
       setLoading(false);
     }
