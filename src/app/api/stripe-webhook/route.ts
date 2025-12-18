@@ -72,10 +72,9 @@ async function postToSheets(type: string, payload: Record<string, unknown>) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type, payload }),
-      redirect: "manual", // ⬅️ THIS IS THE FIX
+      redirect: "manual", // Apps Script often responds 302
     });
 
-    // Apps Script often returns 302 even when successful
     if (!(res.status === 200 || res.status === 302)) {
       const txt = await res.text().catch(() => "");
       console.error("❌ Sheets webhook non-200/302:", res.status, txt);
@@ -144,14 +143,10 @@ function buildCommonPayload(session: Stripe.Checkout.Session) {
   const email = normalizeEmail(session);
 
   const name =
-    session.customer_details?.name ||
-    getCustomerName(session.customer) ||
-    null;
+    session.customer_details?.name || getCustomerName(session.customer) || null;
 
   const phone =
-    session.customer_details?.phone ||
-    getCustomerPhone(session.customer) ||
-    null;
+    session.customer_details?.phone || getCustomerPhone(session.customer) || null;
 
   const source = (metadata.source || metadata.product || "").toString();
 
@@ -174,8 +169,9 @@ function buildCommonPayload(session: Stripe.Checkout.Session) {
     source,
     metadata,
 
-    // Cohort/course hints
-    courseSlug: (metadata.course_slug || metadata.course || "music-production").toString(),
+    courseSlug: (metadata.course_slug ||
+      metadata.course ||
+      "music-production").toString(),
     cohortType: (metadata.cohort_type || metadata.cohort || "").toString(),
 
     lineItems: summarizeLineItems(session),
@@ -215,10 +211,16 @@ async function upsertPendingMembership(args: {
   else console.log("✅ pending_memberships upsert:", { email, status });
 }
 
+/**
+ * ✅ Generate password-set invite link
+ * Redirects to your existing /auth/reset-password page
+ *
+ * Supabase Dashboard must whitelist:
+ *  - https://www.the808academy.com/auth/reset-password
+ * (and your preview domains if any)
+ */
 async function buildInviteActivateLink(email: string) {
-  // Must be whitelisted in Supabase Redirect URLs:
-  // https://www.the808academy.com/auth/confirm
-  const redirectTo = `${SITE_URL}/auth/confirm?next=/auth/set-password`;
+  const redirectTo = `${SITE_URL}/auth/reset-password`;
 
   try {
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({
@@ -232,12 +234,13 @@ async function buildInviteActivateLink(email: string) {
       return null;
     }
 
+    // Supabase types vary by version; handle both shapes safely
     const actionLink =
       (data as any)?.properties?.action_link ||
       (data as any)?.action_link ||
       null;
 
-    return actionLink;
+    return typeof actionLink === "string" ? actionLink : null;
   } catch (err) {
     console.error("❌ generateLink(invite) threw:", err);
     return null;
@@ -270,11 +273,6 @@ export async function POST(req: NextRequest) {
 
   try {
     switch (event.type) {
-      /**
-       * ✅ Success purchase
-       * - send to Sheets: active_user
-       * - continue existing Supabase insert/upsert behavior
-       */
       case "checkout.session.completed": {
         const sessionLite = event.data.object as Stripe.Checkout.Session;
 
@@ -293,13 +291,18 @@ export async function POST(req: NextRequest) {
 
         const lineItems = session.line_items?.data ?? [];
         const hasMembershipPrice =
-          !!PRICE_MEMBERSHIP && lineItems.some((li) => li.price?.id === PRICE_MEMBERSHIP);
+          !!PRICE_MEMBERSHIP &&
+          lineItems.some((li) => li.price?.id === PRICE_MEMBERSHIP);
 
         const isMembership =
-          source === "membership" || session.mode === "subscription" || hasMembershipPrice;
+          source === "membership" ||
+          session.mode === "subscription" ||
+          hasMembershipPrice;
+
+        // ✅ Create “set password” activation link (invite)
         const activateLink = await buildInviteActivateLink(email);
 
-        // --- MEMBERSHIP path (existing behavior) ---
+        // --- MEMBERSHIP path ---
         if (isMembership) {
           const subscriptionId =
             typeof session.subscription === "string"
@@ -316,7 +319,10 @@ export async function POST(req: NextRequest) {
 
           if (session.subscription && typeof session.subscription !== "string") {
             status = getStringProp(session.subscription, "status");
-            currentPeriodEndUnix = getNumberProp(session.subscription, "current_period_end");
+            currentPeriodEndUnix = getNumberProp(
+              session.subscription,
+              "current_period_end"
+            );
           } else if (subscriptionId) {
             const sub = await stripe.subscriptions.retrieve(subscriptionId);
             status = getStringProp(sub, "status");
@@ -332,20 +338,25 @@ export async function POST(req: NextRequest) {
             stripePriceId: PRICE_MEMBERSHIP ?? null,
           });
 
-          // ✅ SHEETS: active_user
           await postToSheets("active_user", {
             ...buildCommonPayload(session),
             enrollmentType: "Membership",
             activateLink,
-            links: { lounge: LOUNGE_LINK, discord: DISCORD_INVITE, submit: SUBMISSION_LINK },
+            links: {
+              lounge: LOUNGE_LINK,
+              discord: DISCORD_INVITE,
+              submit: SUBMISSION_LINK,
+            },
           });
 
           break;
         }
 
-        // --- COHORT path (existing behavior) ---
+        // --- COHORT path ---
         const courseSlug = (metadata.course_slug || "music-production").toString();
-        const cohortType = (metadata.cohort_type || metadata.product || "cohort").toString();
+        const cohortType = (metadata.cohort_type ||
+          metadata.product ||
+          "cohort").toString();
 
         const { error } = await supabaseAdmin.from("pending_enrollments").insert({
           email: email.toLowerCase(),
@@ -357,21 +368,20 @@ export async function POST(req: NextRequest) {
         if (error) console.error("❌ pending_enrollments insert error:", error);
         else console.log("✅ Pending enrollment inserted:", { email, courseSlug, cohortType });
 
-        // ✅ SHEETS: active_user
         await postToSheets("active_user", {
           ...buildCommonPayload(session),
           enrollmentType: "Course",
           activateLink,
-          links: { lounge: LOUNGE_LINK, discord: DISCORD_INVITE, submit: SUBMISSION_LINK },
+          links: {
+            lounge: LOUNGE_LINK,
+            discord: DISCORD_INVITE,
+            submit: SUBMISSION_LINK,
+          },
         });
 
         break;
       }
 
-      /**
-       * ✅ Abandoned carts (true “checkout started but not completed”)
-       * Fires when the checkout session expires (Stripe sets an expiration time).
-       */
       case "checkout.session.expired":
       case "checkout.session.async_payment_failed": {
         const sessionLite = event.data.object as Stripe.Checkout.Session;
@@ -388,9 +398,6 @@ export async function POST(req: NextRequest) {
         break;
       }
 
-      /**
-       * ✅ Keep your membership table synced when Stripe updates subscription state
-       */
       case "customer.subscription.created":
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
@@ -401,7 +408,6 @@ export async function POST(req: NextRequest) {
         if (typeof sub.customer === "string") {
           const cust = await stripe.customers.retrieve(sub.customer);
           if (!("deleted" in cust)) {
-            // Stripe types here can still be strict depending on version
             email = (cust as Stripe.Customer).email ?? null;
           }
         } else {
@@ -434,7 +440,6 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     console.error("🔥 Webhook handler error:", err);
 
-    // Optional: log webhook failures into Sheets too
     await postToSheets("admin_alert", {
       where: "stripe-webhook",
       error: getErrorMessage(err),
