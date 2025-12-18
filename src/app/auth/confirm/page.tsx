@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-export default function AuthConfirmPage() {
+function ConfirmInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [msg, setMsg] = useState("Confirming your access…");
@@ -12,7 +12,7 @@ export default function AuthConfirmPage() {
   useEffect(() => {
     const run = async () => {
       const token_hash = searchParams.get("token_hash");
-      const type = searchParams.get("type"); // should be "invite"
+      const type = searchParams.get("type"); // "invite"
       const next = searchParams.get("next") || "/students";
 
       if (!token_hash || !type) {
@@ -49,5 +49,25 @@ export default function AuthConfirmPage() {
         <p className="text-sm text-white/70">{msg}</p>
       </div>
     </main>
+  );
+}
+
+export default function AuthConfirmPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-black text-white">
+          <div className="mx-auto flex max-w-md flex-col gap-4 px-4 py-16">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/50">
+              808 Academy
+            </p>
+            <h1 className="text-2xl font-semibold">Activating your account</h1>
+            <p className="text-sm text-white/70">Loading…</p>
+          </div>
+        </main>
+      }
+    >
+      <ConfirmInner />
+    </Suspense>
   );
 }
