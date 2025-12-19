@@ -66,13 +66,7 @@ const BookLayout: React.FC<BookLayoutProps> = ({
                 return (
                   <li key={chapter.id}>
                     <Link
-                      href={{
-                        pathname: "/ebook/music-production",
-                        query:
-                          chapter.id === "sound-hearing"
-                            ? undefined
-                            : { chapter: chapter.id },
-                      }}
+                      href={`/ebook/music-production/chapters/${chapter.id}`}
                       scroll
                       className={[
                         "flex flex-col rounded-xl px-3 py-2 transition",
@@ -146,13 +140,7 @@ const BookLayout: React.FC<BookLayoutProps> = ({
                 return (
                   <Link
                     key={chapter.id}
-                    href={{
-                      pathname: "/ebook/music-production",
-                      query:
-                        chapter.id === "sound-hearing"
-                          ? undefined
-                          : { chapter: chapter.id },
-                    }}
+                    href={`/ebook/music-production/chapters/${chapter.id}`}
                     scroll
                     className={[
                       "whitespace-nowrap rounded-full border px-3 py-1.5 text-xs transition",

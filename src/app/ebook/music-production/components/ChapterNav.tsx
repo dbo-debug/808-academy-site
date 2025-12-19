@@ -17,12 +17,7 @@ const ChapterNav: React.FC<ChapterNavProps> = ({
     index < chapters.length - 1 ? chapters[index + 1] : undefined;
 
   const makeHref = (chapter: ChapterMeta) =>
-    chapter.id === "sound-hearing"
-      ? "/ebook/music-production"
-      : {
-          pathname: "/ebook/music-production",
-          query: { chapter: chapter.id },
-        };
+    `/ebook/music-production/chapters/${chapter.id}`;
 
   return (
     <nav
