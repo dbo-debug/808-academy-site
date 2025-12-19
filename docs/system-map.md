@@ -16,6 +16,8 @@ flowchart LR
   Sheets --> Gmail[(Gmail welcome emails - planned via Apps Script)]
   Sheets --> Admin[(Admin alerts rows)]
   Webhook --> Discord[(Discord onboarding - planned)]
+  N --> AuthFlow[/auth/confirm → /auth/set-password\nSupabase verifyOtp + updateUser]
+  AuthFlow --> Lounge[/students (Student Lounge)\nSupabase client auth]
 ```
 
 ## Apply flow (Course / Tutoring / Membership)
@@ -68,11 +70,11 @@ flowchart TD
 ```
 
 ## Quick reference
-- **Routes**: `/`, `/courses`, `/courses/music-production`, `/apply`, `/apply/schedule`
+- **Routes**: `/`, `/courses`, `/courses/music-production`, `/apply`, `/apply/schedule`, `/auth/confirm`, `/auth/set-password`, `/students`
 - **APIs**: `/api/apply`, `/api/checkout`, `/api/stripe-webhook`
 - **Data stores**: Supabase tables `pending_enrollments`, `pending_memberships`; Google Sheets via `GOOGLE_SHEETS_WEBHOOK_URL` Apps Script Web App; Stripe Checkout sessions/subscriptions (source of truth for payments)
-- **Env vars (names only)**: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_MEMBERSHIP`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `GOOGLE_SHEETS_WEBHOOK_URL`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `RESEND_API_KEY`, `ENROLLMENT_FROM`, `ENROLLMENT_INBOX`, `ZAPIER_ENROLL_WEBHOOK_URL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
-- **Other services**: Resend (admin emails from apply form), Zapier (optional application payload), Calendly embeds on `/apply/schedule`, Discord/Gmail onboarding (planned via Apps Script)
+- **Env vars (names only)**: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_MEMBERSHIP`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `GOOGLE_SHEETS_WEBHOOK_URL`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `RESEND_API_KEY`, `ENROLLMENT_FROM`, `ENROLLMENT_INBOX`, `ZAPIER_ENROLL_WEBHOOK_URL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
+- **Other services**: Resend (admin emails from apply form), Zapier (optional application payload), Calendly embeds on `/apply/schedule`, Supabase auth (invite/verifyOtp + updateUser for Student Lounge), Discord/Gmail onboarding (planned via Apps Script)
 
 ## Debug checklist
 - Google Apps Script responds 302→405: ensure Web App is deployed as “Anyone”/latest version; allow redirects or set `redirect: "manual"` (already in webhook); test direct POST to `GOOGLE_SHEETS_WEBHOOK_URL`.

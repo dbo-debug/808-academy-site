@@ -16,25 +16,19 @@ export default function ForgotPasswordPage() {
     setStatus("sending");
     setMessage("");
 
-    const getErrorMessage = (error: unknown) => {
-      if (error instanceof Error) return error.message;
-      if (typeof error === "string") return error;
-      if (
-        error &&
-        typeof error === "object" &&
-        "message" in error &&
-        typeof (error as { message: unknown }).message === "string"
-      ) {
-        return (error as { message: string }).message;
-      }
-      return "Something went wrong.";
-    };
-
     try {
+      // IMPORTANT:
+      // Use the canonical public site url. This must match what Supabase knows.
+      // You already have NEXT_PUBLIC_SITE_URL set to https://the808academy.com
       const baseUrl =
-        process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-        "http://localhost:3000";
+        (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(
+          /\/$/,
+          ""
+        );
 
+      // Send Supabase reset email and force it to come back to *your* reset page.
+      // Supabase will append the auth params; your reset page must be able to
+      // establish a recovery session from them.
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${baseUrl}/auth/reset-password`,
       });
@@ -49,7 +43,9 @@ export default function ForgotPasswordPage() {
       setMessage("Check your email for a password reset link.");
     } catch (err: unknown) {
       setStatus("error");
-      setMessage(getErrorMessage(err));
+      setMessage(
+        err instanceof Error ? err.message : "Something went wrong sending the reset email."
+      );
     }
   };
 
@@ -80,6 +76,7 @@ export default function ForgotPasswordPage() {
             onChange={(e) => setEmail(e.target.value)}
             className="mt-2 w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-[#00FFF7]"
             placeholder="you@example.com"
+            autoComplete="email"
           />
 
           <button
@@ -90,19 +87,23 @@ export default function ForgotPasswordPage() {
             {status === "sending" ? "Sending…" : "Send reset link"}
           </button>
 
-          {message && (
-            <p
-              className={`mt-3 text-xs ${
-                status === "error" ? "text-red-300" : "text-white/70"
-              }`}
-            >
-              {message}
+          {/* Privacy-safe message (don’t confirm if an email exists) */}
+          {status === "sent" && (
+            <p className="mt-3 text-xs text-white/70">
+              If that email exists in our system, you’ll receive a reset link shortly.
             </p>
+          )}
+
+          {status === "error" && message && (
+            <p className="mt-3 text-xs text-red-300">{message}</p>
           )}
         </form>
 
         <div className="text-sm text-white/70">
-          <Link className="underline-offset-4 hover:underline" href="/auth/signin">
+          <Link
+            className="underline-offset-4 hover:underline"
+            href="/auth/signin"
+          >
             Back to sign in
           </Link>
         </div>

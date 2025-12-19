@@ -346,7 +346,7 @@ function ProfileCard({
           </Link>
 
           <Link
-            href="/auth/forgot"
+            href="/auth/forgot-password"
             className="rounded-lg border border-white/20 px-4 py-2 text-center text-xs hover:border-[#00FFF7] hover:text-[#00FFF7]"
           >
             Reset password
