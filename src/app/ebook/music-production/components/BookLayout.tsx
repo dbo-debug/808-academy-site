@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import Link from "next/link";
-import type { ChapterMeta } from "../page";
+import type { ChapterMeta } from "../EbookReader";
 
 type BookLayoutProps = {
   children: ReactNode;

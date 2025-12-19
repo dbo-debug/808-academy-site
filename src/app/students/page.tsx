@@ -220,7 +220,7 @@ function HeaderBar({ displayName = "Student" }: { displayName?: string }) {
           <Link href="/students" className="hover:text-cyan-300">
             Dashboard
           </Link>
-          <Link href="/students/music-production" className="hover:text-cyan-300">
+          <Link href="/ebook/music-production" className="hover:text-cyan-300">
             Course
           </Link>
           <Link href="/students/contests" className="hover:text-cyan-300">
