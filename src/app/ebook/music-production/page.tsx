@@ -34,7 +34,7 @@ export type ChapterMeta = {
   isPreLesson?: boolean;
 };
 
-const CHAPTERS: ChapterMeta[] = [
+export const CHAPTERS: ChapterMeta[] = [
   {
     id: "sound-hearing",
     title: "Sound & Hearing Fundamentals",
@@ -114,7 +114,7 @@ type PageProps = {
 };
 
 // Helper to safely narrow to our ChapterId union
-function isChapterId(value: unknown): value is ChapterId {
+export function isChapterId(value: unknown): value is ChapterId {
   if (typeof value !== "string") return false;
   return CHAPTERS.some((c) => c.id === value);
 }
@@ -124,6 +124,9 @@ export default function MusicProductionEbookPage({ searchParams }: PageProps) {
 
   const chapterParam =
     typeof rawChapterParam === "string" ? rawChapterParam : undefined;
+
+  const invalidChapterParam =
+    chapterParam && !isChapterId(chapterParam) ? chapterParam : null;
 
   const currentChapterId: ChapterId = isChapterId(chapterParam)
     ? chapterParam
@@ -157,30 +160,39 @@ export default function MusicProductionEbookPage({ searchParams }: PageProps) {
       case "final-unit":
         return <FinalUnitChapter />;
       default:
-        return (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-semibold tracking-tight text-slate-50">
-              {currentChapter.title}
-            </h2>
-            <p className="text-slate-300">
-              This chapter is coming soon. Check back later — for now, start
-              with{" "}
-              <a
-                href="/ebook/music-production"
-                className="font-medium text-emerald-400 underline-offset-4 hover:underline"
-              >
-                Sound &amp; Hearing Fundamentals
-              </a>
-              .
-            </p>
-          </div>
-        );
+        return null;
     }
   };
 
   return (
     <BookLayout chapters={CHAPTERS} currentChapterId={currentChapterId}>
-      <article className="space-y-10">
+      <article className="space-y-10 break-words" id="top">
+        {invalidChapterParam && (
+          <div className="rounded-2xl border border-amber-500/50 bg-amber-500/10 p-4 text-sm text-amber-100">
+            <p className="font-semibold">
+              Chapter “{invalidChapterParam}” was not found.
+            </p>
+            <p className="mt-1">
+              Use the chapter list to jump to an available chapter or return to
+              the lounge.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <a
+                href="/ebook/music-production"
+                className="inline-flex items-center rounded-full border border-amber-400/60 px-3 py-1 text-xs font-semibold text-amber-50 transition hover:border-emerald-400 hover:text-emerald-100"
+              >
+                View all chapters
+              </a>
+              <a
+                href="/students"
+                className="inline-flex items-center rounded-full border border-slate-700 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:border-emerald-400 hover:text-emerald-100"
+              >
+                Back to Lounge
+              </a>
+            </div>
+          </div>
+        )}
+
         <header className="space-y-2">
           {currentChapter.isPreLesson && (
             <p className="inline-flex items-center rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">
@@ -202,7 +214,7 @@ export default function MusicProductionEbookPage({ searchParams }: PageProps) {
           )}
         </header>
 
-        <div className="prose prose-invert prose-slate max-w-none prose-headings:scroll-mt-24 prose-a:text-emerald-400 prose-a:underline-offset-4 hover:prose-a:underline">
+        <div className="prose prose-invert prose-slate max-w-none prose-headings:scroll-mt-24 prose-headings:break-words prose-a:text-emerald-400 prose-a:underline-offset-4 prose-img:mx-auto prose-img:rounded-2xl prose-video:rounded-2xl hover:prose-a:underline">
           {renderChapter()}
         </div>
 

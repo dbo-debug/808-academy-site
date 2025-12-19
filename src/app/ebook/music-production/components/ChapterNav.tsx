@@ -27,8 +27,23 @@ const ChapterNav: React.FC<ChapterNavProps> = ({
   return (
     <nav
       aria-label="Chapter navigation"
-      className="mt-8 flex flex-col gap-4 border-t border-slate-800/70 pt-6 sm:flex-row sm:items-center sm:justify-between"
+      className="mt-8 flex flex-col gap-4 border-t border-slate-800/70 pt-6"
     >
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <Link
+          href="/students"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700/80 bg-slate-950/70 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-emerald-500/60 hover:text-emerald-100 sm:w-auto"
+        >
+          ← Back to Lounge
+        </Link>
+        <Link
+          href="/ebook/music-production"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/50 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-100 transition hover:border-emerald-400 hover:text-emerald-50 sm:w-auto"
+        >
+          All Chapters
+        </Link>
+      </div>
+
       {/* Previous / Next buttons */}
       <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:gap-4">
         {/* Previous */}
@@ -90,13 +105,19 @@ const ChapterNav: React.FC<ChapterNavProps> = ({
       </div>
 
       {/* Back to top (anchor only, no JS) */}
-      <div className="flex items-center justify-between gap-3 text-xs text-slate-400">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
         <a
           href="#top"
           className="inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-950/70 px-3 py-1 font-medium text-slate-300 transition hover:border-emerald-500/60 hover:bg-slate-900 hover:text-emerald-200"
         >
           ↑ Back to top
         </a>
+        <Link
+          href="/ebook/music-production"
+          className="inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-950/70 px-3 py-1 font-medium text-slate-300 transition hover:border-emerald-500/60 hover:bg-slate-900 hover:text-emerald-200"
+        >
+          Chapter list
+        </Link>
       </div>
     </nav>
   );

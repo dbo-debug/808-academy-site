@@ -14,8 +14,27 @@ const BookLayout: React.FC<BookLayoutProps> = ({
   currentChapterId,
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-slate-950 to-black text-slate-100">
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-slate-950 to-black text-slate-100">
       <main className="mx-auto flex max-w-7xl scroll-smooth flex-col gap-0 px-4 pb-16 pt-8 sm:px-6 lg:flex-row lg:gap-10 lg:px-8 lg:pt-12">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/70 px-4 py-3 shadow-sm lg:hidden">
+          <div className="text-sm font-semibold text-slate-50">
+            Music Production — Ebook
+          </div>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <Link
+              href="/students"
+              className="inline-flex items-center rounded-full border border-slate-700/70 px-3 py-1 font-semibold text-slate-200 transition hover:border-emerald-500/60 hover:text-emerald-200"
+            >
+              ← Back to Lounge
+            </Link>
+            <Link
+              href="/ebook/music-production"
+              className="inline-flex items-center rounded-full border border-emerald-500/60 px-3 py-1 font-semibold text-emerald-200 transition hover:border-emerald-400 hover:text-emerald-50"
+            >
+              All Chapters
+            </Link>
+          </div>
+        </div>
         {/* Left TOC (desktop) */}
         <aside className="mb-8 hidden w-full shrink-0 lg:sticky lg:top-8 lg:block lg:max-w-xs">
           <nav className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-4 shadow-[0_0_30px_rgba(0,0,0,0.8)] backdrop-blur">
@@ -28,9 +47,17 @@ const BookLayout: React.FC<BookLayoutProps> = ({
                   Music Production
                 </h2>
               </div>
-              <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-300">
-                Ebook
-              </span>
+              <div className="flex flex-col items-end gap-2">
+                <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-300">
+                  Ebook
+                </span>
+                <Link
+                  href="/students"
+                  className="text-[11px] font-semibold text-slate-300 underline-offset-4 hover:text-emerald-200 hover:underline"
+                >
+                  ← Back to Lounge
+                </Link>
+              </div>
             </div>
 
             <ul className="space-y-1 text-sm">
@@ -77,6 +104,29 @@ const BookLayout: React.FC<BookLayoutProps> = ({
         </aside>
 
         <div className="flex-1">
+          <div className="mb-4 hidden items-center justify-between gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/70 px-4 py-3 lg:flex">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">
+                Music Production — Ebook
+              </p>
+              <p className="text-sm text-slate-200">Navigate chapters or jump back.</p>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Link
+                href="/students"
+                className="inline-flex items-center rounded-full border border-slate-700/80 px-3 py-1.5 font-semibold text-slate-200 transition hover:border-emerald-500/60 hover:text-emerald-200"
+              >
+                ← Back to Lounge
+              </Link>
+              <Link
+                href="/ebook/music-production"
+                className="inline-flex items-center rounded-full border border-emerald-500/60 bg-emerald-500/10 px-3 py-1.5 font-semibold text-emerald-200 transition hover:border-emerald-400 hover:text-emerald-50"
+              >
+                All Chapters
+              </Link>
+            </div>
+          </div>
+
           {/* Top TOC (mobile) */}
           <div className="mb-6 lg:hidden">
             <div className="mb-3 flex items-center justify-between gap-2">

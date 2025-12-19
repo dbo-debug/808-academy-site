@@ -743,23 +743,33 @@ export default function LowEndTheoryChapter() {
                       <p className="text-[11px] text-slate-300">
                         {card.description}
                       </p>
-                      <span className="mt-1 inline-flex items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
-                        {activeInstrument === card.id
-                          ? "Stop Sample"
-                          : "Play Sample"}
-                      </span>
-                    </button>
-                    <audio
-                      id={`low-end-audio-${card.id}`}
-                      src={card.sampleSrc}
-                      className="hidden"
-                    />
-                  </div>
-                ))}
-              </div>
+                    <span className="mt-1 inline-flex items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
+                      {activeInstrument === card.id
+                        ? "Stop Sample"
+                        : "Play Sample"}
+                    </span>
+                  </button>
+                  <audio
+                    id={`low-end-audio-${card.id}`}
+                    src={card.sampleSrc}
+                    className="sr-only"
+                    preload="none"
+                    controls
+                    onEnded={() => setActiveInstrument(null)}
+                  />
+                  <a
+                    href={card.sampleSrc}
+                    className="mt-2 text-[11px] font-semibold text-emerald-200 underline-offset-4 hover:underline"
+                    download
+                  >
+                    Download sample
+                  </a>
+                </div>
+              ))}
+            </div>
 
-              {/* Bottom row: 2 cards, centered */}
-              <div className="flex flex-wrap justify-center gap-4">
+            {/* Bottom row: 2 cards, centered */}
+            <div className="flex flex-wrap justify-center gap-4">
                 {instrumentCards.slice(3).map((card) => (
                   <div
                     key={card.id}
@@ -788,21 +798,31 @@ export default function LowEndTheoryChapter() {
                       <p className="text-[11px] text-slate-300">
                         {card.description}
                       </p>
-                      <span className="mt-1 inline-flex items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
-                        {activeInstrument === card.id
-                          ? "Stop Sample"
-                          : "Play Sample"}
-                      </span>
-                    </button>
-                    <audio
-                      id={`low-end-audio-${card.id}`}
-                      src={card.sampleSrc}
-                      className="hidden"
-                    />
-                  </div>
-                ))}
-              </div>
+                    <span className="mt-1 inline-flex items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
+                      {activeInstrument === card.id
+                        ? "Stop Sample"
+                        : "Play Sample"}
+                    </span>
+                  </button>
+                  <audio
+                    id={`low-end-audio-${card.id}`}
+                    src={card.sampleSrc}
+                    className="sr-only"
+                    preload="none"
+                    controls
+                    onEnded={() => setActiveInstrument(null)}
+                  />
+                  <a
+                    href={card.sampleSrc}
+                    className="mt-2 text-[11px] font-semibold text-emerald-200 underline-offset-4 hover:underline"
+                    download
+                  >
+                    Download sample
+                  </a>
+                </div>
+              ))}
             </div>
+          </div>
 
             <p className="text-[11px] text-slate-400">
               Layered low end combines a sub layer, a mid-bass layer, and a

@@ -965,8 +965,18 @@ export default function HarmonyChordsChapter() {
       <audio
         id={`harmony-sound-audio-${card.id}`}
         src={card.sampleSrc}
-        className="hidden"
+        className="sr-only"
+        preload="none"
+        controls
+        onEnded={() => setActiveHarmonySound(null)}
       />
+      <a
+        href={card.sampleSrc}
+        className="mt-2 text-[11px] font-semibold text-emerald-200 underline-offset-4 hover:underline"
+        download
+      >
+        Download sample
+      </a>
     </div>
   ))}
 </div>
