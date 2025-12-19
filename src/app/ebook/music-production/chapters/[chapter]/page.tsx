@@ -1,3 +1,7 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const dynamicParams = true;
+
 import MusicProductionEbookPage, {
   ChapterId,
   isChapterId,
@@ -16,6 +20,7 @@ export default function ChapterSlugPage({ params, searchParams }: PageProps) {
     return (
       <MusicProductionEbookPage
         searchParams={{ ...searchParams, chapter: slug }}
+        params={{ chapter: slug }}
       />
     );
   }
@@ -25,6 +30,9 @@ export default function ChapterSlugPage({ params, searchParams }: PageProps) {
 
   // Re-use the main ebook page to avoid duplicate markup/styles
   return (
-    <MusicProductionEbookPage searchParams={mergedSearchParams} />
+    <MusicProductionEbookPage
+      searchParams={mergedSearchParams}
+      params={{ chapter: slug }}
+    />
   );
 }

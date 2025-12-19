@@ -119,8 +119,11 @@ export function isChapterId(value: unknown): value is ChapterId {
   return CHAPTERS.some((c) => c.id === value);
 }
 
-export default function MusicProductionEbookPage({ searchParams }: PageProps) {
-  const rawChapterParam = searchParams?.chapter;
+export default function MusicProductionEbookPage({ searchParams, params }: PageProps & { params?: { chapter?: string } }) {
+  const rawChapterParam =
+    typeof params?.chapter === "string"
+      ? params.chapter
+      : searchParams?.chapter;
 
   const chapterParam =
     typeof rawChapterParam === "string" ? rawChapterParam : undefined;
@@ -166,7 +169,11 @@ export default function MusicProductionEbookPage({ searchParams }: PageProps) {
 
   return (
     <BookLayout chapters={CHAPTERS} currentChapterId={currentChapterId}>
-      <article className="space-y-10 break-words" id="top">
+      <article
+        className="space-y-10 break-words"
+        id="top"
+        key={currentChapterId}
+      >
         {invalidChapterParam && (
           <div className="rounded-2xl border border-amber-500/50 bg-amber-500/10 p-4 text-sm text-amber-100">
             <p className="font-semibold">
