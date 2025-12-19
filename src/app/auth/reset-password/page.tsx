@@ -1,86 +1,58 @@
+// src/app/auth/reset-password/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+export const dynamic = "force-dynamic";
+
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-export default function ResetPasswordPage() {
+function ResetInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [ready, setReady] = useState(false);
-  const [hasSession, setHasSession] = useState(false);
-
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-
-  const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">(
+    "idle"
+  );
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    let cancelled = false;
-
     const init = async () => {
-      try {
-        // IMPORTANT:
-        // Recovery/invite links may arrive as:
-        // - ?code=... (PKCE)  -> should be handled by /auth/callback, but we support it anyway
-        // - #access_token=... (hash)
-        //
-        // We do NOT "guess" — we deterministically attempt:
-        // 1) exchange code if present
-        // 2) otherwise poll session briefly (hash ingestion can lag)
-        const code = searchParams.get("code");
-        if (code) {
-          await supabase.auth.exchangeCodeForSession(code);
-        }
-
-        // Poll for session (handles hash flow + slow storage)
-        for (let i = 0; i < 6; i++) {
-          const { data } = await supabase.auth.getSession();
-          if (data.session) {
-            if (!cancelled) {
-              setHasSession(true);
-              setReady(true);
-              setMessage("");
-            }
-            return;
-          }
-          await new Promise((r) => setTimeout(r, 250));
-        }
-
-        if (!cancelled) {
-          setHasSession(false);
+      // Some Supabase flows land with ?code=... (PKCE). Exchange it first.
+      const code = searchParams.get("code");
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
           setReady(true);
-          setMessage("This reset link is invalid or expired. Please request a new one.");
+          setStatus("error");
+          setMessage(error.message);
+          return;
         }
-      } catch {
-        if (!cancelled) {
-          setHasSession(false);
-          setReady(true);
-          setMessage("This reset link is invalid or expired. Please request a new one.");
-        }
+      }
+
+      // After exchange (or hash flow), we should have a session
+      const { data } = await supabase.auth.getSession();
+      setReady(true);
+
+      if (!data.session) {
+        setStatus("error");
+        setMessage(
+          "Auth session missing. Please request a new reset link and try again."
+        );
       }
     };
 
     init();
-
-    return () => {
-      cancelled = true;
-    };
   }, [searchParams]);
 
   const updatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("saving");
     setMessage("");
-
-    if (!hasSession) {
-      setStatus("error");
-      setMessage("No active reset session. Please request a new reset link.");
-      return;
-    }
 
     if (password.length < 6) {
       setStatus("error");
@@ -94,74 +66,19 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    try {
-      const { error } = await supabase.auth.updateUser({ password });
+    const { error } = await supabase.auth.updateUser({ password });
 
-      if (error) {
-        setStatus("error");
-        setMessage(error.message);
-        return;
-      }
-
-      setStatus("success");
-      setMessage("Password updated. Redirecting you to the Student Lounge…");
-      setTimeout(() => router.push("/students"), 700);
-    } catch (err: unknown) {
+    if (error) {
       setStatus("error");
-      setMessage(err instanceof Error ? err.message : "Something went wrong.");
+      setMessage(error.message);
+      return;
     }
+
+    setStatus("success");
+    setMessage("Password updated. Redirecting…");
+    setTimeout(() => router.push("/students"), 900);
   };
 
-  // Loading state
-  if (!ready) {
-    return (
-      <main className="min-h-screen bg-black text-white">
-        <div className="mx-auto flex max-w-md flex-col gap-4 px-4 py-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/50">
-            Account
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold">Set a new password</h1>
-          <p className="mt-2 text-sm text-white/70">Loading your reset session…</p>
-        </div>
-      </main>
-    );
-  }
-
-  // No session state
-  if (!hasSession) {
-    return (
-      <main className="min-h-screen bg-black text-white">
-        <div className="mx-auto flex max-w-md flex-col gap-6 px-4 py-16">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/50">
-              Account
-            </p>
-            <h1 className="mt-2 text-3xl font-semibold">Reset link expired</h1>
-            <p className="mt-2 text-sm text-white/70">
-              {message || "This reset link is invalid or expired. Please request a new one."}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
-            <Link
-              className="block w-full rounded-xl bg-[#00FFF7] px-4 py-3 text-center text-sm font-semibold text-black transition hover:scale-[1.01]"
-              href="/auth/forgot-password"
-            >
-              Request a new reset link
-            </Link>
-
-            <div className="mt-4 text-center text-xs text-white/60">
-              <Link className="hover:text-white" href="/auth/signin">
-                Back to sign in
-              </Link>
-            </div>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  // Has session state: show form
   return (
     <main className="min-h-screen bg-black text-white">
       <div className="mx-auto flex max-w-md flex-col gap-6 px-4 py-16">
@@ -189,7 +106,7 @@ export default function ResetPasswordPage() {
             onChange={(e) => setPassword(e.target.value)}
             className="mt-2 w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-[#00FFF7]"
             placeholder="••••••••"
-            autoComplete="new-password"
+            disabled={!ready || status === "saving"}
           />
 
           <label className="mt-4 block text-xs font-semibold text-white/70">
@@ -202,12 +119,12 @@ export default function ResetPasswordPage() {
             onChange={(e) => setConfirm(e.target.value)}
             className="mt-2 w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-[#00FFF7]"
             placeholder="••••••••"
-            autoComplete="new-password"
+            disabled={!ready || status === "saving"}
           />
 
           <button
             type="submit"
-            disabled={status === "saving"}
+            disabled={!ready || status === "saving" || status === "error"}
             className="mt-5 w-full rounded-xl bg-[#00FFF7] px-4 py-3 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:opacity-60"
           >
             {status === "saving" ? "Saving…" : "Update password"}
@@ -234,5 +151,19 @@ export default function ResetPasswordPage() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-neutral-950 text-white/80 flex items-center justify-center">
+          Loading…
+        </div>
+      }
+    >
+      <ResetInner />
+    </Suspense>
   );
 }
