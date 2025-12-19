@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const dynamicParams = true;
 
 import MusicProductionEbookPage from "../../page";
 
@@ -13,7 +14,7 @@ export default function ChapterSlugPage({ params, searchParams }: PageProps) {
     <MusicProductionEbookPage
       key={params.chapter}
       params={{ chapter: params.chapter }}
-      searchParams={{ ...searchParams, chapter: params.chapter }}
+      searchParams={searchParams}
     />
   );
 }

@@ -38,8 +38,8 @@ function StudentHeader({ email }: { email: string | null }) {
   const links = useMemo(
     () => [
       { href: "/students", label: "Dashboard" },
+      { href: "/ebook/music-production", label: "Course" },
       { href: "/students/store", label: "Store" },
-      { href: "/students/music-production", label: "Course" },
       { href: "/students/profile", label: "Profile" },
     ],
     []

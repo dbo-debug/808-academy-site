@@ -111,6 +111,7 @@ export const CHAPTERS: ChapterMeta[] = [
 // Next.js app router style: searchParams are just strings/string[]
 type PageProps = {
   searchParams?: { [key: string]: string | string[] | undefined };
+  params?: { chapter?: string };
 };
 
 // Helper to safely narrow to our ChapterId union
@@ -119,14 +120,9 @@ export function isChapterId(value: unknown): value is ChapterId {
   return CHAPTERS.some((c) => c.id === value);
 }
 
-export default function MusicProductionEbookPage({ searchParams, params }: PageProps & { params?: { chapter?: string } }) {
-  const rawChapterParam =
-    typeof params?.chapter === "string"
-      ? params.chapter
-      : searchParams?.chapter;
-
+export default function MusicProductionEbookPage({ params }: PageProps) {
   const chapterParam =
-    typeof rawChapterParam === "string" ? rawChapterParam : undefined;
+    typeof params?.chapter === "string" ? params.chapter : undefined;
 
   const invalidChapterParam =
     chapterParam && !isChapterId(chapterParam) ? chapterParam : null;
