@@ -10,6 +10,5 @@ type PageProps = {
 };
 
 export default function ChapterSlugPage({ params }: PageProps) {
-  return <EbookReader chapterIdParam={params.chapter} />;
+  return <EbookReader key={params.chapter} chapterIdParam={params.chapter} />;
 }
-
