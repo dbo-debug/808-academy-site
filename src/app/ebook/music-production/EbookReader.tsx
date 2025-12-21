@@ -2,16 +2,16 @@ import React from "react";
 import BookLayout from "./components/BookLayout";
 import ChapterNav from "./components/ChapterNav";
 
-import SoundHearingChapter from "./chapters/sound-hearing";
-import DawSignalFlowChapter from "./chapters/daw-signal-flow";
-import PreProductionChapter from "./chapters/pre-production";
-import VerseHookChapter from "./chapters/verse-hook";
-import DrumProductionChapter from "./chapters/drum-production";
-import LowEndTheoryChapter from "./chapters/low-end-theory";
-import HarmonyChordsChapter from "./chapters/harmony-chords";
-import VocalProductionChapter from "./chapters/vocal-production";
-import MixingFundamentalsChapter from "./chapters/mixing-fundamentals";
-import FinalUnitChapter from "./chapters/final-unit";
+import SoundHearingChapter from "./chapter-content/sound-hearing";
+import DawSignalFlowChapter from "./chapter-content/daw-signal-flow";
+import PreProductionChapter from "./chapter-content/pre-production";
+import VerseHookChapter from "./chapter-content/verse-hook";
+import DrumProductionChapter from "./chapter-content/drum-production";
+import LowEndTheoryChapter from "./chapter-content/low-end-theory";
+import HarmonyChordsChapter from "./chapter-content/harmony-chords";
+import VocalProductionChapter from "./chapter-content/vocal-production";
+import MixingFundamentalsChapter from "./chapter-content/mixing-fundamentals";
+import FinalUnitChapter from "./chapter-content/final-unit";
 
 export type ChapterId =
   | "sound-hearing"
