@@ -80,7 +80,7 @@ export default function LoungePage() {
         <div className="mt-6 space-y-3">
           <Link
             className="inline-block rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 hover:bg-white/[0.06]"
-            href="/students/music-production"
+            href="/ebook/music-production"
           >
             Music Production
           </Link>

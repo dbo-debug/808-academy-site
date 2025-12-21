@@ -163,6 +163,12 @@ export default function EbookReader({ chapterIdParam }: EbookReaderProps) {
         id="top"
         key={currentChapterId}
       >
+        <p
+          className="sr-only"
+          data-chapter-param={chapterIdParam ?? "none"}
+        >
+          Debug chapter param: {chapterIdParam ?? "none"}
+        </p>
         {invalidChapterParam && (
           <div className="rounded-2xl border border-amber-500/50 bg-amber-500/10 p-4 text-sm text-amber-100">
             <p className="font-semibold">
@@ -219,4 +225,3 @@ export default function EbookReader({ chapterIdParam }: EbookReaderProps) {
     </BookLayout>
   );
 }
-

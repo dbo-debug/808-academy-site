@@ -16,7 +16,7 @@ export default function CourseCard({ c }: { c: CourseSummary }) {
   const href =
     c.href ??
     (c.slug === "music-production"
-      ? "/students/music-production"
+      ? "/ebook/music-production"
       : c.slug
       ? `/students/${c.slug}`
       : "#");

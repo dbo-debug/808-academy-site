@@ -21,7 +21,7 @@ const tones: Record<NonNullable<Banner["tone"]>, string> = {
 
 export default function PromoBar({
   items = [
-    { id: "mp", label: "Music Production", sub: "Start or resume your course →", href: "/students/music-production", tone: "cyan" },
+    { id: "mp", label: "Music Production", sub: "Start or resume your course →", href: "/ebook/music-production", tone: "cyan" },
     { id: "events", label: "Live Events", sub: "Weekly Q&A and guest producers", href: "/students/lounge/events", tone: "purple" },
     { id: "plugins", label: "Plugin Deals (Soon)", sub: "Student discounts on your favorite tools", href: "/students/store/plugins", tone: "green" },
     { id: "merch", label: "Student Merch (Soon)", sub: "Hoodies, tees, hats, stickers", href: "/students/store/merch", tone: "rose" },

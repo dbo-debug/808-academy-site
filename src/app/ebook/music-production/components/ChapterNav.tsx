@@ -43,7 +43,7 @@ const ChapterNav: React.FC<ChapterNavProps> = ({
       <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:gap-4">
         {/* Previous */}
         {prev ? (
-          <Link
+          <a
             href={makeHref(prev)}
             className="group inline-flex flex-1 items-center gap-2 rounded-2xl border border-slate-700/80 bg-slate-950/60 px-4 py-3 text-left text-sm text-slate-200 shadow-sm transition hover:border-emerald-500/60 hover:bg-slate-900/80 hover:text-emerald-200"
           >
@@ -56,7 +56,7 @@ const ChapterNav: React.FC<ChapterNavProps> = ({
                 {prev.label}: {prev.title}
               </span>
             </span>
-          </Link>
+          </a>
         ) : (
           <div className="inline-flex flex-1 items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/40 px-4 py-3 text-xs text-slate-400">
             <span className="text-lg leading-none">◎</span>
@@ -72,7 +72,7 @@ const ChapterNav: React.FC<ChapterNavProps> = ({
 
         {/* Next */}
         {next ? (
-          <Link
+          <a
             href={makeHref(next)}
             className="group inline-flex flex-1 items-center justify-end gap-2 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-right text-sm text-emerald-100 shadow-[0_0_18px_rgba(16,185,129,0.28)] transition hover:border-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-50"
           >
@@ -87,7 +87,7 @@ const ChapterNav: React.FC<ChapterNavProps> = ({
             <span className="text-lg leading-none group-hover:translate-x-0.5">
               →
             </span>
-          </Link>
+          </a>
         ) : (
           <div className="inline-flex flex-1 items-center justify-end gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-right text-xs text-emerald-100 shadow-[0_0_18px_rgba(16,185,129,0.28)]">
             <span className="text-lg leading-none">★</span>
@@ -107,12 +107,12 @@ const ChapterNav: React.FC<ChapterNavProps> = ({
         >
           ↑ Back to top
         </a>
-        <Link
+        <a
           href="/ebook/music-production"
           className="inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-950/70 px-3 py-1 font-medium text-slate-300 transition hover:border-emerald-500/60 hover:bg-slate-900 hover:text-emerald-200"
         >
           Chapter list
-        </Link>
+        </a>
       </div>
     </nav>
   );

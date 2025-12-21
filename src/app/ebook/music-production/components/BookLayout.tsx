@@ -65,9 +65,8 @@ const BookLayout: React.FC<BookLayoutProps> = ({
                 const isActive = chapter.id === currentChapterId;
                 return (
                   <li key={chapter.id}>
-                    <Link
+                    <a
                       href={`/ebook/music-production/chapters/${chapter.id}`}
-                      scroll
                       className={[
                         "flex flex-col rounded-xl px-3 py-2 transition",
                         "hover:bg-slate-900/80 hover:text-slate-50",
@@ -89,7 +88,7 @@ const BookLayout: React.FC<BookLayoutProps> = ({
                       <span className="mt-0.5 text-[13px] font-medium">
                         {chapter.title}
                       </span>
-                    </Link>
+                    </a>
                   </li>
                 );
               })}
@@ -138,10 +137,9 @@ const BookLayout: React.FC<BookLayoutProps> = ({
               {chapters.map((chapter) => {
                 const isActive = chapter.id === currentChapterId;
                 return (
-                  <Link
+                  <a
                     key={chapter.id}
                     href={`/ebook/music-production/chapters/${chapter.id}`}
-                    scroll
                     className={[
                       "whitespace-nowrap rounded-full border px-3 py-1.5 text-xs transition",
                       "hover:border-emerald-400/60 hover:text-emerald-300",
@@ -153,7 +151,7 @@ const BookLayout: React.FC<BookLayoutProps> = ({
                     {chapter.label.replace("Chapter ", "Ch. ")}
                     {" • "}
                     {chapter.isPreLesson ? "Pre" : chapter.title}
-                  </Link>
+                  </a>
                 );
               })}
             </div>
