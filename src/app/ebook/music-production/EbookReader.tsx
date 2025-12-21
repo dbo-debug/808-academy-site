@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useParams } from "next/navigation";
 import BookLayout from "./components/BookLayout";
 import ChapterNav from "./components/ChapterNav";
 
@@ -117,11 +120,20 @@ type EbookReaderProps = {
 };
 
 export default function EbookReader({ chapterIdParam }: EbookReaderProps) {
-  const invalidChapterParam =
-    chapterIdParam && !isChapterId(chapterIdParam) ? chapterIdParam : null;
+  const params = useParams<{ chapter?: string }>();
+  const paramChapter = Array.isArray(params?.chapter)
+    ? params?.chapter[0]
+    : params?.chapter;
 
-  const currentChapterId: ChapterId = isChapterId(chapterIdParam)
-    ? chapterIdParam
+  const effectiveChapterParam = chapterIdParam ?? paramChapter;
+
+  const invalidChapterParam =
+    effectiveChapterParam && !isChapterId(effectiveChapterParam)
+      ? effectiveChapterParam
+      : null;
+
+  const currentChapterId: ChapterId = isChapterId(effectiveChapterParam)
+    ? effectiveChapterParam
     : "sound-hearing";
 
   const currentChapterIndex = CHAPTERS.findIndex(
