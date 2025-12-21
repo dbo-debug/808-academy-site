@@ -66,6 +66,7 @@ const BookLayout: React.FC<BookLayoutProps> = ({
                 return (
                   <li key={chapter.id}>
                     <Link
+                      prefetch={false}
                       href={`/ebook/music-production/chapters/${chapter.id}`}
                       className={[
                         "flex flex-col rounded-xl px-3 py-2 transition",
@@ -139,6 +140,7 @@ const BookLayout: React.FC<BookLayoutProps> = ({
                 return (
                   <Link
                     key={chapter.id}
+                    prefetch={false}
                     href={`/ebook/music-production/chapters/${chapter.id}`}
                     className={[
                       "whitespace-nowrap rounded-full border px-3 py-1.5 text-xs transition",

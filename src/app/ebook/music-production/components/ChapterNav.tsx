@@ -44,6 +44,7 @@ const ChapterNav: React.FC<ChapterNavProps> = ({
         {/* Previous */}
         {prev ? (
           <Link
+            prefetch={false}
             href={makeHref(prev)}
             className="group inline-flex flex-1 items-center gap-2 rounded-2xl border border-slate-700/80 bg-slate-950/60 px-4 py-3 text-left text-sm text-slate-200 shadow-sm transition hover:border-emerald-500/60 hover:bg-slate-900/80 hover:text-emerald-200"
           >
@@ -73,6 +74,7 @@ const ChapterNav: React.FC<ChapterNavProps> = ({
         {/* Next */}
         {next ? (
           <Link
+            prefetch={false}
             href={makeHref(next)}
             className="group inline-flex flex-1 items-center justify-end gap-2 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-right text-sm text-emerald-100 shadow-[0_0_18px_rgba(16,185,129,0.28)] transition hover:border-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-50"
           >
