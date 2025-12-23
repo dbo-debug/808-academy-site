@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
+type OtpType = "signup" | "invite" | "magiclink" | "recovery" | "email_change" | "sms" | "phone_change";
+
 function ConfirmInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -12,8 +14,18 @@ function ConfirmInner() {
   useEffect(() => {
     const run = async () => {
       const token_hash = searchParams.get("token_hash");
-      const type = searchParams.get("type"); // "invite"
+      const rawType = searchParams.get("type"); // "invite"
       const next = searchParams.get("next") || "/students";
+      const allowedTypes: OtpType[] = [
+        "signup",
+        "invite",
+        "magiclink",
+        "recovery",
+        "email_change",
+        "sms",
+        "phone_change",
+      ];
+      const type = allowedTypes.find((t) => t === rawType) ?? null;
 
       if (!token_hash || !type) {
         setMsg("Missing confirmation token. Please use the link from your email.");
@@ -22,7 +34,7 @@ function ConfirmInner() {
       }
 
       const { error } = await supabase.auth.verifyOtp({
-        type: type as any,
+        type,
         token_hash,
       });
 

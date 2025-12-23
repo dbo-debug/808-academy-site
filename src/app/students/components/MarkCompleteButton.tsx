@@ -7,6 +7,7 @@ export default function MarkCompleteButton({ lessonId, course }: { lessonId: str
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  type ProgressRow = { lesson_id: string; completed: boolean };
 
   // On mount: check current completion
   useEffect(() => {
@@ -22,7 +23,8 @@ export default function MarkCompleteButton({ lessonId, course }: { lessonId: str
         setErr(json?.error || "Failed to load progress");
         return;
       }
-      const completed = (json?.progress || []).some((p: any) => p.lesson_id === lessonId && p.completed);
+      const progress = Array.isArray(json?.progress) ? (json.progress as ProgressRow[]) : [];
+      const completed = progress.some((p) => p.lesson_id === lessonId && p.completed);
       setDone(completed);
     })();
   }, [course, lessonId]);
@@ -50,8 +52,8 @@ export default function MarkCompleteButton({ lessonId, course }: { lessonId: str
         return;
       }
       setDone(true);
-    } catch (e: any) {
-      setErr(e?.message || "Could not save progress");
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : "Could not save progress");
     } finally {
       setSaving(false);
     }

@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSWRConfig } from "swr";
 import { supabase } from "@/lib/supabase";
 
 type Props = {
@@ -30,6 +31,7 @@ export default function Quiz({
   courseSlug = "music-production",
   lessonId = "",
 }: Props) {
+  const { mutate } = useSWRConfig();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [selected, setSelected] = useState<SelectedMap>({});
   const [loading, setLoading] = useState(true);
@@ -83,8 +85,8 @@ export default function Quiz({
           (a: QuizQuestion, b: QuizQuestion) => a.order_index - b.order_index
         );
         setQuestions(sorted);
-      } catch (e: any) {
-        setErr(e?.message || "Could not load quiz");
+      } catch (e: unknown) {
+        setErr(e instanceof Error ? e.message : "Could not load quiz");
       } finally {
         setLoading(false);
       }
@@ -131,8 +133,9 @@ export default function Quiz({
       const max = json.max ?? questions.length;
       setResult({ score: json.score ?? 0, max, passed: json.passed });
       setLatest({ score: json.score ?? 0, max_score: max, passed: json.passed });
-    } catch (e: any) {
-      setErr(e?.message || "Could not save quiz");
+      void mutate("/students/api/lounge");
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : "Could not save quiz");
       setSubmitted(false);
     }
   };

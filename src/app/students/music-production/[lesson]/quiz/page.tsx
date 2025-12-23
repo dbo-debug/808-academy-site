@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Quiz from "@/app/students/components/Quiz";
 import { COURSE_SLUG, getMpLessonByLessonId } from "@/lib/musicProductionLessons";
@@ -43,12 +44,12 @@ export default function LessonQuizPage() {
               >
                 Back to Lounge
               </button>
-              <a
+              <Link
                 className="rounded-full border border-white/20 px-4 py-2 text-xs hover:bg-white/10"
                 href="/ebook/music-production"
               >
                 View Ebook
-              </a>
+              </Link>
             </div>
           </div>
         ) : (
@@ -71,12 +72,12 @@ export default function LessonQuizPage() {
                 Back to Lounge
               </button>
 
-              <a
+              <Link
                 className="rounded-full border border-white/20 px-4 py-2 text-xs hover:bg-white/10"
                 href={`/ebook/music-production/chapters/${lesson.chapter_slug}`}
               >
                 Review chapter
-              </a>
+              </Link>
             </div>
           </>
         )}

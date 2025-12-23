@@ -56,6 +56,12 @@ type SubmissionRow = {
   created_at: string;
 };
 
+function getMetadataName(metadata: unknown): string | null {
+  if (!metadata || typeof metadata !== "object") return null;
+  const fullName = (metadata as Record<string, unknown>).full_name;
+  return typeof fullName === "string" ? fullName : null;
+}
+
 // Fire-and-forget Zapier webhook
 async function notifyZapier(submission: SubmissionRow) {
   if (!ZAPIER_SUBMISSION_WEBHOOK_URL) return;
@@ -142,7 +148,7 @@ export async function POST(req: NextRequest) {
 
     const userEmail = user.email ?? null;
     const userName =
-      (user.user_metadata as any)?.full_name ??
+      getMetadataName(user.user_metadata) ??
       user.email?.split("@")[0] ??
       "Student";
 
@@ -175,10 +181,10 @@ export async function POST(req: NextRequest) {
     void notifyResend(inserted);
 
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("[submissions] POST error", e);
     return NextResponse.json(
-      { error: e?.message ?? "Unknown error" },
+      { error: e instanceof Error ? e.message : "Unknown error" },
       { status: 500 }
     );
   }
@@ -224,10 +230,10 @@ export async function GET(req: NextRequest) {
       submissions: (data ?? []) as SubmissionRow[],
       isAdmin,
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("[submissions] GET error", e);
     return NextResponse.json(
-      { error: e?.message ?? "Unknown error" },
+      { error: e instanceof Error ? e.message : "Unknown error" },
       { status: 500 }
     );
   }

@@ -66,9 +66,9 @@ export default function SubmissionsPage() {
 
         const json = (await res.json()) as { submissions: Submission[] };
         if (!cancelled) setSubmissions(json.submissions ?? []);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("[submissions page] load error", err);
-        if (!cancelled) setError(err?.message ?? "Something went wrong.");
+        if (!cancelled) setError(err instanceof Error ? err.message : "Something went wrong.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -145,9 +145,7 @@ export default function SubmissionsPage() {
                 <select
                   className="mt-1 rounded-md bg-black/40 px-3 py-1 text-sm"
                   value={filterKind}
-                  onChange={(e) =>
-                    setFilterKind(e.target.value as any)
-                  }
+                  onChange={(e) => setFilterKind(e.target.value as typeof filterKind)}
                 >
                   <option value="all">All</option>
                   <option value="homework">Homework</option>
@@ -164,9 +162,7 @@ export default function SubmissionsPage() {
                 <select
                   className="mt-1 rounded-md bg-black/40 px-3 py-1 text-sm"
                   value={filterDate}
-                  onChange={(e) =>
-                    setFilterDate(e.target.value as any)
-                  }
+                  onChange={(e) => setFilterDate(e.target.value as typeof filterDate)}
                 >
                   <option value="all">All Time</option>
                   <option value="today">Today</option>

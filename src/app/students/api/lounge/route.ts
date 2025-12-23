@@ -3,9 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const NO_CACHE_HEADERS = { "Cache-Control": "no-store, max-age=0", Pragma: "no-cache" };
 
 /** Create a supabase client bound to the incoming user's auth token */
 function sb(token: string): SupabaseClient {
@@ -48,6 +50,12 @@ function isExpired(expiresAt?: string | null) {
   return Number.isFinite(d.getTime()) ? d.getTime() < Date.now() : false;
 }
 
+function getMetadataName(metadata: unknown): string | null {
+  if (!metadata || typeof metadata !== "object") return null;
+  const fullName = (metadata as Record<string, unknown>).full_name;
+  return typeof fullName === "string" ? fullName : null;
+}
+
 /**
  * GET /students/api/lounge
  * optional query: ?course=<slug>
@@ -58,14 +66,14 @@ export async function GET(req: NextRequest) {
     const authHeader = req.headers.get("authorization") ?? "";
     const token = authHeader.replace(/^Bearer\s+/i, "").trim();
     if (!token) {
-      return NextResponse.json({ error: "Missing auth" }, { status: 401 });
+      return NextResponse.json({ error: "Missing auth" }, { status: 401, headers: NO_CACHE_HEADERS });
     }
 
     const supabase = sb(token);
     const { data: auth } = await supabase.auth.getUser();
     const user = auth?.user;
     if (!user) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401, headers: NO_CACHE_HEADERS });
     }
 
     // ---------- PROFILE (name/avatar + legacy flags) ----------
@@ -81,7 +89,7 @@ export async function GET(req: NextRequest) {
 
     const displayName =
       profile?.full_name ||
-      (user.user_metadata as any)?.full_name ||
+      getMetadataName(user.user_metadata) ||
       user.email?.split("@")[0] ||
       "Student";
 
@@ -137,7 +145,7 @@ export async function GET(req: NextRequest) {
       // logged in, but not paid: block lounge
       return NextResponse.json(
         { error: "No active membership or enrollment", hasLoungeAccess: false },
-        { status: 403 }
+        { status: 403, headers: NO_CACHE_HEADERS }
       );
     }
 
@@ -159,7 +167,7 @@ export async function GET(req: NextRequest) {
 
     // If they don’t have curriculum access, we still pick a default slug for consistency
     // (UI will hide course cards anyway)
-    let course_slug: string = qCourse || (enr?.course_slug as string) || "music-production";
+    const course_slug: string = qCourse || (enr?.course_slug as string) || "music-production";
 
     // ---------- PROGRESS (only compute if curriculum is unlocked) ----------
     let done = 0;
@@ -175,8 +183,8 @@ export async function GET(req: NextRequest) {
       total = Array.isArray(lessons) && lessons.length > 0 ? lessons.length : 10;
 
       const { data: prog } = await supabase
-        .from("progress")
-        .select("lesson_id, lesson_slug, completed_at")
+        .from("lesson_progress")
+        .select("lesson_id, completed_at")
         .eq("user_id", user.id)
         .eq("course_slug", course_slug)
         .eq("completed", true)
@@ -184,7 +192,7 @@ export async function GET(req: NextRequest) {
 
       if (Array.isArray(prog)) {
         done = prog.length;
-        currentLessonSlug = prog[0]?.lesson_slug ?? null;
+        currentLessonSlug = prog[0]?.lesson_id ?? null;
       }
     } else {
       // membership/tutoring: no curriculum
@@ -194,7 +202,36 @@ export async function GET(req: NextRequest) {
     }
 
     const percent = total > 0 ? Math.round((done / total) * 100) : 0;
-    const gpaPct = percent; // proxy for now
+    // GPA = average of the latest attempt score per lesson (score stored as 0-100).
+    let gpaPct = 0;
+
+    if (hasCurriculumAccess) {
+      type AttemptRow = {
+        lesson_id: string | null;
+        score: number | null;
+        max_score: number | null;
+        submitted_at: string | null;
+      };
+
+      const { data: attempts } = await supabase
+        .from("quiz_attempts")
+        .select("lesson_id, score, max_score, submitted_at")
+        .eq("user_id", user.id)
+        .eq("course_slug", course_slug)
+        .order("submitted_at", { ascending: false });
+
+      const latestByLesson = new Map<string, number>();
+      (attempts as AttemptRow[] | null)?.forEach((row) => {
+        if (!row.lesson_id || latestByLesson.has(row.lesson_id)) return;
+        if (typeof row.score === "number") latestByLesson.set(row.lesson_id, row.score);
+      });
+
+      const scores = Array.from(latestByLesson.values());
+      if (scores.length > 0) {
+        const avg = scores.reduce((sum, value) => sum + value, 0) / scores.length;
+        gpaPct = Math.round(avg * 10) / 10;
+      }
+    }
 
     // ---------- LINKS / ANNOUNCEMENTS ----------
     const links: LoungeResponse["links"] = [
@@ -223,10 +260,10 @@ export async function GET(req: NextRequest) {
       announcements,
     };
 
-    return NextResponse.json(body);
+    return NextResponse.json(body, { headers: NO_CACHE_HEADERS });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Unknown error";
     console.error("[students/api/lounge] error", e);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: msg }, { status: 500, headers: NO_CACHE_HEADERS });
   }
 }

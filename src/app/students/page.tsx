@@ -76,7 +76,7 @@ const loungeFetcher = async (url: string): Promise<LoungeFetcherResult> => {
 
   // ✅ Treat 403 as “paywall state”, not a fatal error
   if (res.status === 403) {
-    const j = await res.json().catch(() => ({} as any));
+    const j = (await res.json().catch(() => null)) as { error?: string } | null;
     return {
       ok: false,
       status: 403,
@@ -373,8 +373,8 @@ function ProfileCard({
 
                 if (json?.url) window.location.href = json.url;
                 else throw new Error("Missing billing portal URL.");
-              } catch (e: any) {
-                alert(e?.message || "Could not open billing portal.");
+              } catch (e: unknown) {
+                alert(e instanceof Error ? e.message : "Could not open billing portal.");
               }
             }}
             className="rounded-lg border border-white/20 px-4 py-2 text-center text-xs hover:border-[#00FFF7] hover:text-[#00FFF7]"
@@ -652,7 +652,9 @@ function QuickLinksCard() {
   );
 }
 
-function AnnouncementsCard({ items }: { items: any[] }) {
+type AnnouncementItem = LoungeResponse["announcements"][number];
+
+function AnnouncementsCard({ items }: { items: AnnouncementItem[] }) {
   return (
     <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
       <h3 className="mb-4 text-lg font-semibold">Announcements</h3>

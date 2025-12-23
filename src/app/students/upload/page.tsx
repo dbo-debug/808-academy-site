@@ -127,7 +127,7 @@ export default function UploadPage() {
       setTimeout(() => {
         router.push("/students/submissions");
       }, 800);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[upload] submit error", err);
       setError("Unexpected error. Please try again.");
     } finally {

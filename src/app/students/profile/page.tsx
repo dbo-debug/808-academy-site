@@ -72,10 +72,10 @@ export default function ProfilePage() {
             instagram_handle: data.instagram_handle ?? "",
           });
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("[profile] load error", err);
         if (!cancelled) {
-          setError(err?.message ?? "Failed to load profile.");
+          setError(err instanceof Error ? err.message : "Failed to load profile.");
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -120,9 +120,9 @@ export default function ProfilePage() {
       if (upsertErr) throw upsertErr;
 
       setSuccess("Profile updated.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[profile] save error", err);
-      setError(err?.message ?? "Failed to save profile.");
+      setError(err instanceof Error ? err.message : "Failed to save profile.");
     } finally {
       setSaving(false);
     }
@@ -179,9 +179,9 @@ export default function ProfilePage() {
 
       setProfile((p) => ({ ...p, avatar_url: publicUrl }));
       setSuccess("Avatar updated.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[profile] avatar error", err);
-      setError(err?.message ?? "Failed to upload avatar.");
+      setError(err instanceof Error ? err.message : "Failed to upload avatar.");
     } finally {
       setUploading(false);
       // reset file input so you can re-upload same file if needed

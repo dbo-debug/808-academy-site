@@ -516,12 +516,12 @@ export default function VocalProductionChapter() {
               </p>
               <ul className="ml-4 list-disc space-y-1">
                 <li>
-                  <span className="font-semibold">Airy tone (6–10")</span> — more
+                  <span className="font-semibold">Airy tone (6–10&quot;)</span> — more
                   space and brightness. Great for pop and indie clarity.
                 </li>
                 <li>
                   <span className="font-semibold">
-                    Warm &amp; intimate (3–5")
+                    Warm &amp; intimate (3–5&quot;)
                   </span>{" "}
                   — fuller, richer low end. Perfect for R&amp;B and emotional
                   delivery.
@@ -534,7 +534,7 @@ export default function VocalProductionChapter() {
                 </li>
                 <li>
                   <span className="font-semibold">
-                    Soft ballads (8–12", slightly above the mouth)
+                    Soft ballads (8–12&quot;, slightly above the mouth)
                   </span>{" "}
                   — natural dynamics, fewer plosives, more “open” sound.
                 </li>

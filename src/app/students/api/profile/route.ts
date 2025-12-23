@@ -19,6 +19,12 @@ type ProfileResponse = {
   avatarUrl: string | null;
 };
 
+function getMetadataName(metadata: unknown): string | null {
+  if (!metadata || typeof metadata !== "object") return null;
+  const fullName = (metadata as Record<string, unknown>).full_name;
+  return typeof fullName === "string" ? fullName : null;
+}
+
 // ---------- helper to get user ----------
 async function getUserFromRequest(req: NextRequest) {
   const authHeader = req.headers.get("authorization") ?? "";
@@ -55,7 +61,7 @@ export async function GET(req: NextRequest) {
 
     const fullName =
       profile?.full_name ||
-      (user.user_metadata as any)?.full_name ||
+      getMetadataName(user.user_metadata) ||
       user.email?.split("@")[0] ||
       "Student";
 
@@ -65,10 +71,10 @@ export async function GET(req: NextRequest) {
       fullName,
       avatarUrl,
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("[profile] GET error", e);
     return NextResponse.json(
-      { error: e?.message ?? "Unknown error" },
+      { error: e instanceof Error ? e.message : "Unknown error" },
       { status: 500 }
     );
   }
@@ -87,7 +93,12 @@ export async function POST(req: NextRequest) {
       avatarUrl?: string;
     };
 
-    const updates: Record<string, any> = {
+    const updates: {
+      id: string;
+      updated_at: string;
+      full_name?: string;
+      avatar_url?: string;
+    } = {
       id: user.id,
       updated_at: new Date().toISOString(),
     };
@@ -113,10 +124,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("[profile] POST error", e);
     return NextResponse.json(
-      { error: e?.message ?? "Unknown error" },
+      { error: e instanceof Error ? e.message : "Unknown error" },
       { status: 500 }
     );
   }

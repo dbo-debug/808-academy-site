@@ -235,12 +235,17 @@ async function buildInviteActivateLink(email: string) {
     }
 
     // Supabase types vary by version; handle both shapes safely
-    const actionLink =
-      (data as any)?.properties?.action_link ||
-      (data as any)?.action_link ||
-      null;
+    const actionLink = (() => {
+      if (!data || typeof data !== "object") return null;
+      const typed = data as {
+        properties?: { action_link?: unknown };
+        action_link?: unknown;
+      };
+      const link = typed.properties?.action_link ?? typed.action_link ?? null;
+      return typeof link === "string" ? link : null;
+    })();
 
-    return typeof actionLink === "string" ? actionLink : null;
+    return actionLink;
   } catch (err) {
     console.error("❌ generateLink(invite) threw:", err);
     return null;

@@ -55,8 +55,11 @@ export async function GET(req: NextRequest) {
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
     return NextResponse.json({ questions: questions ?? [] });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || "Unknown error" }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Unknown error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -66,19 +69,19 @@ export async function POST(req: NextRequest) {
     const token = auth.replace(/^Bearer\s+/i, "").trim();
     if (!token) return NextResponse.json({ error: "Missing auth" }, { status: 401 });
 
-    const body = await req.json();
+    const body = (await req.json().catch(() => null)) as
+      | {
+          course_slug?: string;
+          lesson_id?: string;
+          quiz_id?: string;
+          answers?: SubmittedAnswer[];
+        }
+      | null;
 
-    const {
-      course_slug,
-      lesson_id,
-      quiz_id,
-      answers, // array of {question_id, selected_answer}
-    }: {
-      course_slug: string;
-      lesson_id: string;
-      quiz_id: string;
-      answers: SubmittedAnswer[];
-    } = body;
+    const course_slug = body?.course_slug;
+    const lesson_id = body?.lesson_id;
+    const quiz_id = body?.quiz_id;
+    const answers = body?.answers;
 
     if (!course_slug || !lesson_id || !quiz_id || !Array.isArray(answers)) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -211,7 +214,10 @@ export async function POST(req: NextRequest) {
       correct: correctCount,
       max: max_score,
     });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || "Unknown error" }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Unknown error" },
+      { status: 500 }
+    );
   }
 }

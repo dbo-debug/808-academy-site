@@ -91,7 +91,7 @@ export default function StudentsLayout({ children }: { children: React.ReactNode
   const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    let mounted = true;
+    const mounted = true;
     (async () => {
       const {
         data: { session },

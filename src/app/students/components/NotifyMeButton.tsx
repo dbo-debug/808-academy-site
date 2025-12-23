@@ -34,9 +34,9 @@ export default function NotifyMeButton({ kind, item }: { kind: string; item: str
       }
       setStatus("saved");
       setMsg("You’re on the list. We’ll email you when it’s live.");
-    } catch (e: any) {
+    } catch (e: unknown) {
       setStatus("error");
-      setMsg(e?.message || "Could not save");
+      setMsg(e instanceof Error ? e.message : "Could not save");
     }
   };
 

@@ -7,6 +7,7 @@ import { lessons } from "../music-production/data/lessons";
 export default function ProgressTracker({ course }: { course: string }) {
   const [doneCount, setDoneCount] = useState(0);
   const [err, setErr] = useState<string | null>(null);
+  type ProgressRow = { lesson_id: string; completed: boolean };
 
   useEffect(() => {
     (async () => {
@@ -21,9 +22,8 @@ export default function ProgressTracker({ course }: { course: string }) {
         setErr(json?.error || "Failed to load progress");
         return;
       }
-      const completedSet = new Set<string>(
-        (json?.progress || []).filter((p: any) => p.completed).map((p: any) => p.lesson_id)
-      );
+      const progress = Array.isArray(json?.progress) ? (json.progress as ProgressRow[]) : [];
+      const completedSet = new Set<string>(progress.filter((p) => p.completed).map((p) => p.lesson_id));
       setDoneCount(completedSet.size);
     })();
   }, [course]);

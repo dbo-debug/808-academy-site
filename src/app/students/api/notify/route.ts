@@ -18,7 +18,11 @@ export async function POST(req: NextRequest) {
     const token = auth.replace(/^Bearer\s+/i, "").trim();
     if (!token) return NextResponse.json({ error: "Missing auth" }, { status: 401 });
 
-    const { kind, item } = await req.json();
+    const body = (await req.json().catch(() => null)) as
+      | { kind?: string; item?: string }
+      | null;
+    const kind = body?.kind;
+    const item = body?.item;
     if (!kind || !item) return NextResponse.json({ error: "Missing kind or item" }, { status: 400 });
 
     const supabase = client(token);
@@ -37,7 +41,10 @@ export async function POST(req: NextRequest) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || "Unknown error" }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Unknown error" },
+      { status: 500 }
+    );
   }
 }
