@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type ZoomImageState = {
   src: string;
@@ -10,37 +11,6 @@ type ZoomImageState = {
 
 export default function SoundHearingChapter() {
   const [zoomImage, setZoomImage] = React.useState<ZoomImageState>(null);
-
-  // Drag-and-drop state for Compression / Rarefaction quiz
-  const [dragLabel, setDragLabel] = React.useState<"C" | "R" | null>(null);
-  const [compressionResult, setCompressionResult] = React.useState<
-    "correct" | "wrong" | null
-  >(null);
-  const [rarefactionResult, setRarefactionResult] = React.useState<
-    "correct" | "wrong" | null
-  >(null);
-
-  const handleDragStart = (label: "C" | "R") => {
-    setDragLabel(label);
-  };
-
-  const handleDrop = (target: "compression" | "rarefaction") => {
-    if (!dragLabel) return;
-
-    if (target === "compression") {
-      setCompressionResult(dragLabel === "C" ? "correct" : "wrong");
-    } else {
-      setRarefactionResult(dragLabel === "R" ? "correct" : "wrong");
-    }
-
-    setDragLabel(null);
-  };
-
-  const resetCRQuiz = () => {
-    setCompressionResult(null);
-    setRarefactionResult(null);
-    setDragLabel(null);
-  };
 
   const ZoomableImage = ({
     src,
@@ -81,7 +51,7 @@ export default function SoundHearingChapter() {
           <div className="pointer-events-none absolute inset-0 opacity-35">
             <video
               className="h-full w-full object-cover"
-              src="/assets/music-production/sound-hearing/images/sound-bkgrnd.mp4"
+              src="/assets/music-production/sound-hearing/images/sound-bkgrnd.jpg"
               autoPlay
               loop
               muted
@@ -248,7 +218,6 @@ export default function SoundHearingChapter() {
             </div>
           </div>
 
-          {/* Static interactive idea – main graded version appears in Review */}
           <div className="grid gap-4 md:grid-cols-2 md:items-center">
             <figure className="flex h-full flex-col rounded-2xl border border-slate-800/80 bg-black/80 p-3">
               <div className="relative h-full w-full min-h-[220px] aspect-[16/10]">
@@ -273,14 +242,12 @@ export default function SoundHearingChapter() {
                 high-pressure regions called{" "}
                 <span className="font-semibold text-emerald-300">compressions</span>{" "}
                 and low-pressure regions called{" "}
-                <span className="font-semibold text-emerald-300">rarefactions</span>
-                . As these regions move away from the source, they form the
-                waveform you&apos;ll see inside your DAW.
+                <span className="font-semibold text-emerald-300">rarefactions</span>.
+                As these regions move away from the source, they form the waveform
+                you&apos;ll see inside your DAW.
               </p>
               <p className="leading-relaxed text-slate-200">
-                Later, in the quiz at the end of this chapter, you&apos;ll drag C
-                (compression) and R (rarefaction) labels onto a waveform to test
-                yourself.
+                You’ll lock this in with the Foundations quiz in the Student Lounge.
               </p>
             </div>
           </div>
@@ -380,9 +347,7 @@ export default function SoundHearingChapter() {
                 high- and low-pressure regions. We measure amplitude in{" "}
                 <span className="font-medium">decibels (dB)</span>.
               </p>
-              <p className="mt-2 text-sm text-slate-300">
-                Amplitude can be viewed from:
-              </p>
+              <p className="mt-2 text-sm text-slate-300">Amplitude can be viewed from:</p>
               <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-slate-300">
                 <li>
                   An acoustic standpoint —{" "}
@@ -426,8 +391,7 @@ export default function SoundHearingChapter() {
                   />
                 </div>
                 <figcaption className="mt-1 text-[11px] text-slate-400">
-                  Higher frequency → more cycles per second → higher perceived
-                  pitch.
+                  Higher frequency → more cycles per second → higher perceived pitch.
                 </figcaption>
               </figure>
               <p className="mt-2 text-xs text-slate-300">
@@ -621,7 +585,6 @@ export default function SoundHearingChapter() {
             </figure>
           </div>
 
-          {/* Listen: sine vs violin */}
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl border border-slate-800/80 bg-black/80 p-4 text-sm text-slate-200">
               <h3 className="text-sm font-semibold text-slate-50">
@@ -685,6 +648,7 @@ export default function SoundHearingChapter() {
           <h2 className="text-xl font-semibold tracking-tight text-slate-50">
             4. How We Hear
           </h2>
+
           <div className="space-y-3 text-sm text-slate-200">
             <p>
               The human body is miraculous. Right now, dozens of systems are working
@@ -700,7 +664,6 @@ export default function SoundHearingChapter() {
             </p>
           </div>
 
-          {/* More compact hero video */}
           <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/80">
             <div className="border-b border-slate-800/80 bg-slate-900/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
               Watch • How your ears work
@@ -716,7 +679,6 @@ export default function SoundHearingChapter() {
             </div>
           </div>
 
-          {/* Ear overview + image */}
           <div className="flex flex-col gap-6 md:flex-row md:items-start">
             <div className="flex-1 space-y-3 text-sm text-slate-200">
               <p>
@@ -749,12 +711,9 @@ export default function SoundHearingChapter() {
             </figure>
           </div>
 
-          {/* Outer / Middle / Inner ear cards */}
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-xs text-slate-200">
-              <h3 className="text-sm font-semibold text-slate-50">
-                Pinna (Outer Ear)
-              </h3>
+              <h3 className="text-sm font-semibold text-slate-50">Pinna (Outer Ear)</h3>
               <p className="mt-2">
                 The pinna (Latin for &quot;feather&quot;) is the visible outer ear.
                 It helps localize sound and filters certain frequencies because of
@@ -834,7 +793,6 @@ export default function SoundHearingChapter() {
             </div>
           </div>
 
-          {/* Protect your ears */}
           <div className="grid gap-4 md:grid-cols-2 md:items-center">
             <figure className="flex h-full flex-col rounded-2xl border border-slate-800/80 bg-slate-950/80 p-3">
               <div className="relative h-full w-full min-h-[240px] aspect-[3/4]">
@@ -871,7 +829,6 @@ export default function SoundHearingChapter() {
             </div>
           </div>
 
-          {/* Hearing test samples */}
           <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 text-sm text-slate-200">
             <h3 className="text-sm font-semibold text-slate-50">
               Interactive Listening: Hearing Range Test
@@ -909,11 +866,7 @@ export default function SoundHearingChapter() {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                     {hz} Hz Sine
                   </p>
-                  <audio
-                    className="mt-1 w-full"
-                    controls
-                    src={getSinePath(hz)}
-                  />
+                  <audio className="mt-1 w-full" controls src={getSinePath(hz)} />
                 </div>
               ))}
             </div>
@@ -939,7 +892,6 @@ export default function SoundHearingChapter() {
             </p>
           </div>
 
-          {/* Fletcher-Munson layout tweak */}
           <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 space-y-3">
             <div className="grid gap-4 md:grid-cols-2 md:items-center">
               <figure className="flex h-full flex-col rounded-2xl border border-slate-800/80 bg-black/80 p-3">
@@ -991,11 +943,9 @@ export default function SoundHearingChapter() {
             </aside>
           </div>
 
-          {/* Masking with images */}
           <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
             <h3 className="text-sm font-semibold text-slate-50">Masking</h3>
             <div className="mt-3 grid gap-4 md:grid-cols-2 md:items-center">
-              {/* Bird + Jackhammer images */}
               <div className="grid gap-3 rounded-xl border border-slate-800/80 bg-black/80 p-3">
                 <figure className="relative h-44 w-full">
                   <ZoomableImage
@@ -1034,11 +984,8 @@ export default function SoundHearingChapter() {
             </div>
           </div>
 
-          {/* Acoustic Beats */}
           <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
-            <h3 className="text-sm font-semibold text-slate-50">
-              Acoustic Beats
-            </h3>
+            <h3 className="text-sm font-semibold text-slate-50">Acoustic Beats</h3>
             <div className="mt-2 grid gap-4 md:grid-cols-[minmax(0,1.3fr),minmax(0,1fr)]">
               <div className="space-y-2 text-sm text-slate-200">
                 <p>
@@ -1166,97 +1113,26 @@ export default function SoundHearingChapter() {
               <li>
                 Ear mechanics: pinna → eardrum → ossicles → cochlea → auditory nerve.
               </li>
-              <li>
-                Psychoacoustics: loudness perception, masking, acoustic beats.
-              </li>
+              <li>Psychoacoustics: loudness perception, masking, acoustic beats.</li>
               <li>Stereo imaging: width, depth, spatial placement.</li>
             </ul>
           </div>
 
-          {/* QUIZ — 10 Questions Placeholder */}
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 space-y-4">
-            <h3 className="text-sm font-semibold text-slate-50">
-              Knowledge Check (10 Questions)
+          {/* QUIZ CTA (replaces broken drag/drop) */}
+          <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-5">
+            <h3 className="text-sm font-semibold text-emerald-100">
+              Knowledge Check
             </h3>
-
-            {/* Compression vs Rarefaction Interactive */}
-            <div className="space-y-2">
-              <p className="text-xs text-slate-300">
-                Drag the labels onto the waveform:
-              </p>
-
-              {/* Drag labels */}
-              <div className="flex gap-3 text-xs">
-                <div
-                  draggable
-                  onDragStart={() => handleDragStart("C")}
-                  className="px-3 py-1 bg-slate-800 rounded-md cursor-grab"
-                >
-                  C
-                </div>
-                <div
-                  draggable
-                  onDragStart={() => handleDragStart("R")}
-                  className="px-3 py-1 bg-slate-800 rounded-md cursor-grab"
-                >
-                  R
-                </div>
-              </div>
-
-              {/* Drop Zone */}
-              <div className="relative border border-slate-700 rounded-xl bg-black/60 p-3">
-                <Image
-                  src="/assets/music-production/sound-hearing/interactive-images/soundwave-test.jpg"
-                  alt="Compression vs rarefaction test waveform"
-                  width={900}
-                  height={200}
-                  className="rounded-md"
-                />
-
-                {/* Drop target - Compression */}
-                <div
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => handleDrop("compression")}
-                  className="absolute left-[32%] top-12 h-24 w-32 rounded-lg border-2 border-emerald-500/40"
-                />
-                {/* Drop target - Rarefaction */}
-                <div
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => handleDrop("rarefaction")}
-                  className="absolute right-[6%] top-6 h-24 w-36 rounded-lg border-2 border-emerald-500/40"
-                />
-              </div>
-
-              {/* Results */}
-              <div className="text-xs text-slate-300 mt-2">
-                {compressionResult === "correct" && (
-                  <p className="text-emerald-300">Compression: Correct!</p>
-                )}
-                {compressionResult === "wrong" && (
-                  <p className="text-red-400">Compression: Try again.</p>
-                )}
-
-                {rarefactionResult === "correct" && (
-                  <p className="text-emerald-300">Rarefaction: Correct!</p>
-                )}
-                {rarefactionResult === "wrong" && (
-                  <p className="text-red-400">Rarefaction: Try again.</p>
-                )}
-              </div>
-
-              <button
-                onClick={resetCRQuiz}
-                className="mt-2 text-xs px-3 py-1 rounded-md bg-slate-800 hover:bg-slate-700"
-              >
-                Reset
-              </button>
-            </div>
-
-            {/* Placeholder for remaining 9 questions (Supabase-powered later) */}
-            <div className="text-xs text-slate-400">
-              Additional quiz questions will appear here when integrated with
-              Supabase.
-            </div>
+            <p className="mt-2 text-sm text-emerald-50/90">
+              Take the Foundations quiz in the Student Lounge. Unlimited attempts —
+              highest score counts.
+            </p>
+            <Link
+              href="/students/music-production/mp-foundations/quiz"
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-[#00FFF7] px-5 py-2 text-sm font-semibold text-black hover:translate-y-[1px]"
+            >
+              Take the Quiz
+            </Link>
           </div>
         </section>
       </div>
@@ -1267,10 +1143,14 @@ export default function SoundHearingChapter() {
           className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6"
           onClick={() => setZoomImage(null)}
         >
-          <div className="relative max-w-4xl w-full">
+          <div
+            className="relative max-w-4xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               className="absolute -top-4 -right-4 bg-slate-900 text-white rounded-full p-2 text-sm border border-slate-700"
               onClick={() => setZoomImage(null)}
+              type="button"
             >
               ✕
             </button>
@@ -1287,4 +1167,3 @@ export default function SoundHearingChapter() {
     </>
   );
 }
-                 
