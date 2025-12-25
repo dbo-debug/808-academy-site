@@ -2,9 +2,8 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { EmailOtpType } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
-
-type OtpType = "signup" | "invite" | "magiclink" | "recovery" | "email_change" | "sms" | "phone_change";
 
 function ConfirmInner() {
   const router = useRouter();
@@ -16,20 +15,21 @@ function ConfirmInner() {
       const token_hash = searchParams.get("token_hash");
       const rawType = searchParams.get("type"); // "invite"
       const next = searchParams.get("next") || "/students";
-      const allowedTypes: OtpType[] = [
+      const allowedTypes: EmailOtpType[] = [
         "signup",
         "invite",
         "magiclink",
         "recovery",
         "email_change",
-        "sms",
-        "phone_change",
       ];
       const type = allowedTypes.find((t) => t === rawType) ?? null;
 
       if (!token_hash || !type) {
         setMsg("Missing confirmation token. Please use the link from your email.");
-        setTimeout(() => router.replace("/auth/signin?error=missing_token"), 900);
+        setTimeout(
+          () => router.replace("/auth/signin?error=Invalid%20confirmation%20link"),
+          900
+        );
         return;
       }
 
