@@ -7,7 +7,10 @@ export const dynamic = "force-dynamic";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const NO_CACHE_HEADERS = { "Cache-Control": "no-store, max-age=0", Pragma: "no-cache" };
+const NO_CACHE_HEADERS = {
+  "Cache-Control": "no-store, max-age=0",
+  Pragma: "no-cache",
+};
 
 /** Create a supabase client bound to the incoming user's auth token */
 function sb(token: string): SupabaseClient {
@@ -28,7 +31,7 @@ type LoungeResponse = {
   hasLoungeAccess: boolean;
   hasCurriculumAccess: boolean;
 
-  membershipTier: MembershipTier; // only returned when hasLoungeAccess=true
+  membershipTier: MembershipTier;
   displayName: string;
   avatarUrl: string | null;
 
@@ -41,7 +44,7 @@ type LoungeResponse = {
   };
   gpa: { percent: number };
   links: Array<{ label: string; href: string }>;
-  announcements: Array<{ id: string; title: string; body?: string }>;
+  announcements: Array<{ id: string; title: string; body: string; date: string }>;
 };
 
 function isExpired(expiresAt?: string | null) {
@@ -66,14 +69,21 @@ export async function GET(req: NextRequest) {
     const authHeader = req.headers.get("authorization") ?? "";
     const token = authHeader.replace(/^Bearer\s+/i, "").trim();
     if (!token) {
-      return NextResponse.json({ error: "Missing auth" }, { status: 401, headers: NO_CACHE_HEADERS });
+      return NextResponse.json(
+        { error: "Missing auth" },
+        { status: 401, headers: NO_CACHE_HEADERS }
+      );
     }
 
     const supabase = sb(token);
     const { data: auth } = await supabase.auth.getUser();
     const user = auth?.user;
+
     if (!user) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401, headers: NO_CACHE_HEADERS });
+      return NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401, headers: NO_CACHE_HEADERS }
+      );
     }
 
     // ---------- PROFILE (name/avatar + legacy flags) ----------
@@ -122,7 +132,6 @@ export async function GET(req: NextRequest) {
       !!membershipTierFromRow && !isExpired(membershipRow?.expires_at ?? null);
 
     // ---------- ENROLLMENTS (cohort / lifetime etc.) ----------
-    // If you still use enrollments as a cohort “entitlement”, treat any active row as paid access.
     const { data: enr, error: enrErr } = await supabase
       .from("enrollments")
       .select("course_slug, is_active")
@@ -142,7 +151,6 @@ export async function GET(req: NextRequest) {
     const hasLoungeAccess = membershipActive || hasEnrollment || legacyHasLounge;
 
     if (!hasLoungeAccess) {
-      // logged in, but not paid: block lounge
       return NextResponse.json(
         { error: "No active membership or enrollment", hasLoungeAccess: false },
         { status: 403, headers: NO_CACHE_HEADERS }
@@ -150,13 +158,12 @@ export async function GET(req: NextRequest) {
     }
 
     // Curriculum access = cohort tier OR enrollment OR legacy ebook flag
-    // (membership + tutoring should NOT unlock curriculum)
     const inferredTier: MembershipTier =
       membershipActive && membershipTierFromRow
         ? membershipTierFromRow
         : hasEnrollment
         ? "cohort"
-        : "membership"; // fallback if only legacy flag gave lounge access
+        : "membership";
 
     const hasCurriculumAccess =
       inferredTier === "cohort" || hasEnrollment || legacyHasEbook;
@@ -165,9 +172,8 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const qCourse = url.searchParams.get("course") ?? undefined;
 
-    // If they don’t have curriculum access, we still pick a default slug for consistency
-    // (UI will hide course cards anyway)
-    const course_slug: string = qCourse || (enr?.course_slug as string) || "music-production";
+    const course_slug: string =
+      qCourse || (enr?.course_slug as string) || "music-production";
 
     // ---------- PROGRESS (only compute if curriculum is unlocked) ----------
     let done = 0;
@@ -175,14 +181,23 @@ export async function GET(req: NextRequest) {
     let currentLessonSlug: string | null = null;
 
     if (hasCurriculumAccess) {
-      const { data: lessons } = await supabase
+      const { data: lessons, error: lessonsErr } = await supabase
         .from("lessons")
         .select("id, slug")
         .eq("course_slug", course_slug);
 
+      if (lessonsErr) {
+        console.warn("[students/api/lounge] lessons select error", lessonsErr);
+      }
+
       total = Array.isArray(lessons) && lessons.length > 0 ? lessons.length : 10;
 
-      const { data: prog } = await supabase
+      const lessonIdToSlug = new Map<string, string>();
+      (lessons ?? []).forEach((l: any) => {
+        if (l?.id && l?.slug) lessonIdToSlug.set(String(l.id), String(l.slug));
+      });
+
+      const { data: prog, error: progErr } = await supabase
         .from("lesson_progress")
         .select("lesson_id, completed_at")
         .eq("user_id", user.id)
@@ -190,19 +205,25 @@ export async function GET(req: NextRequest) {
         .eq("completed", true)
         .order("completed_at", { ascending: false });
 
+      if (progErr) {
+        console.warn("[students/api/lounge] lesson_progress select error", progErr);
+      }
+
       if (Array.isArray(prog)) {
         done = prog.length;
-        currentLessonSlug = prog[0]?.lesson_id ?? null;
+
+        const latestLessonId = prog[0]?.lesson_id ? String(prog[0].lesson_id) : null;
+        currentLessonSlug = latestLessonId ? lessonIdToSlug.get(latestLessonId) ?? null : null;
       }
     } else {
-      // membership/tutoring: no curriculum
       total = 10;
       done = 0;
       currentLessonSlug = null;
     }
 
     const percent = total > 0 ? Math.round((done / total) * 100) : 0;
-    // GPA = average of the latest attempt score per lesson (score stored as 0-100).
+
+    // ---------- GPA ----------
     let gpaPct = 0;
 
     if (hasCurriculumAccess) {
@@ -213,12 +234,16 @@ export async function GET(req: NextRequest) {
         submitted_at: string | null;
       };
 
-      const { data: attempts } = await supabase
+      const { data: attempts, error: attErr } = await supabase
         .from("quiz_attempts")
         .select("lesson_id, score, max_score, submitted_at")
         .eq("user_id", user.id)
         .eq("course_slug", course_slug)
         .order("submitted_at", { ascending: false });
+
+      if (attErr) {
+        console.warn("[students/api/lounge] quiz_attempts select error", attErr);
+      }
 
       const latestByLesson = new Map<string, number>();
       (attempts as AttemptRow[] | null)?.forEach((row) => {
@@ -233,7 +258,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // ---------- LINKS / ANNOUNCEMENTS ----------
+    // ---------- LINKS ----------
     const links: LoungeResponse["links"] = [
       { label: "Student Discord", href: "/students/discord" },
       { label: "Contact Teacher", href: "mailto:teacher@the808academy.com" },
@@ -241,9 +266,50 @@ export async function GET(req: NextRequest) {
       { label: "Book Tutoring", href: "/tutoring" },
     ];
 
-    const announcements: LoungeResponse["announcements"] = [
-      { id: "welcome", title: "Welcome to the Student Lounge" },
-    ];
+    // ---------- ANNOUNCEMENTS (Supabase CMS) ----------
+    // Expected table: public.announcements
+    // columns:
+    //  - id uuid (pk)
+    //  - title text
+    //  - body text nullable
+    //  - publish_at timestamptz
+    //  - pinned bool default false
+    //  - is_published bool default false
+    type AnnouncementRow = {
+      id: string;
+      title: string;
+      body: string | null;
+      publish_at: string;
+      pinned: boolean | null;
+      is_published: boolean | null;
+    };
+
+    const { data: announcementsRaw, error: annErr } = await supabase
+      .from("announcements")
+      .select("id,title,body,publish_at,pinned,is_published")
+      .eq("is_published", true)
+      .order("pinned", { ascending: false })
+      .order("publish_at", { ascending: false })
+      .limit(10);
+
+    if (annErr) {
+      console.warn("[students/api/lounge] announcements select error", annErr);
+    }
+
+    const announcements: LoungeResponse["announcements"] =
+      (announcementsRaw as AnnouncementRow[] | null)?.map((a) => ({
+        id: a.id,
+        title: a.title,
+        body: a.body ?? "",
+        date: new Date(a.publish_at).toISOString(),
+      })) ?? [
+        {
+          id: "welcome",
+          title: "Welcome to the Student Lounge",
+          body: "Announcements will appear here as we publish them.",
+          date: new Date().toISOString(),
+        },
+      ];
 
     const body: LoungeResponse = {
       hasLoungeAccess,
