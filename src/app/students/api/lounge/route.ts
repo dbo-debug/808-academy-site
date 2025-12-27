@@ -7,10 +7,7 @@ export const dynamic = "force-dynamic";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const NO_CACHE_HEADERS = {
-  "Cache-Control": "no-store, max-age=0",
-  Pragma: "no-cache",
-};
+const NO_CACHE_HEADERS = { "Cache-Control": "no-store, max-age=0", Pragma: "no-cache" };
 
 /** Create a supabase client bound to the incoming user's auth token */
 function sb(token: string): SupabaseClient {
@@ -44,7 +41,13 @@ type LoungeResponse = {
   };
   gpa: { percent: number };
   links: Array<{ label: string; href: string }>;
-  announcements: Array<{ id: string; title: string; body: string; date: string }>;
+  announcements: Array<{
+    id: string;
+    title: string;
+    body?: string | null;
+    date?: string | null;
+    pinned?: boolean | null;
+  }>;
 };
 
 function isExpired(expiresAt?: string | null) {
@@ -69,33 +72,24 @@ export async function GET(req: NextRequest) {
     const authHeader = req.headers.get("authorization") ?? "";
     const token = authHeader.replace(/^Bearer\s+/i, "").trim();
     if (!token) {
-      return NextResponse.json(
-        { error: "Missing auth" },
-        { status: 401, headers: NO_CACHE_HEADERS }
-      );
+      return NextResponse.json({ error: "Missing auth" }, { status: 401, headers: NO_CACHE_HEADERS });
     }
 
     const supabase = sb(token);
     const { data: auth } = await supabase.auth.getUser();
     const user = auth?.user;
-
     if (!user) {
-      return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401, headers: NO_CACHE_HEADERS }
-      );
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401, headers: NO_CACHE_HEADERS });
     }
 
-    // ---------- PROFILE (name/avatar + legacy flags) ----------
+    // ---------- PROFILE ----------
     const { data: profile, error: profErr } = await supabase
       .from("profiles")
       .select("full_name, avatar_url, has_lounge_access, has_music_prod_ebook")
       .eq("id", user.id)
       .maybeSingle();
 
-    if (profErr) {
-      console.warn("[students/api/lounge] profiles select error", profErr);
-    }
+    if (profErr) console.warn("[students/api/lounge] profiles select error", profErr);
 
     const displayName =
       profile?.full_name ||
@@ -108,7 +102,7 @@ export async function GET(req: NextRequest) {
     const legacyHasLounge = profile?.has_lounge_access === true;
     const legacyHasEbook = profile?.has_music_prod_ebook === true;
 
-    // ---------- MEMBERSHIP (paid membership/tutoring/cohort in user_memberships) ----------
+    // ---------- MEMBERSHIP ----------
     const { data: membershipRow, error: memErr } = await supabase
       .from("user_memberships")
       .select("tier, expires_at")
@@ -117,9 +111,7 @@ export async function GET(req: NextRequest) {
       .limit(1)
       .maybeSingle();
 
-    if (memErr) {
-      console.warn("[students/api/lounge] user_memberships select error", memErr);
-    }
+    if (memErr) console.warn("[students/api/lounge] user_memberships select error", memErr);
 
     const membershipTierFromRow =
       membershipRow?.tier === "membership" ||
@@ -131,7 +123,7 @@ export async function GET(req: NextRequest) {
     const membershipActive =
       !!membershipTierFromRow && !isExpired(membershipRow?.expires_at ?? null);
 
-    // ---------- ENROLLMENTS (cohort / lifetime etc.) ----------
+    // ---------- ENROLLMENTS ----------
     const { data: enr, error: enrErr } = await supabase
       .from("enrollments")
       .select("course_slug, is_active")
@@ -140,14 +132,11 @@ export async function GET(req: NextRequest) {
       .limit(1)
       .maybeSingle();
 
-    if (enrErr) {
-      console.warn("[students/api/lounge] enrollments select error", enrErr);
-    }
+    if (enrErr) console.warn("[students/api/lounge] enrollments select error", enrErr);
 
     const hasEnrollment = !!enr?.course_slug;
 
     // ---------- ACCESS GATES ----------
-    // Lounge access = any paid membership OR any active enrollment OR legacy override flag.
     const hasLoungeAccess = membershipActive || hasEnrollment || legacyHasLounge;
 
     if (!hasLoungeAccess) {
@@ -157,7 +146,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Curriculum access = cohort tier OR enrollment OR legacy ebook flag
     const inferredTier: MembershipTier =
       membershipActive && membershipTierFromRow
         ? membershipTierFromRow
@@ -171,33 +159,22 @@ export async function GET(req: NextRequest) {
     // ---------- COURSE CHOICE ----------
     const url = new URL(req.url);
     const qCourse = url.searchParams.get("course") ?? undefined;
+    const course_slug: string = qCourse || (enr?.course_slug as string) || "music-production";
 
-    const course_slug: string =
-      qCourse || (enr?.course_slug as string) || "music-production";
-
-    // ---------- PROGRESS (only compute if curriculum is unlocked) ----------
+    // ---------- PROGRESS ----------
     let done = 0;
     let total = 0;
     let currentLessonSlug: string | null = null;
 
     if (hasCurriculumAccess) {
-      const { data: lessons, error: lessonsErr } = await supabase
+      const { data: lessons } = await supabase
         .from("lessons")
         .select("id, slug")
         .eq("course_slug", course_slug);
 
-      if (lessonsErr) {
-        console.warn("[students/api/lounge] lessons select error", lessonsErr);
-      }
-
       total = Array.isArray(lessons) && lessons.length > 0 ? lessons.length : 10;
 
-      const lessonIdToSlug = new Map<string, string>();
-      (lessons ?? []).forEach((l: any) => {
-        if (l?.id && l?.slug) lessonIdToSlug.set(String(l.id), String(l.slug));
-      });
-
-      const { data: prog, error: progErr } = await supabase
+      const { data: prog } = await supabase
         .from("lesson_progress")
         .select("lesson_id, completed_at")
         .eq("user_id", user.id)
@@ -205,15 +182,9 @@ export async function GET(req: NextRequest) {
         .eq("completed", true)
         .order("completed_at", { ascending: false });
 
-      if (progErr) {
-        console.warn("[students/api/lounge] lesson_progress select error", progErr);
-      }
-
       if (Array.isArray(prog)) {
         done = prog.length;
-
-        const latestLessonId = prog[0]?.lesson_id ? String(prog[0].lesson_id) : null;
-        currentLessonSlug = latestLessonId ? lessonIdToSlug.get(latestLessonId) ?? null : null;
+        currentLessonSlug = prog[0]?.lesson_id ?? null;
       }
     } else {
       total = 10;
@@ -234,16 +205,12 @@ export async function GET(req: NextRequest) {
         submitted_at: string | null;
       };
 
-      const { data: attempts, error: attErr } = await supabase
+      const { data: attempts } = await supabase
         .from("quiz_attempts")
         .select("lesson_id, score, max_score, submitted_at")
         .eq("user_id", user.id)
         .eq("course_slug", course_slug)
         .order("submitted_at", { ascending: false });
-
-      if (attErr) {
-        console.warn("[students/api/lounge] quiz_attempts select error", attErr);
-      }
 
       const latestByLesson = new Map<string, number>();
       (attempts as AttemptRow[] | null)?.forEach((row) => {
@@ -266,50 +233,39 @@ export async function GET(req: NextRequest) {
       { label: "Book Tutoring", href: "/tutoring" },
     ];
 
-    // ---------- ANNOUNCEMENTS (Supabase CMS) ----------
-    // Expected table: public.announcements
-    // columns:
-    //  - id uuid (pk)
-    //  - title text
-    //  - body text nullable
-    //  - publish_at timestamptz
-    //  - pinned bool default false
-    //  - is_published bool default false
+    // ---------- ANNOUNCEMENTS (Supabase table) ----------
     type AnnouncementRow = {
       id: string;
-      title: string;
+      title: string | null;
       body: string | null;
-      publish_at: string;
-      pinned: boolean | null;
+      publish_at: string | null;
+      created_at: string | null;
       is_published: boolean | null;
+      pinned: boolean | null;
     };
 
-    const { data: announcementsRaw, error: annErr } = await supabase
-      .from("announcements")
-      .select("id,title,body,publish_at,pinned,is_published")
-      .eq("is_published", true)
-      .order("pinned", { ascending: false })
-      .order("publish_at", { ascending: false })
-      .limit(10);
+    const nowIso = new Date().toISOString();
 
-    if (annErr) {
-      console.warn("[students/api/lounge] announcements select error", annErr);
-    }
+    const { data: annRows, error: annErr } = await supabase
+      .from("announcements")
+      .select("id, title, body, publish_at, created_at, is_published, pinned")
+      .eq("is_published", true)
+      .or(`publish_at.is.null,publish_at.lte.${nowIso}`)
+      .order("pinned", { ascending: false })
+      .order("publish_at", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: false })
+      .limit(8);
+
+    if (annErr) console.warn("[students/api/lounge] announcements select error", annErr);
 
     const announcements: LoungeResponse["announcements"] =
-      (announcementsRaw as AnnouncementRow[] | null)?.map((a) => ({
-        id: a.id,
-        title: a.title,
-        body: a.body ?? "",
-        date: new Date(a.publish_at).toISOString(),
-      })) ?? [
-        {
-          id: "welcome",
-          title: "Welcome to the Student Lounge",
-          body: "Announcements will appear here as we publish them.",
-          date: new Date().toISOString(),
-        },
-      ];
+      (annRows as AnnouncementRow[] | null)?.map((r) => ({
+        id: r.id,
+        title: r.title ?? "Announcement",
+        body: r.body ?? null,
+        date: r.publish_at ?? r.created_at ?? null,
+        pinned: r.pinned ?? false,
+      })) ?? [];
 
     const body: LoungeResponse = {
       hasLoungeAccess,
