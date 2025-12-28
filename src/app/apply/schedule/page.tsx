@@ -56,8 +56,13 @@ function Stepper({ current }: { current: 1 | 2 | 3 }) {
   );
 }
 
-// Calendly
-const CAL_ONBOARDING = "https://calendly.com/admin-the808academy/onboarding-call";
+// ✅ Calendly (NEW split)
+const CAL_ONBOARDING_PAID =
+  "https://calendly.com/admin-the808academy/onboarding-call";
+const CAL_ONBOARDING_DEMO =
+  "https://calendly.com/admin-the808academy/free-cohort-onboarding-call";
+
+// Optional quick intro call
 const CAL_INTRO = "https://calendly.com/admin-the808academy/30min";
 
 // Tutoring: Calendly + Stripe price IDs
@@ -94,9 +99,7 @@ const TUTORING: Record<
   },
 };
 
-// Checkout helper:
-// - membership/cohort use mode
-// - tutoring uses priceId (generic one-time payment branch in /api/checkout)
+// Existing helper (keep for tutoring + membership because those may not use calendly redirect flow)
 async function startCheckout(params: {
   mode?: "demo" | "paid" | "membership" | "subscription";
   priceId?: string;
@@ -134,7 +137,6 @@ function normalizeProgram(raw: string | null): Program {
 }
 
 function normalizeCohort(raw: string | null): CohortMode {
-  // default is ALWAYS paid unless explicitly demo
   return raw === "demo" ? "demo" : "paid";
 }
 
@@ -205,9 +207,6 @@ export default function SchedulePage() {
     const tp = getParam("tutoringPackage");
     if (tp === "single" || tp === "block4") setTutoringPackage(tp);
 
-    // cohort gate:
-    // - cohort=demo => free demo cohort
-    // - else => paid cohort
     setCohortMode(normalizeCohort(getParam("cohort")));
   }, []);
 
@@ -231,6 +230,26 @@ export default function SchedulePage() {
     ? "Choose your tutoring option, schedule your session, then complete checkout to confirm."
     : "You already picked your class time. This 30-minute onboarding call confirms goals, answers questions, and gets you set up before payment.";
 
+  // ✅ choose correct calendly based on demo/paid
+  const courseCalendly =
+    cohortMode === "demo" ? CAL_ONBOARDING_DEMO : CAL_ONBOARDING_PAID;
+
+  // ✅ helper to preserve params and send to /apply/checkout bridge
+  const buildCheckoutBridgeUrl = () => {
+    const next = new URL("/apply/checkout", window.location.origin);
+
+    // Explicitly mark demo vs paid for the bridge page
+    next.searchParams.set("cohort", cohortMode === "demo" ? "demo" : "paid");
+
+    // Keep context (optional but useful)
+    next.searchParams.set("program", program);
+    if (course) next.searchParams.set("course", course);
+    if (classTime) next.searchParams.set("classTime", classTime);
+
+    // If calendly passed details through, they’re already on this URL, but we don’t need them.
+    return next.toString();
+  };
+
   return (
     <main className="min-h-screen px-6 py-16 text-white">
       <section className="mx-auto w-full max-w-5xl">
@@ -243,6 +262,20 @@ export default function SchedulePage() {
               {headline}
             </h1>
             <p className="text-gray-300 mb-6">{subhead}</p>
+
+            {/* ✅ IMPORTANT NOTICE for Courses (this is the fix for confusion) */}
+            {isCourse && (
+              <div className="mb-5 rounded-2xl border border-teal-400/30 bg-teal-400/10 p-4 text-sm text-white/80">
+                <div className="text-xs uppercase tracking-[0.2em] text-teal-200">
+                  Important
+                </div>
+                <div className="mt-1">
+                  Booking the onboarding call does <span className="font-semibold">not</span> complete enrollment.
+                  After you schedule, you’ll be redirected to{" "}
+                  <span className="font-semibold">secure checkout</span> to confirm your spot.
+                </div>
+              </div>
+            )}
 
             {/* Tutoring: two cards + calendly embed */}
             {isTutoring && (
@@ -282,12 +315,12 @@ export default function SchedulePage() {
               </>
             )}
 
-            {/* Course: embed onboarding calendly */}
+            {/* Course: embed correct onboarding calendly */}
             {isCourse && (
               <div className="rounded-2xl overflow-hidden border border-white/10 bg-black">
                 <iframe
                   title="Onboarding Call"
-                  src={`${CAL_ONBOARDING}?hide_gdpr_banner=1`}
+                  src={`${courseCalendly}?hide_gdpr_banner=1`}
                   className="w-full"
                   style={{ height: "760px" }}
                 />
@@ -361,7 +394,7 @@ export default function SchedulePage() {
                       </span>
                     </div>
                     <div className="mt-2">
-                      Schedule onboarding first, then checkout.
+                      After booking, you’ll complete checkout to confirm.
                     </div>
                   </div>
                 </>
@@ -424,14 +457,8 @@ export default function SchedulePage() {
                       return;
                     }
 
-                    // Course cohort — derived from URL ONLY
-                    await startCheckout({
-                      mode: cohortMode === "demo" ? "demo" : "paid",
-                      source:
-                        cohortMode === "demo"
-                          ? "apply_cohort_demo_after_onboarding"
-                          : "apply_cohort_paid_after_onboarding",
-                    });
+                    // ✅ Course cohort: send to the same bridge Calendly uses
+                    window.location.href = buildCheckoutBridgeUrl();
                   } catch (e: unknown) {
                     alert(getErrorMessage(e));
                   } finally {
@@ -443,7 +470,7 @@ export default function SchedulePage() {
               </button>
 
               <p className="mt-3 text-xs text-white/50">
-                Tip: schedule first, then checkout to confirm.
+                Tip: booking the call does not enroll you — checkout is required to confirm.
               </p>
             </div>
           </aside>
