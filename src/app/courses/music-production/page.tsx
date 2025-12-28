@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { JoinDemoCohortButton } from "../../../components/JoinDemoCohortButton";
 
 export const metadata = {
   title: "Music Production Course | 808 Academy",
@@ -120,8 +121,9 @@ export default function MusicProductionPage() {
           </h1>
 
           <p className="mt-4 max-w-2xl text-sm sm:text-base text-white/75">
-            Learn to produce, arrange, and finish release-ready songs from your home studio.
-            This is a hands-on cohort with structure, feedback, and a clear weekly path.
+            Learn to produce, arrange, and finish release-ready songs from your
+            home studio. This is a hands-on cohort with structure, feedback, and
+            a clear weekly path.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -133,17 +135,28 @@ export default function MusicProductionPage() {
               Apply Now
             </Link>
 
-            {/* Keep this as intro call (Calendly) if you want */}
+            {/* Paid intro call (kept as-is) */}
             <Link
               href="/apply?program=Course&course=Music+Production"
               className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white/90 hover:bg-white/10 transition"
             >
               Schedule a Call
             </Link>
+
+            {/* ✅ FREE demo cohort (existing logic; safe for free Stripe product) */}
+            <JoinDemoCohortButton
+              label="Join Free Demo Cohort"
+              className="rounded-full"
+            />
           </div>
 
           <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-white/45">
             Limited spots • Zoom + screen share • Built for real producers
+          </p>
+
+          <p className="mt-3 max-w-2xl text-xs text-white/55">
+            Prefer to try it first? Join the free demo cohort above (limited
+            time).
           </p>
         </div>
       </section>
@@ -202,7 +215,9 @@ export default function MusicProductionPage() {
         />
         <div className="mx-auto max-w-5xl px-6 mt-6 grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <div className="text-sm font-semibold">A finished, release-ready track</div>
+            <div className="text-sm font-semibold">
+              A finished, release-ready track
+            </div>
             <p className="mt-2 text-sm text-white/70">
               Your goal is completion — not another half-done loop folder.
             </p>
@@ -211,15 +226,18 @@ export default function MusicProductionPage() {
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <div className="text-sm font-semibold">Real feedback + direction</div>
             <p className="mt-2 text-sm text-white/70">
-              Weekly progress with clear priorities so you always know what to improve next.
+              Weekly progress with clear priorities so you always know what to
+              improve next.
             </p>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <div className="text-sm font-semibold">12 months of membership included</div>
+            <div className="text-sm font-semibold">
+              12 months of membership included
+            </div>
             <p className="mt-2 text-sm text-white/70">
-              Enroll in the course and get a full year of membership free — Student Lounge, drops,
-              remix contests, and more.
+              Enroll in the course and get a full year of membership free —
+              Student Lounge, drops, remix contests, and more.
             </p>
           </div>
         </div>
@@ -253,15 +271,22 @@ export default function MusicProductionPage() {
           ))}
         </div>
 
-        <div className="mx-auto max-w-5xl px-6 mt-10">
+        <div className="mx-auto max-w-5xl px-6 mt-10 flex flex-wrap gap-3 items-center">
           <Link
             href="/apply?program=Course&course=Music+Production"
             className="inline-flex items-center justify-center rounded-full bg-[#00FFF7] px-7 py-3 text-sm font-semibold text-black shadow-lg shadow-cyan-500/30 transition hover:translate-y-[1px]"
           >
             Apply for the cohort
           </Link>
-          <p className="mt-3 text-xs text-white/50">
-            You’ll choose your class time (12pm or 6pm) on the application. Next step is the 30-minute onboarding call.
+
+          <JoinDemoCohortButton
+            label="Join Free Demo Cohort"
+            className="rounded-full border border-white/20 bg-transparent px-7 py-3 text-sm font-semibold text-white/90 hover:bg-white/10 transition"
+          />
+
+          <p className="w-full mt-3 text-xs text-white/50">
+            You’ll choose your class time (12pm or 6pm) on the application. Next
+            step is the 30-minute onboarding call.
           </p>
         </div>
       </section>
