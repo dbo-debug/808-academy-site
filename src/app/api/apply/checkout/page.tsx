@@ -1,4 +1,4 @@
-// src/app/apply/checkout/page.tsx
+// src/app/apply/checkout/CheckoutClient.tsx
 "use client";
 
 import * as React from "react";
@@ -7,17 +7,17 @@ import { useSearchParams } from "next/navigation";
 type Mode = "demo" | "paid";
 
 function normalizeMode(raw: string | null): Mode {
-  if (!raw) return "paid"; // default paid
+  if (!raw) return "paid";
   const v = raw.toLowerCase();
   return v === "demo" ? "demo" : "paid";
 }
 
-export default function ApplyCheckoutBridgePage() {
+export default function CheckoutClient() {
   const sp = useSearchParams();
 
   const [status, setStatus] = React.useState<
-    "starting" | "creating" | "redirecting" | "error"
-  >("starting");
+    "creating" | "redirecting" | "error"
+  >("creating");
   const [message, setMessage] = React.useState<string>("");
 
   React.useEffect(() => {
@@ -30,36 +30,28 @@ export default function ApplyCheckoutBridgePage() {
         const course = sp.get("course") || "Music Production";
         const classTime = sp.get("classTime") || "";
 
-        // Create Stripe checkout session using your EXISTING /api/checkout route
         const res = await fetch("/api/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            mode, // "demo" | "paid" -> your API maps paid correctly, demo is default
+            mode, // "demo" | "paid"
             source: "calendly",
-            // metadata helpers (optional, safe)
             program,
             course,
             classTime,
-            // pass-through: calendly can append these; we don't need them, but you can store later
-            calendlyEvent: sp.get("event_type_uuid") || undefined,
-            calendlyInvitee: sp.get("invitee_uuid") || undefined,
           }),
         });
 
         const data = await res.json().catch(() => ({}));
-
         if (!res.ok || !data?.url) {
-          throw new Error(data?.error || "Could not start checkout.");
+          throw new Error(data?.error || data?.details || "Could not start checkout.");
         }
 
         setStatus("redirecting");
         window.location.href = data.url;
       } catch (e: unknown) {
-        const msg =
-          e instanceof Error ? e.message : "Could not start checkout.";
         setStatus("error");
-        setMessage(msg);
+        setMessage(e instanceof Error ? e.message : "Could not start checkout.");
       }
     };
 
@@ -75,16 +67,15 @@ export default function ApplyCheckoutBridgePage() {
             Step 3 of 3
           </p>
 
-          <h1 className="mt-3 text-3xl font-semibold">Finishing enrollment…</h1>
+          <h1 className="mt-3 text-3xl font-semibold">
+            {status === "error" ? "Checkout error" : "Finishing enrollment…"}
+          </h1>
 
-          {status !== "error" ? (
-            <p className="mt-3 text-white/70">
-              We’re opening secure checkout now. If nothing happens in a few
-              seconds, click the button below.
-            </p>
+          {status === "error" ? (
+            <p className="mt-3 text-red-300">{message}</p>
           ) : (
-            <p className="mt-3 text-red-300">
-              {message || "Something went wrong starting checkout."}
+            <p className="mt-3 text-white/70">
+              We’re opening secure checkout now…
             </p>
           )}
 
@@ -97,8 +88,7 @@ export default function ApplyCheckoutBridgePage() {
             </a>
 
             <p className="text-xs text-white/40">
-              Tip: Scheduling the call does not enroll you — checkout is required
-              to save your spot.
+              Tip: scheduling the call does not enroll you — checkout confirms your spot.
             </p>
           </div>
         </div>
