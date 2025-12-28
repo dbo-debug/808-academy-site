@@ -1,16 +1,23 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { JoinDemoCohortButton } from "../components/JoinDemoCohortButton";
+import HomeEntryOverlay from "../components/HomeEntryOverlay";
 
 /**
  * Home / Landing
  * - White logo, left-justified hero, dark overlay on /main.jpg
  * - Courses (4 cards)
- * - Choose Your Path (pricing: Courses / Tutoring / VIP)
+ * - Choose Your Path (pricing: Courses / Tutoring / Membership)
  */
 export default function HomePage() {
   return (
     <main className="text-gray-100">
+      {/* ---------- ENTRY OVERLAY (shows once per session) ---------- */}
+      <HomeEntryOverlay
+        classHref="/courses/music-production"
+        remixHref="/remix-contest"
+      />
+
       {/* ---------- HERO ---------- */}
       <section
         className="relative min-h-[88vh] flex items-center"
@@ -50,14 +57,39 @@ export default function HomePage() {
             >
               View Courses
             </Link>
+
             <Link
               href="/apply"
               className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10 transition"
             >
               Apply Now
             </Link>
-            <JoinDemoCohortButton />
+
+            {/* NEW: explain what the free class/cohort is BEFORE application */}
+            <Link
+              href="/courses/music-production"
+              className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10 transition"
+            >
+              Free Class Details
+            </Link>
+
+            {/* NEW: remix contest entry point */}
+            <Link
+              href="/remix-contest"
+              className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10 transition"
+            >
+              Remix Contest
+            </Link>
+
+            {/* KEEP: this is likely what triggers demo/free cohort behavior + free Stripe product */}
+            <JoinDemoCohortButton label="Join Free Demo Cohort" />
           </div>
+
+          {/* Optional tiny helper text (keeps intent clear; remove if you want it cleaner) */}
+          <p className="mt-4 max-w-2xl text-left text-sm text-gray-400">
+            Tip: “Free Class Details” explains the program. “Join Free Demo
+            Cohort” takes you straight to the demo cohort application.
+          </p>
         </div>
       </section>
 
@@ -168,7 +200,7 @@ export default function HomePage() {
               href="/tutoring"
             />
 
-              {/* Membership */}
+            {/* Membership */}
             <PricingCard
               name="Membership"
               price="$15"
@@ -182,10 +214,10 @@ export default function HomePage() {
                 "Unlimited entries to 808 remix contests",
                 "Sync submission opportunities and more",
               ]}
-              image="/vip.png"              // keep the same image
+              image="/vip.png"
               ctaLabel="Explore Membership"
-              href="/membership"            // points to the new membership page
-/>
+              href="/membership"
+            />
           </div>
         </div>
       </section>
