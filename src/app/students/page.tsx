@@ -12,6 +12,7 @@ import AuthGuard from "./components/AuthGuard";
 import Stat from "./components/Stat";
 import Announcements from "./components/Announcements";
 import CourseCard from "./components/CourseCard";
+import { useSWRConfig } from "swr";
 
 //
 // ---------------------------
@@ -124,7 +125,7 @@ const loungeFetcher = async (url: string): Promise<LoungeFetcherResult> => {
 // ---------------------------
 //
 
-function ClaimEnrollmentsOnMount() {
+function ClaimEnrollmentsOnMount({ onDone }: { onDone?: () => void }) {
   useEffect(() => {
     let cancelled = false;
 
@@ -153,6 +154,9 @@ function ClaimEnrollmentsOnMount() {
 
         if (!cancelled) {
           console.log("[students/page] claim-enrollments response", res.status, json);
+
+          // ✅ Always ask SWR to revalidate the lounge data after claim finishes
+          onDone?.();
         }
       } catch (err) {
         if (!cancelled) console.error("[students/page] claim-enrollments error", err);
@@ -164,7 +168,7 @@ function ClaimEnrollmentsOnMount() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [onDone]);
 
   return null;
 }
@@ -753,6 +757,8 @@ function StoreCard() {
 //
 
 export default function StudentsHome() {
+  const { mutate } = useSWRConfig();
+
   const { data, error, isLoading } = useSWR<LoungeFetcherResult>(
     "/students/api/lounge",
     loungeFetcher
