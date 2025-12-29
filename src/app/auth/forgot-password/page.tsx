@@ -6,9 +6,7 @@ import { supabase } from "@/lib/supabase";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
-    "idle"
-  );
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState<string>("");
 
   const sendReset = async (e: React.FormEvent) => {
@@ -17,20 +15,15 @@ export default function ForgotPasswordPage() {
     setMessage("");
 
     try {
-      // IMPORTANT:
-      // Use the canonical public site url. This must match what Supabase knows.
-      // You already have NEXT_PUBLIC_SITE_URL set to https://the808academy.com
-      const baseUrl =
-        (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(
-          /\/$/,
-          ""
-        );
+      // Use the current origin so Preview builds send Preview links,
+      // and Production sends Production links.
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
 
-      // Send Supabase reset email and force it to come back to *your* reset page.
-      // Supabase will append the auth params; your reset page must be able to
-      // establish a recovery session from them.
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${baseUrl}/auth/reset-password`,
+      const redirectTo = `${origin.replace(/\/$/, "")}/auth/reset-password`;
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo,
       });
 
       if (error) {
@@ -40,12 +33,10 @@ export default function ForgotPasswordPage() {
       }
 
       setStatus("sent");
-      setMessage("Check your email for a password reset link.");
+      setMessage("If that email exists in our system, you’ll receive a reset link shortly.");
     } catch (err: unknown) {
       setStatus("error");
-      setMessage(
-        err instanceof Error ? err.message : "Something went wrong sending the reset email."
-      );
+      setMessage(err instanceof Error ? err.message : "Something went wrong sending the reset email.");
     }
   };
 
@@ -66,9 +57,7 @@ export default function ForgotPasswordPage() {
           onSubmit={sendReset}
           className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur"
         >
-          <label className="block text-xs font-semibold text-white/70">
-            Email
-          </label>
+          <label className="block text-xs font-semibold text-white/70">Email</label>
           <input
             type="email"
             required
@@ -90,7 +79,7 @@ export default function ForgotPasswordPage() {
           {/* Privacy-safe message (don’t confirm if an email exists) */}
           {status === "sent" && (
             <p className="mt-3 text-xs text-white/70">
-              If that email exists in our system, you’ll receive a reset link shortly.
+              {message}
             </p>
           )}
 
@@ -100,10 +89,7 @@ export default function ForgotPasswordPage() {
         </form>
 
         <div className="text-sm text-white/70">
-          <Link
-            className="underline-offset-4 hover:underline"
-            href="/auth/signin"
-          >
+          <Link className="underline-offset-4 hover:underline" href="/auth/signin">
             Back to sign in
           </Link>
         </div>
