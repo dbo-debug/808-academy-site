@@ -145,11 +145,14 @@ export default function Quiz({
   }
 
   if (err && !questions.length) {
-    return <div className="text-amber-300 text-sm">{err}</div>;
+    if (err === "Not signed in") {
+      return <div className="text-white/60 text-sm">Sign in to take the quiz.</div>;
+    }
+    return <div className="text-white/60 text-sm">Quiz is being published — check back soon.</div>;
   }
 
   if (!questions.length) {
-    return <div className="text-white/60">Quiz coming soon.</div>;
+    return <div className="text-white/60">Quiz is being published — check back soon.</div>;
   }
 
   return (

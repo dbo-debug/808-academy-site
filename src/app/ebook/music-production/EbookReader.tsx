@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import BookLayout from "./components/BookLayout";
 import ChapterNav from "./components/ChapterNav";
@@ -15,6 +15,9 @@ import HarmonyChordsChapter from "./chapter-content/harmony-chords";
 import VocalProductionChapter from "./chapter-content/vocal-production";
 import MixingFundamentalsChapter from "./chapter-content/mixing-fundamentals";
 import FinalUnitChapter from "./chapter-content/final-unit";
+import Quiz from "@/app/students/components/Quiz";
+import { supabase } from "@/lib/supabase";
+import { getQuizEntryForChapter } from "@/lib/musicProductionQuizMap";
 
 export type ChapterId =
   | "sound-hearing"
@@ -124,6 +127,8 @@ export default function EbookReader({ chapterIdParam }: EbookReaderProps) {
   const paramChapter = Array.isArray(params?.chapter)
     ? params?.chapter[0]
     : params?.chapter;
+  const [hasCurriculumAccess, setHasCurriculumAccess] = useState(false);
+  const [accessChecked, setAccessChecked] = useState(false);
 
   const effectiveChapterParam = chapterIdParam ?? paramChapter;
 
@@ -140,6 +145,54 @@ export default function EbookReader({ chapterIdParam }: EbookReaderProps) {
     (c) => c.id === currentChapterId
   );
   const currentChapter = CHAPTERS[currentChapterIndex] ?? CHAPTERS[0];
+  const quizEntry = getQuizEntryForChapter(currentChapterId);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadAccess = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+
+        if (!token) {
+          if (!cancelled) {
+            setHasCurriculumAccess(false);
+            setAccessChecked(true);
+          }
+          return;
+        }
+
+        const res = await fetch("/students/api/lounge", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) {
+          if (!cancelled) {
+            setHasCurriculumAccess(false);
+            setAccessChecked(true);
+          }
+          return;
+        }
+
+        const json = await res.json();
+        if (!cancelled) {
+          setHasCurriculumAccess(json?.hasCurriculumAccess === true);
+          setAccessChecked(true);
+        }
+      } catch {
+        if (!cancelled) {
+          setHasCurriculumAccess(false);
+          setAccessChecked(true);
+        }
+      }
+    };
+
+    void loadAccess();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const renderChapter = () => {
     switch (currentChapterId) {
@@ -231,6 +284,34 @@ export default function EbookReader({ chapterIdParam }: EbookReaderProps) {
         <div className="prose prose-invert prose-slate max-w-none prose-headings:scroll-mt-24 prose-headings:break-words prose-a:text-emerald-400 prose-a:underline-offset-4 prose-img:mx-auto prose-img:rounded-2xl prose-video:rounded-2xl hover:prose-a:underline">
           {renderChapter()}
         </div>
+
+        {accessChecked && hasCurriculumAccess && (
+          <section className="space-y-4 rounded-2xl border border-cyan-400/20 bg-white/[0.03] p-6 shadow-[0_0_24px_rgba(34,211,238,0.08)]">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/80">
+                Chapter Quiz
+              </p>
+              <h2 className="text-2xl font-semibold text-slate-50">
+                Check your understanding
+              </h2>
+              <p className="text-sm text-slate-300">
+                Answer all questions and submit to update your progress and GPA.
+              </p>
+            </div>
+
+            {quizEntry ? (
+              <Quiz
+                quizId={quizEntry.quizId}
+                courseSlug={quizEntry.courseSlug}
+                lessonId={quizEntry.lessonId}
+              />
+            ) : (
+              <div className="text-white/60 text-sm">
+                Quiz is being published — check back soon.
+              </div>
+            )}
+          </section>
+        )}
 
         <ChapterNav chapters={CHAPTERS} currentChapterId={currentChapterId} />
       </article>
