@@ -157,22 +157,19 @@ export default function Quiz({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <h3 className="text-lg font-semibold">Knowledge Check</h3>
-        {latest ? (
-          <div className="text-sm text-white/70">
-            Last score:{" "}
-            <span className="text-cyan-300">
-              {latest.score}/{latest.max_score}
+      {latest ? (
+        <div className="text-sm text-white/70">
+          Last score:{" "}
+          <span className="text-cyan-300">
+            {latest.score}/{latest.max_score}
+          </span>
+          {typeof latest.passed === "boolean" ? (
+            <span className="ml-2 text-xs text-white/50">
+              ({latest.passed ? "passed" : "not passed"})
             </span>
-            {typeof latest.passed === "boolean" ? (
-              <span className="ml-2 text-xs text-white/50">
-                ({latest.passed ? "passed" : "not passed"})
-              </span>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
+          ) : null}
+        </div>
+      ) : null}
 
       <ol className="space-y-5">
         {questions.map((q, idx) => (
