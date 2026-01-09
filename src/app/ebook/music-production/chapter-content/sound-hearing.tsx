@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 type ZoomImageState = {
   src: string;
@@ -1118,22 +1117,6 @@ export default function SoundHearingChapter() {
             </ul>
           </div>
 
-          {/* QUIZ CTA (replaces broken drag/drop) */}
-          <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-5">
-            <h3 className="text-sm font-semibold text-emerald-100">
-              Knowledge Check
-            </h3>
-            <p className="mt-2 text-sm text-emerald-50/90">
-              Take the Foundations quiz in the Student Lounge. Unlimited attempts —
-              highest score counts.
-            </p>
-            <Link
-              href="/students/music-production/mp-foundations/quiz"
-              className="mt-4 inline-flex items-center justify-center rounded-full bg-[#00FFF7] px-5 py-2 text-sm font-semibold text-black hover:translate-y-[1px]"
-            >
-              Take the Quiz
-            </Link>
-          </div>
         </section>
       </div>
 
