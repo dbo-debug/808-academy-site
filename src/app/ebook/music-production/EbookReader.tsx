@@ -146,22 +146,6 @@ export default function EbookReader({ chapterIdParam }: EbookReaderProps) {
   );
   const currentChapter = CHAPTERS[currentChapterIndex] ?? CHAPTERS[0];
   const quizEntry = getQuizEntryForChapter(currentChapterId);
-  const hasQuiz = Boolean(quizEntry);
-  const canAccessQuiz = accessChecked && hasCurriculumAccess && hasQuiz;
-  const quizStatusMessage = !accessChecked
-    ? "Checking quiz access..."
-    : !hasCurriculumAccess
-      ? "Sign in to take the quiz."
-      : !hasQuiz
-        ? "Quiz is being published — check back soon."
-        : "Ready when you are — scroll down to start.";
-
-  const handleScrollToQuiz = () => {
-    const el = document.getElementById("chapter-quiz");
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.setTimeout(() => window.scrollBy(0, -80), 120);
-  };
 
   useEffect(() => {
     let cancelled = false;
@@ -296,27 +280,6 @@ export default function EbookReader({ chapterIdParam }: EbookReaderProps) {
             </p>
           )}
         </header>
-
-        <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_0_24px_rgba(34,211,238,0.08)]">
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/80">
-              Knowledge Check
-            </p>
-            <h2 className="text-lg font-semibold text-slate-50">
-              Take the chapter quiz
-            </h2>
-            <p className="text-sm text-slate-300">{quizStatusMessage}</p>
-          </div>
-          <button
-            type="button"
-            onClick={handleScrollToQuiz}
-            disabled={!canAccessQuiz}
-            aria-disabled={!canAccessQuiz}
-            className="inline-flex items-center justify-center rounded-full bg-[#00FFF7] px-5 py-2 text-sm font-semibold text-black transition hover:translate-y-[1px] disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/60 disabled:hover:translate-y-0"
-          >
-            Take the Quiz
-          </button>
-        </section>
 
         <div className="prose prose-invert prose-slate max-w-none prose-headings:scroll-mt-24 prose-headings:break-words prose-a:text-emerald-400 prose-a:underline-offset-4 prose-img:mx-auto prose-img:rounded-2xl prose-video:rounded-2xl hover:prose-a:underline">
           {renderChapter()}
