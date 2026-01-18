@@ -589,7 +589,7 @@ function SampleLibraryCard() {
               className="group w-[220px] shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-black/30"
             >
               {/* Cover */}
-              <div className="relative aspect-[1/1] w-full bg-black/50">
+              <div className="relative aspect-[3/4] w-full bg-black/50">
                 <Image
                   src={p.cover}
                   alt={`${p.name} cover`}
