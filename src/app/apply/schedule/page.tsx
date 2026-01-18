@@ -99,6 +99,15 @@ const TUTORING: Record<
   },
 };
 
+// ✅ Calendly helper: build a more reliable inline embed URL
+function calendlyInlineSrc(url: string) {
+  const u = new URL(url);
+  u.searchParams.set("hide_gdpr_banner", "1");
+  u.searchParams.set("embed_domain", "the808academy.com");
+  u.searchParams.set("embed_type", "Inline");
+  return u.toString();
+}
+
 // Existing helper (keep for tutoring + membership)
 async function startCheckout(params: {
   mode?: "demo" | "paid" | "membership" | "subscription";
@@ -329,11 +338,25 @@ export default function SchedulePage() {
 
                 <div className="rounded-2xl overflow-hidden border border-white/10 bg-black">
                   <iframe
+                    key={tutoringPackage} // ✅ force Calendly remount on switch
                     title="Tutoring Scheduler"
-                    src={`${tutoring.calendly}?hide_gdpr_banner=1`}
+                    src={calendlyInlineSrc(tutoring.calendly)}
                     className="w-full"
                     style={{ height: "760px" }}
                   />
+                </div>
+
+                <div className="mt-3 text-xs text-white/50">
+                  If the scheduler ever fails to load,{" "}
+                  <a
+                    className="text-teal-300 underline hover:text-teal-200"
+                    href={tutoring.calendly}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    open it in a new tab
+                  </a>
+                  .
                 </div>
               </>
             )}
