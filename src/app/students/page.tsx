@@ -538,27 +538,93 @@ function RemixContestCard() {
 }
 
 function SampleLibraryCard() {
+  // Later: replace with real data + real cover images
+  const packs = [
+    {
+      name: "808 Drum Essentials",
+      tag: "Featured",
+      cover: "/assets/lounge/samples/808-drum-essentials.jpg",
+    },
+    {
+      name: "Synth One-Shots",
+      tag: "Featured",
+      cover: "/assets/lounge/samples/synth-one-shots.jpg",
+    },
+    {
+      name: "Texture FX",
+      tag: "Featured",
+      cover: "/assets/lounge/samples/texture-fx.jpg",
+    },
+    {
+      name: "Vocal Chops",
+      tag: "Featured",
+      cover: "/assets/lounge/samples/vocal-chops.jpg",
+    },
+  ];
+
   return (
     <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
       <div className="flex items-center justify-between gap-4">
-        <h3 className="text-lg font-semibold">Sample Library</h3>
+        <div>
+          <h3 className="text-lg font-semibold">Sample Library</h3>
+          <p className="mt-1 text-sm text-white/70">
+            Featured packs and weekly drops. (Library coming online soon.)
+          </p>
+        </div>
+
         <Link
           href="/students/samples"
-          className="rounded-lg border border-white/20 px-3 py-1.5 text-xs transition hover:border-[#00FFF7] hover:text-[#00FFF7]"
+          className="shrink-0 rounded-lg border border-white/20 px-3 py-1.5 text-xs transition hover:border-[#00FFF7] hover:text-[#00FFF7]"
         >
           Open Library →
         </Link>
       </div>
 
-      <p className="mt-2 text-sm text-white/70">Featured packs and weekly drops. (Library coming online soon.)</p>
+      {/* Taller carousel on desktop */}
+      <div className="mt-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-4">
+          {packs.map((p) => (
+            <div
+              key={p.name}
+              className="group w-[220px] shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-black/30"
+            >
+              {/* Cover */}
+              <div className="relative aspect-[1/1] w-full bg-black/50">
+                <Image
+                  src={p.cover}
+                  alt={`${p.name} cover`}
+                  fill
+                  className="object-cover transition duration-300 group-hover:scale-[1.03]"
+                  sizes="(max-width: 768px) 220px, 260px"
+                />
 
-      <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
-        {["808 Drum Essentials", "Synth One-Shots", "Texture FX", "Vocal Chops"].map((name) => (
-          <div key={name} className="min-w-[220px] rounded-xl border border-white/10 bg-black/30 p-4">
-            <div className="text-sm font-semibold">{name}</div>
-            <div className="mt-1 text-xs text-white/60">Featured</div>
-          </div>
-        ))}
+                {/* subtle overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+                {/* tag */}
+                <div className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/40 px-2 py-1 text-[10px] text-white/70">
+                  {p.tag}
+                </div>
+              </div>
+
+              {/* Text */}
+              <div className="p-4">
+                <div className="text-sm font-semibold">{p.name}</div>
+                <div className="mt-1 text-xs text-white/60">Sample Pack</div>
+
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    className="w-full rounded-lg border border-white/20 px-3 py-2 text-xs text-white/80 transition hover:border-[#00FFF7] hover:text-[#00FFF7]"
+                    onClick={() => alert("Sample Library coming soon.")}
+                  >
+                    View pack →
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
