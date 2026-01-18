@@ -24,7 +24,6 @@ const toTitle = (slug: string): string =>
 type MembershipTier = "membership" | "tutoring" | "cohort" | "both";
 
 type LoungeResponse = {
-  // ✅ explicit gates
   hasLoungeAccess: boolean;
   hasCurriculumAccess: boolean;
 
@@ -62,6 +61,12 @@ function getMetadataName(metadata: unknown): string | null {
   return typeof fullName === "string" ? fullName : null;
 }
 
+function getMetadataAvatar(metadata: unknown): string | null {
+  if (!metadata || typeof metadata !== "object") return null;
+  const avatar = (metadata as Record<string, unknown>).avatar_url;
+  return typeof avatar === "string" ? avatar : null;
+}
+
 /**
  * GET /students/api/lounge
  * optional query: ?course=<slug>
@@ -97,7 +102,8 @@ export async function GET(req: NextRequest) {
       user.email?.split("@")[0] ||
       "Student";
 
-    const avatarUrl = profile?.avatar_url ?? null;
+    // ✅ IMPORTANT: fallback to auth metadata for avatar if profiles is null
+    const avatarUrl = profile?.avatar_url ?? getMetadataAvatar(user.user_metadata) ?? null;
 
     const legacyHasLounge = profile?.has_lounge_access === true;
     const legacyHasEbook = profile?.has_music_prod_ebook === true;
@@ -147,7 +153,6 @@ export async function GET(req: NextRequest) {
     }
 
     // ---------- TIER INFERENCE ----------
-    // If user has BOTH a membership and an active enrollment, expose "both"
     const inferredTier: MembershipTier =
       membershipActive && hasEnrollment
         ? "both"

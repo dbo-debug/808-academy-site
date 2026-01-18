@@ -39,10 +39,10 @@ export default function Announcements({ items }: { items: AnnouncementItem[] }) 
 
   const goTo = (idx: number) => {
     if (!scrollerRef.current || total === 0) return;
-    const next = Math.max(0, Math.min(idx, total - 1));
-    setActive(next);
+    const nextIdx = Math.max(0, Math.min(idx, total - 1));
+    setActive(nextIdx);
 
-    const child = scrollerRef.current.children.item(next) as HTMLElement | null;
+    const child = scrollerRef.current.children.item(nextIdx) as HTMLElement | null;
     child?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
   };
 
@@ -51,17 +51,15 @@ export default function Announcements({ items }: { items: AnnouncementItem[] }) 
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div>
+      {/* Header */}
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <h3 className="text-lg font-semibold">Announcements</h3>
           <p className="text-xs text-white/50">Updates from 808 Academy — check back often.</p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="rounded-full border border-white/10 bg-black/30 px-2 py-1 text-[11px] text-white/70">
-            {total} total
-          </div>
-
+        {/* Controls */}
+        <div className="shrink-0 flex items-center gap-2">
           <button
             type="button"
             onClick={prev}

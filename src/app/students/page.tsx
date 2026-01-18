@@ -690,7 +690,10 @@ function StoreCard() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl bg-black/40 p-3">
+                <Link
+          href="/students/store/merch?item=art-hoodie"
+          className="block rounded-2xl bg-black/40 p-3 transition hover:bg-white/[0.06]"
+        >
           <div className="relative mb-2 aspect-[3/4] w-full overflow-hidden rounded-xl bg-black/60">
             <Image
               src="/assets/lounge/store/merch/art-hoodie-mod.jpg"
@@ -702,35 +705,41 @@ function StoreCard() {
           </div>
           <p className="text-xs font-semibold">Art Hoodie</p>
           <p className="text-[11px] text-white/60">Statement piece • Limited run</p>
-        </div>
+        </Link>
 
-        <div className="rounded-2xl bg-black/40 p-3">
-          <div className="relative mb-2 aspect-[3/4] w-full overflow-hidden rounded-xl bg-black/60">
-            <Image
-              src="/assets/lounge/store/merch/white-t-mod.jpg"
-              alt="White Logo Tee"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 200px"
-            />
-          </div>
-          <p className="text-xs font-semibold">White Logo Tee</p>
-          <p className="text-[11px] text-white/60">Clean front print • Everyday fit</p>
-        </div>
+       <Link
+  href="/students/store/merch?item=white-logo-tee"
+  className="block rounded-2xl bg-black/40 p-3 transition hover:bg-white/[0.06]"
+>
+  <div className="relative mb-2 aspect-[3/4] w-full overflow-hidden rounded-xl bg-black/60">
+    <Image
+      src="/assets/lounge/store/merch/white-t-mod.jpg"
+      alt="White Logo Tee"
+      fill
+      className="object-cover"
+      sizes="(max-width: 768px) 100vw, 200px"
+    />
+  </div>
+  <p className="text-xs font-semibold">White Logo Tee</p>
+  <p className="text-[11px] text-white/60">Clean front print • Everyday fit</p>
+</Link>
 
-        <div className="rounded-2xl bg-black/40 p-3">
-          <div className="relative mb-2 aspect-[3/4] w-full overflow-hidden rounded-xl bg-black/60">
-            <Image
-              src="/assets/lounge/store/merch/cap-mod.jpg"
-              alt="808 Dad Cap"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 200px"
-            />
-          </div>
-          <p className="text-xs font-semibold">808 Dad Cap</p>
-          <p className="text-[11px] text-white/60">Low-key flex • Adjustable</p>
-        </div>
+        <Link
+  href="/students/store/merch?item=dad-cap"
+  className="block rounded-2xl bg-black/40 p-3 transition hover:bg-white/[0.06]"
+>
+  <div className="relative mb-2 aspect-[3/4] w-full overflow-hidden rounded-xl bg-black/60">
+    <Image
+      src="/assets/lounge/store/merch/cap-mod.jpg"
+      alt="808 Dad Cap"
+      fill
+      className="object-cover"
+      sizes="(max-width: 768px) 100vw, 200px"
+    />
+  </div>
+  <p className="text-xs font-semibold">808 Dad Cap</p>
+  <p className="text-[11px] text-white/60">Low-key flex • Adjustable</p>
+</Link>
       </div>
 
       <div className="mt-5 sm:hidden">

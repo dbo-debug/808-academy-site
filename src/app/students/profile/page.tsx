@@ -43,8 +43,7 @@ export default function ProfilePage() {
         setLoading(true);
         setError(null);
 
-        const { data: sessionData, error: sessionErr } =
-          await supabase.auth.getSession();
+        const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
         if (sessionErr || !sessionData.session?.user) {
           throw new Error("You must be signed in to edit your profile.");
         }
@@ -53,23 +52,21 @@ export default function ProfilePage() {
 
         const { data, error: fetchErr } = await supabase
           .from("profiles")
-          .select(
-            "full_name, avatar_url, favorite_genre, primary_daw, goals, city, instagram_handle"
-          )
+          .select("full_name, avatar_url, favorite_genre, primary_daw, goals, city, instagram_handle")
           .eq("id", user.id)
           .maybeSingle();
 
         if (fetchErr) throw fetchErr;
 
-        if (!cancelled && data) {
+        if (!cancelled) {
           setProfile({
-            full_name: data.full_name ?? "",
-            avatar_url: data.avatar_url ?? null,
-            favorite_genre: data.favorite_genre ?? "",
-            primary_daw: data.primary_daw ?? "",
-            goals: data.goals ?? "",
-            city: data.city ?? "",
-            instagram_handle: data.instagram_handle ?? "",
+            full_name: data?.full_name ?? "",
+            avatar_url: data?.avatar_url ?? null,
+            favorite_genre: data?.favorite_genre ?? "",
+            primary_daw: data?.primary_daw ?? "",
+            goals: data?.goals ?? "",
+            city: data?.city ?? "",
+            instagram_handle: data?.instagram_handle ?? "",
           });
         }
       } catch (err: unknown) {
@@ -94,8 +91,7 @@ export default function ProfilePage() {
       setError(null);
       setSuccess(null);
 
-      const { data: sessionData, error: sessionErr } =
-        await supabase.auth.getSession();
+      const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
       if (sessionErr || !sessionData.session?.user) {
         throw new Error("You must be signed in.");
       }
@@ -113,11 +109,16 @@ export default function ProfilePage() {
         updated_at: new Date().toISOString(),
       };
 
-      const { error: upsertErr } = await supabase
-        .from("profiles")
-        .upsert(updates, { onConflict: "id" });
-
+      const { error: upsertErr } = await supabase.from("profiles").upsert(updates, { onConflict: "id" });
       if (upsertErr) throw upsertErr;
+
+      // ✅ KEEP auth.users metadata IN SYNC too (this is what your Users tab shows)
+      await supabase.auth.updateUser({
+        data: {
+          full_name: profile.full_name || null,
+          avatar_url: profile.avatar_url || null,
+        },
+      });
 
       setSuccess("Profile updated.");
     } catch (err: unknown) {
@@ -137,45 +138,46 @@ export default function ProfilePage() {
       setError(null);
       setSuccess(null);
 
-      const { data: sessionData, error: sessionErr } =
-        await supabase.auth.getSession();
+      const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
       if (sessionErr || !sessionData.session?.user) {
         throw new Error("You must be signed in.");
       }
       const user = sessionData.session.user;
 
-      const fileExt = file.name.split(".").pop();
+      const fileExt = file.name.split(".").pop() || "png";
       const filePath = `${user.id}/${Date.now()}.${fileExt}`;
 
       // upload to avatars bucket
-      const { error: uploadErr } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, {
-          upsert: true,
-        });
+      const { error: uploadErr } = await supabase.storage.from("avatars").upload(filePath, file, {
+        upsert: true,
+      });
 
       if (uploadErr) {
         console.error("[profile] avatar upload error", uploadErr);
         throw uploadErr;
       }
 
-      const { data: publicData } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-
+      const { data: publicData } = supabase.storage.from("avatars").getPublicUrl(filePath);
       const publicUrl = publicData.publicUrl;
 
-      // save to profile
-      const { error: upsertErr } = await supabase.from("profiles").upsert(
-        {
-          id: user.id,
-          avatar_url: publicUrl,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "id" }
-      );
+      // save avatar url to profile
+      const { error: upsertErr } = await supabase
+        .from("profiles")
+        .upsert(
+          {
+            id: user.id,
+            avatar_url: publicUrl,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "id" }
+        );
 
       if (upsertErr) throw upsertErr;
+
+      // ✅ ALSO write to auth metadata so lounge can fall back to it (and Users tab matches)
+      await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl },
+      });
 
       setProfile((p) => ({ ...p, avatar_url: publicUrl }));
       setSuccess("Avatar updated.");
@@ -184,30 +186,24 @@ export default function ProfilePage() {
       setError(err instanceof Error ? err.message : "Failed to upload avatar.");
     } finally {
       setUploading(false);
-      // reset file input so you can re-upload same file if needed
       e.target.value = "";
     }
   }
 
-  const initials =
-    profile.full_name?.trim()?.charAt(0).toUpperCase() || "S";
+  const initials = profile.full_name?.trim()?.charAt(0).toUpperCase() || "S";
 
   return (
     <AuthGuard>
       <div className="relative min-h-screen bg-black text-white">
         <main className="mx-auto max-w-3xl space-y-6 px-4 py-10 sm:px-6 lg:px-8">
-          <Link
-            href="/students"
-            className="text-xs text-white/60 hover:text-white/90"
-          >
+          <Link href="/students" className="text-xs text-white/60 hover:text-white/90">
             ← Back to Lounge
           </Link>
 
           <header className="space-y-2">
             <h1 className="text-2xl font-semibold">Profile &amp; Avatar</h1>
             <p className="text-sm text-white/60">
-              Update how you appear in the Student Lounge and future community
-              features.
+              Update how you appear in the Student Lounge and future community features.
             </p>
           </header>
 
@@ -216,23 +212,14 @@ export default function ProfilePage() {
               <p className="text-sm text-white/60">Loading profile…</p>
             ) : (
               <>
-                {error && (
-                  <p className="mb-3 text-sm text-red-400">{error}</p>
-                )}
-                {success && (
-                  <p className="mb-3 text-sm text-emerald-400">{success}</p>
-                )}
+                {error && <p className="mb-3 text-sm text-red-400">{error}</p>}
+                {success && <p className="mb-3 text-sm text-emerald-400">{success}</p>}
 
                 {/* Avatar row */}
                 <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
                   <div className="relative h-20 w-20 overflow-hidden rounded-full bg-white/10">
                     {profile.avatar_url ? (
-                      <Image
-                        src={profile.avatar_url}
-                        alt="Avatar"
-                        fill
-                        className="object-cover"
-                      />
+                      <Image src={profile.avatar_url} alt="Avatar" fill className="object-cover" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-2xl font-semibold">
                         {initials}
@@ -242,8 +229,7 @@ export default function ProfilePage() {
 
                   <div className="space-y-2">
                     <p className="text-sm text-white/80">
-                      This avatar shows in your Student Lounge and future
-                      community features.
+                      This avatar shows in your Student Lounge and future community features.
                     </p>
 
                     <label className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-white/20 px-4 py-2 text-xs font-medium text-white hover:border-[#00FFF7] hover:text-[#00FFF7]">
@@ -271,17 +257,10 @@ export default function ProfilePage() {
                       type="text"
                       className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm outline-none focus:border-[#00FFF7]"
                       value={profile.full_name ?? ""}
-                      onChange={(e) =>
-                        setProfile((p) => ({
-                          ...p,
-                          full_name: e.target.value,
-                        }))
-                      }
+                      onChange={(e) => setProfile((p) => ({ ...p, full_name: e.target.value }))}
                       placeholder="Your name or artist name"
                     />
-                    <p className="mt-1 text-xs text-white/50">
-                      This is how your name appears in the lounge.
-                    </p>
+                    <p className="mt-1 text-xs text-white/50">This is how your name appears in the lounge.</p>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -293,12 +272,7 @@ export default function ProfilePage() {
                         type="text"
                         className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm outline-none focus:border-[#00FFF7]"
                         value={profile.favorite_genre ?? ""}
-                        onChange={(e) =>
-                          setProfile((p) => ({
-                            ...p,
-                            favorite_genre: e.target.value,
-                          }))
-                        }
+                        onChange={(e) => setProfile((p) => ({ ...p, favorite_genre: e.target.value }))}
                         placeholder="House, Trap, Pop, R&B…"
                       />
                     </div>
@@ -311,12 +285,7 @@ export default function ProfilePage() {
                         type="text"
                         className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm outline-none focus:border-[#00FFF7]"
                         value={profile.primary_daw ?? ""}
-                        onChange={(e) =>
-                          setProfile((p) => ({
-                            ...p,
-                            primary_daw: e.target.value,
-                          }))
-                        }
+                        onChange={(e) => setProfile((p) => ({ ...p, primary_daw: e.target.value }))}
                         placeholder="Ableton, FL Studio, Logic…"
                       />
                     </div>
@@ -331,12 +300,7 @@ export default function ProfilePage() {
                         type="text"
                         className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm outline-none focus:border-[#00FFF7]"
                         value={profile.city ?? ""}
-                        onChange={(e) =>
-                          setProfile((p) => ({
-                            ...p,
-                            city: e.target.value,
-                          }))
-                        }
+                        onChange={(e) => setProfile((p) => ({ ...p, city: e.target.value }))}
                         placeholder="Los Angeles, London…"
                       />
                     </div>
@@ -349,31 +313,19 @@ export default function ProfilePage() {
                         type="text"
                         className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm outline-none focus:border-[#00FFF7]"
                         value={profile.instagram_handle ?? ""}
-                        onChange={(e) =>
-                          setProfile((p) => ({
-                            ...p,
-                            instagram_handle: e.target.value,
-                          }))
-                        }
+                        onChange={(e) => setProfile((p) => ({ ...p, instagram_handle: e.target.value }))}
                         placeholder="@yourhandle (optional)"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-[0.16em] text-white/60">
-                      Goals
-                    </label>
+                    <label className="block text-xs font-semibold uppercase tracking-[0.16em] text-white/60">Goals</label>
                     <textarea
                       className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm outline-none focus:border-[#00FFF7]"
                       rows={4}
                       value={profile.goals ?? ""}
-                      onChange={(e) =>
-                        setProfile((p) => ({
-                          ...p,
-                          goals: e.target.value,
-                        }))
-                      }
+                      onChange={(e) => setProfile((p) => ({ ...p, goals: e.target.value }))}
                       placeholder="What do you want from music? Touring DJ, sync placements, better mixes…"
                     />
                   </div>
