@@ -5,14 +5,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import Link from "next/link";
 import Image from "next/image";
+import { useSWRConfig } from "swr";
 
 import { supabase } from "@/lib/supabase";
 
-import AuthGuard from "./components/AuthGuard";
 import Stat from "./components/Stat";
 import Announcements from "./components/Announcements";
 import CourseCard from "./components/CourseCard";
-import { useSWRConfig } from "swr";
 
 //
 // ---------------------------
@@ -20,10 +19,9 @@ import { useSWRConfig } from "swr";
 // ---------------------------
 //
 
-export type MembershipTier = "membership" | "tutoring" | "cohort";
+export type MembershipTier = "membership" | "tutoring" | "cohort" | "both";
 
 export type LoungeResponse = {
-  // ✅ new gate flags (from lounge API)
   hasLoungeAccess: boolean;
   hasCurriculumAccess: boolean;
 
@@ -57,6 +55,18 @@ type LoungeFetcherResult =
       data?: Partial<LoungeResponse>;
     };
 
+// Env links (public)
+const ZOOM_PERSONAL_ROOM_URL = process.env.NEXT_PUBLIC_ZOOM_PERSONAL_ROOM_URL ?? "";
+const OFFICE_HOURS_URL = process.env.NEXT_PUBLIC_OFFICE_HOURS_CALENDLY_URL ?? "";
+
+function openExternal(url: string) {
+  if (!url) {
+    alert("Link not configured yet.");
+    return;
+  }
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 // Fetcher that attaches the Supabase session token as Authorization
 const loungeFetcher = async (url: string): Promise<LoungeFetcherResult> => {
   const { data, error } = await supabase.auth.getSession();
@@ -75,7 +85,7 @@ const loungeFetcher = async (url: string): Promise<LoungeFetcherResult> => {
     headers: { Authorization: `Bearer ${session.access_token}` },
   });
 
-  // ✅ Treat 403 as “paywall state”, not a fatal error
+  // Treat 403 as “paywall state”, not a fatal error
   if (res.status === 403) {
     const j = (await res.json().catch(() => null)) as { error?: string } | null;
     return {
@@ -85,7 +95,6 @@ const loungeFetcher = async (url: string): Promise<LoungeFetcherResult> => {
       data: {
         hasLoungeAccess: false,
         hasCurriculumAccess: false,
-        // keep the UI stable even if server didn’t send these
         displayName: "Student",
         avatarUrl: null,
         membershipTier: "membership",
@@ -98,7 +107,6 @@ const loungeFetcher = async (url: string): Promise<LoungeFetcherResult> => {
     };
   }
 
-  // 401 should behave like auth problem
   if (res.status === 401) {
     const txt = await res.text().catch(() => "");
     return { ok: false, status: 401, error: txt || "Unauthorized" };
@@ -106,12 +114,7 @@ const loungeFetcher = async (url: string): Promise<LoungeFetcherResult> => {
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    console.error(
-      "[students/page] loungeFetcher HTTP error",
-      res.status,
-      res.statusText,
-      text
-    );
+    console.error("[students/page] loungeFetcher HTTP error", res.status, res.statusText, text);
     return { ok: false, status: res.status, error: `Lounge API error ${res.status}` };
   }
 
@@ -154,9 +157,7 @@ function ClaimEnrollmentsOnMount({ onDone }: { onDone?: () => void }) {
 
         if (!cancelled) {
           console.log("[students/page] claim-enrollments response", res.status, json);
-
-          // ✅ Always ask SWR to revalidate the lounge data after claim finishes
-          onDone?.();
+          onDone?.(); // revalidate lounge data
         }
       } catch (err) {
         if (!cancelled) console.error("[students/page] claim-enrollments error", err);
@@ -201,62 +202,20 @@ const MUSIC_PROD_CHAPTER_SLUGS = [
 
 //
 // ---------------------------
-// Header + Hero
+// Onboarding Shell Placeholder (do NOT build yet)
 // ---------------------------
 //
 
-function HeaderBar({ displayName = "Student" }: { displayName?: string }) {
-  const initial = displayName?.charAt(0).toUpperCase() ?? "S";
-
-  const doSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch {}
-    window.location.href = "/auth/signin";
-  };
-
-  return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-black/60 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <div className="text-lg font-semibold tracking-wide">808 Academy — Students</div>
-
-        <nav className="hidden gap-6 text-sm md:flex">
-          <Link href="/students" className="hover:text-cyan-300">
-            Dashboard
-          </Link>
-          <Link href="/ebook/music-production" className="hover:text-cyan-300">
-            Course
-          </Link>
-          <Link href="/students/contests" className="hover:text-cyan-300">
-            Remix Contests
-          </Link>
-          <Link href="/students/store/merch" className="hover:text-cyan-300">
-            Store
-          </Link>
-          <Link href="/contact" className="hover:text-cyan-300">
-            Support
-          </Link>
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
-            <span className="text-xs">{initial}</span>
-          </div>
-
-          <div className="hidden text-sm text-white/80 sm:block">{displayName}</div>
-
-          <button
-            type="button"
-            onClick={doSignOut}
-            className="text-xs text-white/60 hover:text-white/90"
-          >
-            Sign out
-          </button>
-        </div>
-      </div>
-    </header>
-  );
+function OnboardingShell(props: { enabled: boolean; variant: "membership" | "cohort" }) {
+  void props; // placeholder: prevents unused-var warning until we implement the overlay
+  return null;
 }
+
+//
+// ---------------------------
+// Banner
+// ---------------------------
+//
 
 function BannerCarousel() {
   const slides = [
@@ -294,9 +253,7 @@ function BannerCarousel() {
                 e.stopPropagation();
                 setActive(i);
               }}
-              className={`h-1.5 rounded-full transition-all ${
-                i === active ? "w-6 bg-[#00FFF7]" : "w-3 bg-white/40"
-              }`}
+              className={`h-1.5 rounded-full transition-all ${i === active ? "w-6 bg-[#00FFF7]" : "w-3 bg-white/40"}`}
             />
           ))}
         </div>
@@ -322,12 +279,7 @@ function ProfileCard({
         <div className="flex items-center gap-5">
           <div className="relative h-20 w-20">
             {avatarUrl ? (
-              <Image
-                src={avatarUrl}
-                alt={displayName}
-                fill
-                className="rounded-full object-cover"
-              />
+              <Image src={avatarUrl} alt={displayName} fill className="rounded-full object-cover" />
             ) : (
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/20 text-3xl">
                 {initial}
@@ -402,8 +354,7 @@ function PaywallCard({ message }: { message?: string }) {
     <section className="rounded-3xl border border-white/10 bg-gradient-to-r from-purple-500/20 via-black/40 to-cyan-500/20 p-6 backdrop-blur">
       <h2 className="text-xl font-semibold">Access required</h2>
       <p className="mt-2 text-sm text-white/70">
-        {message ||
-          "Your account is signed in, but it doesn’t have an active membership or enrollment yet."}
+        {message || "Your account is signed in, but it doesn’t have an active membership or enrollment yet."}
       </p>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
@@ -442,7 +393,7 @@ function PaywallCard({ message }: { message?: string }) {
 
 //
 // ---------------------------
-// Dashboard Cards
+// Cards
 // ---------------------------
 //
 
@@ -498,9 +449,7 @@ function HomeworkCard() {
       <h3 className="text-lg font-semibold">Homework Portal</h3>
 
       <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <p className="text-sm">
-          Weekly homework is due Sunday at 11:59pm. Upload your stems, mixes, or project files here.
-        </p>
+        <p className="text-sm">Weekly homework is due Sunday at 11:59pm. Upload your stems, mixes, or project files here.</p>
 
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <Link
@@ -518,9 +467,7 @@ function HomeworkCard() {
           </Link>
         </div>
 
-        <p className="mt-2 text-xs text-white/60">
-          Final project (Lesson 9) is due Friday at 11:59pm of Week 4.
-        </p>
+        <p className="mt-2 text-xs text-white/60">Final project (Lesson 9) is due Friday at 11:59pm of Week 4.</p>
       </div>
     </section>
   );
@@ -552,9 +499,7 @@ function SyncLibraryCard() {
           </Link>
         </div>
 
-        <p className="mt-2 text-xs text-white/60">
-          Use descriptive titles and notes so we know where each track fits.
-        </p>
+        <p className="mt-2 text-xs text-white/60">Use descriptive titles and notes so we know where each track fits.</p>
       </div>
     </section>
   );
@@ -592,6 +537,54 @@ function RemixContestCard() {
   );
 }
 
+function SampleLibraryCard() {
+  return (
+    <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="text-lg font-semibold">Sample Library</h3>
+        <Link
+          href="/students/samples"
+          className="rounded-lg border border-white/20 px-3 py-1.5 text-xs transition hover:border-[#00FFF7] hover:text-[#00FFF7]"
+        >
+          Open Library →
+        </Link>
+      </div>
+
+      <p className="mt-2 text-sm text-white/70">Featured packs and weekly drops. (Library coming online soon.)</p>
+
+      <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
+        {["808 Drum Essentials", "Synth One-Shots", "Texture FX", "Vocal Chops"].map((name) => (
+          <div key={name} className="min-w-[220px] rounded-xl border border-white/10 bg-black/30 p-4">
+            <div className="text-sm font-semibold">{name}</div>
+            <div className="mt-1 text-xs text-white/60">Featured</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function LiveClassCard({ show }: { show: boolean }) {
+  if (!show) return null;
+
+  return (
+    <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+      <h3 className="mb-2 text-lg font-semibold">Live Class</h3>
+      <p className="text-sm text-white/70">If class is currently in session, join here.</p>
+
+      <button
+        type="button"
+        onClick={() => openExternal(ZOOM_PERSONAL_ROOM_URL)}
+        className="mt-4 w-full rounded-xl bg-[#00FFF7] px-4 py-2 text-sm font-semibold text-black transition hover:scale-[1.02]"
+      >
+        Class in Session
+      </button>
+
+      <p className="mt-2 text-xs text-white/50">Cohort members only.</p>
+    </section>
+  );
+}
+
 function StatsCard({
   gpa,
   done,
@@ -613,7 +606,7 @@ function StatsCard({
   );
 }
 
-function QuickLinksCard() {
+function QuickLinksCard({ officeHoursUrl }: { officeHoursUrl: string }) {
   return (
     <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
       <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
@@ -641,9 +634,13 @@ function QuickLinksCard() {
           Book Tutoring →
         </Link>
 
-        <Link href="/tutoring" className="block rounded-lg px-3 py-2 transition hover:bg-white/5">
-          Schedule Office Hours →
-        </Link>
+        <button
+          type="button"
+          onClick={() => openExternal(officeHoursUrl)}
+          className="w-full rounded-lg border border-white/20 px-3 py-2 text-left text-sm transition hover:border-[#00FFF7] hover:text-[#00FFF7]"
+        >
+          Schedule Office Hours
+        </button>
 
         <Link
           href="mailto:teacher@the808academy.com"
@@ -679,9 +676,7 @@ function StoreCard() {
         <div className="flex items-center gap-3">
           <Image src="/logo-808-cyan.svg" alt="808 Academy logo" width={103} height={103} />
           <div>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-white/50">
-              808 Merch • Hoodies • Tees • Caps
-            </p>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-white/50">808 Merch • Hoodies • Tees • Caps</p>
             <h3 className="text-lg font-semibold">Fresh 808 Academy Apparel</h3>
           </div>
         </div>
@@ -759,10 +754,7 @@ function StoreCard() {
 export default function StudentsHome() {
   const { mutate } = useSWRConfig();
 
-  const { data, error, isLoading } = useSWR<LoungeFetcherResult>(
-    "/students/api/lounge",
-    loungeFetcher
-  );
+  const { data, error, isLoading } = useSWR<LoungeFetcherResult>("/students/api/lounge", loungeFetcher);
 
   // Determine state from fetch result
   const lounge = useMemo(() => {
@@ -779,16 +771,24 @@ export default function StudentsHome() {
   const membership: MembershipTier = lounge?.membershipTier ?? "membership";
 
   const membershipLabel =
-    membership === "cohort" ? "Cohort Member" : membership === "tutoring" ? "Tutoring Client" : "Lounge Member";
+    membership === "cohort"
+      ? "Cohort Member"
+      : membership === "both"
+      ? "Cohort + Membership"
+      : membership === "tutoring"
+      ? "Tutoring Client"
+      : "Lounge Member";
 
   const hasCurriculumAccess = lounge?.hasCurriculumAccess ?? false;
+
+  const isCohortMember = membership === "cohort" || membership === "both";
 
   // curriculum-only UI
   const showCourse = hasCurriculumAccess;
   const showStats = hasCurriculumAccess;
-  const showHomework = membership === "cohort"; // HW only for cohort (your rule)
+  const showHomework = isCohortMember; // HW only for cohort
 
-  // paid lounge UI (membership/tutoring/cohort)
+  // paid lounge UI
   const showSyncLibrary = (lounge?.hasLoungeAccess ?? false) === true;
 
   const courseTitle = lounge?.course?.title ?? "Music Production";
@@ -797,8 +797,7 @@ export default function StudentsHome() {
   const percent = (done / OVERRIDE_TOTAL_LESSONS) * 100;
   const percentString = formatPercent(percent);
 
-  const gpaPct =
-    lounge?.gpa?.percent !== undefined ? formatPercent(lounge.gpa.percent) : formatPercent(percent);
+  const gpaPct = lounge?.gpa?.percent !== undefined ? formatPercent(lounge.gpa.percent) : formatPercent(percent);
 
   const announcements = lounge?.announcements ?? [];
 
@@ -807,10 +806,7 @@ export default function StudentsHome() {
 
   let lessonSlug: string | null = null;
 
-  if (
-    apiSlug &&
-    MUSIC_PROD_CHAPTER_SLUGS.includes(apiSlug as (typeof MUSIC_PROD_CHAPTER_SLUGS)[number])
-  ) {
+  if (apiSlug && MUSIC_PROD_CHAPTER_SLUGS.includes(apiSlug as (typeof MUSIC_PROD_CHAPTER_SLUGS)[number])) {
     lessonSlug = apiSlug;
   } else if (done > 0) {
     const idx = Math.min(done, MUSIC_PROD_CHAPTER_SLUGS.length - 1);
@@ -819,9 +815,15 @@ export default function StudentsHome() {
 
   const continueHref = lessonSlug == null ? ebookLandingHref : `${ebookLandingHref}/chapters/${lessonSlug}`;
 
+  const onboardingVariant: "membership" | "cohort" = isCohortMember ? "cohort" : "membership";
+  const onboardingEnabled = false; // later: derive from onboarding_seen
+
   return (
-    <AuthGuard>
-      <ClaimEnrollmentsOnMount />
+    <>
+      <ClaimEnrollmentsOnMount onDone={() => mutate("/students/api/lounge")} />
+
+      {/* Placeholder for future onboarding overlay */}
+      <OnboardingShell enabled={onboardingEnabled} variant={onboardingVariant} />
 
       {/* Global background */}
       <div className="pointer-events-none fixed inset-0 -z-10">
@@ -835,18 +837,12 @@ export default function StudentsHome() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/75 to-black/95" />
       </div>
 
-      <div className="relative min-h-screen bg-black text-white">
-        <HeaderBar displayName={displayName} />
-
+      <div className="relative min-h-screen text-white">
         <main className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <BannerCarousel />
 
-          {/* Loading */}
-          {isLoading && (
-            <p className="mt-6 text-xs text-white/40">Loading your dashboard…</p>
-          )}
+          {isLoading && <p className="mt-6 text-xs text-white/40">Loading your dashboard…</p>}
 
-          {/* Paywall state */}
           {paywalled && (
             <div className="space-y-6">
               <ProfileCard displayName={displayName} membershipLabel="Signed in" avatarUrl={avatarUrl} />
@@ -854,14 +850,8 @@ export default function StudentsHome() {
             </div>
           )}
 
-          {/* Generic error (not paywall) */}
-          {error && !paywalled && (
-            <p className="mt-6 text-xs text-red-400">
-              Couldn’t load lounge data. Please refresh.
-            </p>
-          )}
+          {error && !paywalled && <p className="mt-6 text-xs text-red-400">Couldn’t load lounge data. Please refresh.</p>}
 
-          {/* Normal lounge */}
           {!isLoading && !paywalled && lounge && (
             <>
               <ProfileCard displayName={displayName} membershipLabel={membershipLabel} avatarUrl={avatarUrl} />
@@ -881,13 +871,16 @@ export default function StudentsHome() {
 
                   {showHomework && <HomeworkCard />}
                   {showSyncLibrary && <SyncLibraryCard />}
+
                   <RemixContestCard />
+                  <SampleLibraryCard />
                 </div>
 
                 {/* RIGHT */}
                 <div className="space-y-6">
+                  <LiveClassCard show={isCohortMember} />
                   {showStats && <StatsCard gpa={gpaPct} done={done} percentString={percentString} />}
-                  <QuickLinksCard />
+                  <QuickLinksCard officeHoursUrl={OFFICE_HOURS_URL} />
                   <AnnouncementsCard items={announcements} />
                 </div>
               </div>
@@ -900,6 +893,6 @@ export default function StudentsHome() {
           )}
         </main>
       </div>
-    </AuthGuard>
+    </>
   );
 }

@@ -109,8 +109,7 @@ function CallbackInner() {
           }
 
           // Smart defaults if next isn't provided
-          const fallback =
-            rawType === "recovery" ? "/auth/reset-password" : "/students";
+          const fallback = rawType === "recovery" ? "/auth/reset-password" : "/students";
 
           go(next || fallback);
           return;
@@ -127,11 +126,7 @@ function CallbackInner() {
 
           // Clean hash so refresh doesn't re-run
           try {
-            window.history.replaceState(
-              null,
-              "",
-              window.location.pathname + window.location.search
-            );
+            window.history.replaceState(null, "", window.location.pathname + window.location.search);
           } catch {}
 
           go(next || "/students");
@@ -152,15 +147,21 @@ function CallbackInner() {
 
         // Nothing worked
         go("/auth/signin?error=invalid_or_expired");
-      } catch (err: any) {
+      } catch (err: unknown) {
         // Don't throw people to home; route with a clear error
         const message =
-          typeof err?.message === "string" ? err.message : "invalid_or_expired";
+          err instanceof Error
+            ? err.message
+            : typeof err === "string"
+            ? err
+            : "invalid_or_expired";
+
         go(`/auth/signin?error=${encodeURIComponent(message)}`);
       }
     };
 
     run();
+
     return () => {
       cancelled = true;
     };

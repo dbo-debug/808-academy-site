@@ -3,7 +3,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -161,19 +161,12 @@ function ResetInner() {
     <main className="min-h-screen bg-black text-white">
       <div className="mx-auto flex max-w-md flex-col gap-6 px-4 py-16">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/50">
-            Account
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/50">Account</p>
           <h1 className="mt-2 text-3xl font-semibold">Set a new password</h1>
-          <p className="mt-2 text-sm text-white/70">
-            Choose a new password for your account.
-          </p>
+          <p className="mt-2 text-sm text-white/70">Choose a new password for your account.</p>
         </div>
 
-        <form
-          onSubmit={updatePassword}
-          className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur"
-        >
+        <form onSubmit={updatePassword} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
           <label className="block text-xs font-semibold text-white/70">New password</label>
           <input
             type="password"
@@ -184,9 +177,7 @@ function ResetInner() {
             placeholder="••••••••"
             disabled={!ready || status === "saving"}
           />
-          <p className="mt-2 text-[11px] text-white/50">
-            Minimum 8 characters.
-          </p>
+          <p className="mt-2 text-[11px] text-white/50">Minimum 8 characters.</p>
 
           <label className="mt-4 block text-xs font-semibold text-white/70">Confirm password</label>
           <input
@@ -200,12 +191,28 @@ function ResetInner() {
           />
 
           <button
-  type="submit"
-  disabled={!ready || status === "saving"}
-  className="mt-5 w-full rounded-xl bg-[#00FFF7] px-4 py-3 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:opacity-60"
->
-  {status === "saving" ? "Saving…" : "Update password"}
-</button>
+            type="submit"
+            disabled={!ready || status === "saving"}
+            className="mt-5 w-full rounded-xl bg-[#00FFF7] px-4 py-3 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:opacity-60"
+          >
+            {status === "saving" ? "Saving…" : "Update password"}
+          </button>
+
+          {/* ✅ This fixes the lint warning and improves UX */}
+          {message ? (
+            <div
+              className={[
+                "mt-3 rounded-lg border px-3 py-2 text-xs",
+                status === "error"
+                  ? "border-red-500/30 bg-red-500/10 text-red-200"
+                  : status === "success"
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                  : "border-white/10 bg-white/5 text-white/70",
+              ].join(" ")}
+            >
+              {message}
+            </div>
+          ) : null}
 
           <div className="mt-4 flex items-center justify-between text-xs text-white/60">
             <Link className="hover:text-white" href="/auth/forgot-password">
@@ -225,9 +232,7 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-neutral-950 text-white/80 flex items-center justify-center">
-          Loading…
-        </div>
+        <div className="min-h-screen bg-neutral-950 text-white/80 flex items-center justify-center">Loading…</div>
       }
     >
       <ResetInner />

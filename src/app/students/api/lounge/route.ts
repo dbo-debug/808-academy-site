@@ -21,7 +21,7 @@ function sb(token: string): SupabaseClient {
 const toTitle = (slug: string): string =>
   slug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
 
-type MembershipTier = "membership" | "tutoring" | "cohort";
+type MembershipTier = "membership" | "tutoring" | "cohort" | "both";
 
 type LoungeResponse = {
   // ✅ explicit gates
@@ -117,7 +117,7 @@ export async function GET(req: NextRequest) {
       membershipRow?.tier === "membership" ||
       membershipRow?.tier === "tutoring" ||
       membershipRow?.tier === "cohort"
-        ? (membershipRow.tier as MembershipTier)
+        ? (membershipRow.tier as Exclude<MembershipTier, "both">)
         : null;
 
     const membershipActive =
@@ -146,15 +146,19 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // ---------- TIER INFERENCE ----------
+    // If user has BOTH a membership and an active enrollment, expose "both"
     const inferredTier: MembershipTier =
-      membershipActive && membershipTierFromRow
-        ? membershipTierFromRow
+      membershipActive && hasEnrollment
+        ? "both"
+        : membershipActive && membershipTierFromRow
+        ? (membershipTierFromRow as MembershipTier)
         : hasEnrollment
         ? "cohort"
         : "membership";
 
     const hasCurriculumAccess =
-      inferredTier === "cohort" || hasEnrollment || legacyHasEbook;
+      inferredTier === "cohort" || inferredTier === "both" || hasEnrollment || legacyHasEbook;
 
     // ---------- COURSE CHOICE ----------
     const url = new URL(req.url);
@@ -167,14 +171,21 @@ export async function GET(req: NextRequest) {
     let currentLessonSlug: string | null = null;
 
     if (hasCurriculumAccess) {
-      const { data: lessons } = await supabase
+      const { data: lessons, error: lessonsErr } = await supabase
         .from("lessons")
         .select("id, slug")
         .eq("course_slug", course_slug);
 
+      if (lessonsErr) console.warn("[students/api/lounge] lessons select error", lessonsErr);
+
+      const lessonIdToSlug = new Map<string, string>();
+      (lessons ?? []).forEach((l: { id: string; slug: string }) => {
+        if (l?.id && l?.slug) lessonIdToSlug.set(l.id, l.slug);
+      });
+
       total = Array.isArray(lessons) && lessons.length > 0 ? lessons.length : 10;
 
-      const { data: prog } = await supabase
+      const { data: prog, error: progErr } = await supabase
         .from("lesson_progress")
         .select("lesson_id, completed_at")
         .eq("user_id", user.id)
@@ -182,9 +193,12 @@ export async function GET(req: NextRequest) {
         .eq("completed", true)
         .order("completed_at", { ascending: false });
 
+      if (progErr) console.warn("[students/api/lounge] lesson_progress select error", progErr);
+
       if (Array.isArray(prog)) {
         done = prog.length;
-        currentLessonSlug = prog[0]?.lesson_id ?? null;
+        const latestLessonId = (prog[0] as { lesson_id?: string | null })?.lesson_id ?? null;
+        currentLessonSlug = latestLessonId ? lessonIdToSlug.get(latestLessonId) ?? null : null;
       }
     } else {
       total = 10;
@@ -205,12 +219,14 @@ export async function GET(req: NextRequest) {
         submitted_at: string | null;
       };
 
-      const { data: attempts } = await supabase
+      const { data: attempts, error: attemptsErr } = await supabase
         .from("quiz_attempts")
         .select("lesson_id, score, max_score, submitted_at")
         .eq("user_id", user.id)
         .eq("course_slug", course_slug)
         .order("submitted_at", { ascending: false });
+
+      if (attemptsErr) console.warn("[students/api/lounge] quiz_attempts select error", attemptsErr);
 
       const latestByLesson = new Map<string, number>();
       (attempts as AttemptRow[] | null)?.forEach((row) => {
@@ -233,7 +249,7 @@ export async function GET(req: NextRequest) {
       { label: "Book Tutoring", href: "/tutoring" },
     ];
 
-    // ---------- ANNOUNCEMENTS (Supabase table) ----------
+    // ---------- ANNOUNCEMENTS ----------
     type AnnouncementRow = {
       id: string;
       title: string | null;
