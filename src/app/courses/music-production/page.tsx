@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { JoinDemoCohortButton } from "../../../components/JoinDemoCohortButton";
+import JoinPlatformButton from "../../../components/JoinPlatformButton";
 
 export const metadata = {
-  title: "Music Production Course | 808 Academy",
+  title: "Music Production | 808 Academy",
   description:
-    "Learn to produce, arrange, and finish release-ready songs from your home studio in 808 Academy’s live cohort.",
+    "Music production education inside the 808 Academy platform. Learn to produce, arrange, and finish release-ready songs from your home studio.",
   openGraph: {
-    title: "Music Production Course | 808 Academy",
+    title: "Music Production | 808 Academy",
     description:
-      "Hands-on live cohort teaching you how to produce, arrange, and finish release-ready songs from home.",
+      "Structured music production education inside the 808 Academy membership platform.",
     images: ["/MusicProduction.png"],
   },
 };
@@ -110,10 +110,10 @@ export default function MusicProductionPage() {
         <div className="absolute inset-0 bg-black/75" />
         <div className="relative mx-auto max-w-5xl px-6 py-16 sm:py-20">
           <div className="flex flex-wrap items-center gap-2">
-            <Pill>Live cohort</Pill>
-            <Pill>Mon & Wed</Pill>
-            <Pill>12pm + 6pm options</Pill>
-            <Pill>12 months membership included</Pill>
+            <Pill>Education path</Pill>
+            <Pill>Inside the Platform</Pill>
+            <Pill>Structured curriculum</Pill>
+            <Pill>Feedback + accountability</Pill>
           </div>
 
           <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-semibold leading-tight">
@@ -122,20 +122,19 @@ export default function MusicProductionPage() {
 
           <p className="mt-4 max-w-2xl text-sm sm:text-base text-white/75">
             Learn to produce, arrange, and finish release-ready songs from your
-            home studio. This is a hands-on cohort with structure, feedback, and
-            a clear weekly path.
+            home studio — with a structured path, community feedback, and
+            real-world momentum.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            {/* ✅ Courses flow = PAID cohort */}
-            <Link
-              href="/apply?program=Course&course=Music+Production"
-              className="rounded-full bg-[#00FFF7] px-6 py-3 text-sm font-semibold text-black shadow-lg shadow-cyan-500/30 transition hover:translate-y-[1px] hover:shadow-cyan-400/40"
-            >
-              Apply Now
-            </Link>
+<p className="mt-5 max-w-2xl text-left text-lg font-semibold text-white">
+  Live teachers. Real feedback. No pre-recorded lessons.
+</p>
 
-            {/* Paid intro call (kept as-is) */}
+          <div className="mt-8 flex flex-wrap gap-3 items-center">
+            {/* Primary: Membership */}
+            <JoinPlatformButton />
+
+            {/* Secondary: Call */}
             <Link
               href="/apply?program=Course&course=Music+Production"
               className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white/90 hover:bg-white/10 transition"
@@ -143,20 +142,22 @@ export default function MusicProductionPage() {
               Schedule a Call
             </Link>
 
-            {/* ✅ FREE demo cohort (existing logic; safe for free Stripe product) */}
-            <JoinDemoCohortButton
-              label="Join Free Demo Cohort"
-              className="rounded-full"
-            />
+            {/* Tertiary: Lounge */}
+            <Link
+              href="/students"
+              className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white/90 hover:bg-white/10 transition"
+            >
+              Go to the Lounge
+            </Link>
           </div>
 
           <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-white/45">
-            Limited spots • Zoom + screen share • Built for real producers
+            Membership required • Zoom + screen share • Built for real progress
           </p>
 
           <p className="mt-3 max-w-2xl text-xs text-white/55">
-            Prefer to try it first? Join the free demo cohort above (limited
-            time).
+            Join the platform to access the Student Lounge, education paths,
+            community feedback, contests, submissions, and more.
           </p>
         </div>
       </section>
@@ -164,44 +165,46 @@ export default function MusicProductionPage() {
       {/* Schedule */}
       <section className="py-12 border-b border-white/10">
         <SectionTitle
-          title="Schedule"
-          body="Two class time options so we can hit more people. You choose your time on the application, then you’ll book a 30-minute onboarding call."
+          title="How it works"
+          body="Music Production is an education path inside the 808 Academy platform. Live cohorts and guided experiences are available to members when scheduled."
         />
         <div className="max-w-4xl mx-auto px-6 mt-6 grid gap-3 sm:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="text-xs uppercase tracking-[0.2em] text-white/50">
-              Cohort sessions
+              Start here
             </div>
             <div className="mt-2 text-sm text-white/80">
-              Mon & Wed
+              Join the Platform
               <br />
-              12:00pm – 1:30pm PT
+              Access the Lounge instantly
               <br />
-              6:00pm – 7:30pm PT
+              Begin the curriculum
             </div>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="text-xs uppercase tracking-[0.2em] text-white/50">
-              Office hours
+              Feedback loop
             </div>
             <div className="mt-2 text-sm text-white/80">
-              Fridays
+              Submit work
               <br />
-              10:00am – 6:00pm PT
+              Get feedback + direction
               <br />
-              (support + accountability)
+              Improve week to week
             </div>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="text-xs uppercase tracking-[0.2em] text-white/50">
-              Enrollment flow
+              Go deeper
             </div>
             <div className="mt-2 text-sm text-white/80">
-              Apply → Onboarding call → Checkout
+              Join live cohorts (when available)
               <br />
-              (fast + simple)
+              Book tutoring if needed
+              <br />
+              Build real momentum
             </div>
           </div>
         </div>
@@ -219,25 +222,24 @@ export default function MusicProductionPage() {
               A finished, release-ready track
             </div>
             <p className="mt-2 text-sm text-white/70">
-              Your goal is completion — not another half-done loop folder.
+              The goal is completion — not another half-done loop folder.
             </p>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <div className="text-sm font-semibold">Real feedback + direction</div>
             <p className="mt-2 text-sm text-white/70">
-              Weekly progress with clear priorities so you always know what to
-              improve next.
+              Clear priorities so you always know what to improve next.
             </p>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <div className="text-sm font-semibold">
-              12 months of membership included
+              Platform access + opportunities
             </div>
             <p className="mt-2 text-sm text-white/70">
-              Enroll in the course and get a full year of membership free —
-              Student Lounge, drops, remix contests, and more.
+              Student Lounge access, community, challenges, submissions, and
+              resources — all included with membership.
             </p>
           </div>
         </div>
@@ -247,7 +249,7 @@ export default function MusicProductionPage() {
       <section className="py-12">
         <SectionTitle
           title="Curriculum overview"
-          body="Every section is designed to stack. You’ll build the song as you learn the skills."
+          body="Every section stacks. You’ll build the song as you learn the skills."
         />
         <div className="mx-auto max-w-5xl px-6 mt-8 grid gap-4">
           {CURRICULUM.map((l) => (
@@ -272,21 +274,17 @@ export default function MusicProductionPage() {
         </div>
 
         <div className="mx-auto max-w-5xl px-6 mt-10 flex flex-wrap gap-3 items-center">
+          <JoinPlatformButton />
           <Link
-            href="/apply?program=Course&course=Music+Production"
-            className="inline-flex items-center justify-center rounded-full bg-[#00FFF7] px-7 py-3 text-sm font-semibold text-black shadow-lg shadow-cyan-500/30 transition hover:translate-y-[1px]"
+            href="/courses"
+            className="inline-flex items-center justify-center rounded-full border border-white/20 bg-transparent px-7 py-3 text-sm font-semibold text-white/90 hover:bg-white/10 transition"
           >
-            Apply for the cohort
+            Explore all courses
           </Link>
 
-          <JoinDemoCohortButton
-            label="Join Free Demo Cohort"
-            className="rounded-full border border-white/20 bg-transparent px-7 py-3 text-sm font-semibold text-white/90 hover:bg-white/10 transition"
-          />
-
           <p className="w-full mt-3 text-xs text-white/50">
-            You’ll choose your class time (12pm or 6pm) on the application. Next
-            step is the 30-minute onboarding call.
+            Membership unlocks the Platform. Live cohorts and advanced programs
+            can be added when available.
           </p>
         </div>
       </section>

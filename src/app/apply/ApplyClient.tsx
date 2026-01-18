@@ -12,19 +12,16 @@ type SubmitState =
   | { ok: true; message: string }
   | null;
 
-function Stepper({ current }: { current: 1 | 2 | 3 }) {
-  const steps = [
-    { id: 1, label: "Application" },
-    { id: 2, label: "Onboarding Call" },
-    { id: 3, label: "Payment" },
-  ] as const;
+type Step = { id: number; label: string };
 
+function Stepper({ current, steps }: { current: number; steps: Step[] }) {
   return (
     <div className="mb-8">
       <div className="flex items-center gap-3">
         {steps.map((s, i) => {
           const active = s.id === current;
           const done = s.id < current;
+
           return (
             <div key={s.id} className="flex items-center gap-3">
               <div
@@ -39,6 +36,7 @@ function Stepper({ current }: { current: 1 | 2 | 3 }) {
               >
                 {s.id}
               </div>
+
               <div
                 className={[
                   "text-sm",
@@ -47,6 +45,7 @@ function Stepper({ current }: { current: 1 | 2 | 3 }) {
               >
                 {s.label}
               </div>
+
               {i < steps.length - 1 && (
                 <div className="mx-2 h-px w-10 bg-white/10" aria-hidden />
               )}
@@ -54,8 +53,9 @@ function Stepper({ current }: { current: 1 | 2 | 3 }) {
           );
         })}
       </div>
+
       <div className="mt-2 text-xs uppercase tracking-wide text-white/50">
-        Step {current} of 3
+        Step {current} of {steps.length}
       </div>
     </div>
   );
@@ -99,6 +99,9 @@ export default function ApplyClient() {
     React.useState<TutoringPackage>("block4");
   const [daw, setDaw] = React.useState("Pro Tools");
 
+  // membership add-on: cohort seat
+  const [addCohortSeat, setAddCohortSeat] = React.useState(false);
+
   // Cohort mode: paid by default, demo only when URL explicitly sets cohort=demo
   const [cohortMode, setCohortMode] = React.useState<CohortMode>("paid");
 
@@ -124,16 +127,19 @@ export default function ApplyClient() {
   const [loading, setLoading] = React.useState(false);
   const [submitted, setSubmitted] = React.useState<SubmitState>(null);
 
+  // whether we should lock the program selector (Membership landing)
+  const [lockProgram, setLockProgram] = React.useState(false);
+
   // Read incoming params once (supports: /apply?program=Course&course=music-production&cohort=demo)
   React.useEffect(() => {
     const p = normalizeProgram(getParam("program"));
     setProgram(p);
 
+    // Lock program selection if they were sent here specifically for membership
+    if (p === "Membership") setLockProgram(true);
+
     const c = getParam("course");
-    if (c) {
-      // keep the "slug" if you pass it (music-production), or a label if you pass that
-      setCourse(c);
-    }
+    if (c) setCourse(c);
 
     const ct = getParam("classTime");
     if (ct === "12PM" || ct === "6PM") setClassTime(ct);
@@ -141,7 +147,7 @@ export default function ApplyClient() {
     const cohort = normalizeCohort(getParam("cohort"));
     setCohortMode(cohort);
 
-    // tutoring defaults to block4 if switching
+    // tutoring defaults
     if (p === "Tutoring") setTutoringPackage("block4");
   }, []);
 
@@ -149,6 +155,38 @@ export default function ApplyClient() {
   React.useEffect(() => {
     if (program === "Tutoring") setTutoringPackage("block4");
   }, [program]);
+
+  // If user changes away from membership manually (non-locked flows), clear the add-on checkbox
+  React.useEffect(() => {
+    if (program !== "Membership") setAddCohortSeat(false);
+  }, [program]);
+
+  const isMembership = program === "Membership";
+
+  const steps: Step[] = React.useMemo(() => {
+    // This page is always "step 1", but the labels/length should reflect the flow.
+    if (isMembership && !addCohortSeat) {
+      return [
+        { id: 1, label: "Membership" },
+        { id: 2, label: "Payment" },
+      ];
+    }
+    return [
+      { id: 1, label: "Application" },
+      { id: 2, label: "Onboarding Call" },
+      { id: 3, label: "Payment" },
+    ];
+  }, [isMembership, addCohortSeat]);
+
+  const headerCopy = React.useMemo(() => {
+    if (isMembership && !addCohortSeat) {
+      return "Step 1: Create your membership. Next you’ll complete secure payment.";
+    }
+    if (isMembership && addCohortSeat) {
+      return "Step 1: Create your membership + select your cohort. Next you’ll schedule a short onboarding call, then complete secure payment.";
+    }
+    return `Step 1: Pick your program and class time. Next you’ll schedule a 30-minute onboarding call, then complete secure payment.`;
+  }, [isMembership, addCohortSeat]);
 
   function validate(): string | null {
     if (!firstName.trim()) return "Please enter your first name.";
@@ -159,6 +197,12 @@ export default function ApplyClient() {
     if (program === "Course" && !course) return "Please select a course.";
     if (program === "Tutoring" && !tutoringSubject.trim())
       return "Please describe what you’d like help with.";
+
+    // Membership + cohort add-on: require cohort selections (course/time)
+    if (program === "Membership" && addCohortSeat) {
+      if (!course) return "Please select a course for the cohort add-on.";
+      if (!classTime) return "Please choose a class time for the cohort add-on.";
+    }
 
     return null;
   }
@@ -179,8 +223,21 @@ export default function ApplyClient() {
       email,
       phone,
       program,
-      course: program === "Course" ? course : null,
+
+      // membership add-on flag
+      addCohortSeat: program === "Membership" ? addCohortSeat : false,
+
+      // course/tutoring details
+      course:
+        program === "Course"
+          ? course
+          : program === "Membership" && addCohortSeat
+          ? course
+          : null,
+
       tutoringSubject: program === "Tutoring" ? tutoringSubject : null,
+      tutoringPackage: program === "Tutoring" ? tutoringPackage : null,
+
       daw,
       experience,
       goals,
@@ -188,7 +245,15 @@ export default function ApplyClient() {
       consentSMS,
 
       // class time
-      classTime: program === "Course" ? classTime : null,
+      classTime:
+        program === "Course"
+          ? classTime
+          : program === "Membership" && addCohortSeat
+          ? classTime
+          : null,
+
+      // cohort mode (only relevant for Course)
+      cohortMode: program === "Course" ? cohortMode : null,
 
       // normalized address object
       address: {
@@ -232,11 +297,18 @@ export default function ApplyClient() {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok && (data?.ok ?? true)) {
-        const next = new URL("/apply/schedule", window.location.origin);
+        // Decide next step:
+        // - Membership-only: skip schedule → go straight to checkout
+        // - Anything else (Course/Tutoring/Membership+cohort add-on): schedule first
+        const membershipOnly = program === "Membership" && !addCohortSeat;
 
+        const nextPath = membershipOnly ? "/apply/checkout" : "/apply/schedule";
+        const next = new URL(nextPath, window.location.origin);
+
+        // Keep program in query
         next.searchParams.set("program", program);
 
-        // ONLY free when cohort=demo is present. Default is paid.
+        // Cohort params
         if (program === "Course") {
           next.searchParams.set("course", course);
           next.searchParams.set("classTime", classTime);
@@ -246,11 +318,17 @@ export default function ApplyClient() {
           }
         }
 
+        // Membership + cohort add-on: pass intent + chosen cohort selections
+        if (program === "Membership" && addCohortSeat) {
+          next.searchParams.set("addCohortSeat", "1");
+          next.searchParams.set("course", course);
+          next.searchParams.set("classTime", classTime);
+        }
+
+        // Tutoring params
         if (program === "Tutoring") {
           next.searchParams.set("tutoringPackage", tutoringPackage);
         }
-const cohort = new URLSearchParams(window.location.search).get("cohort");
-if (cohort === "demo") next.searchParams.set("cohort", "demo");
 
         window.location.href = next.toString();
       } else {
@@ -272,14 +350,10 @@ if (cohort === "demo") next.searchParams.set("cohort", "demo");
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-6 text-white">
-      <Stepper current={1} />
+      <Stepper current={1} steps={steps} />
 
       <h1 className="text-4xl font-bebas tracking-wide mb-2">Apply Now</h1>
-      <p className="text-gray-300 mb-8">
-        Step 1: Pick your program and class time. Next you’ll schedule a{" "}
-        <span className="text-white">30-minute onboarding call</span>, then
-        complete secure payment.
-      </p>
+      <p className="text-gray-300 mb-8">{headerCopy}</p>
 
       {submitted && !submitted.ok && (
         <div className="mb-6 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-red-200">
@@ -335,19 +409,27 @@ if (cohort === "demo") next.searchParams.set("cohort", "demo");
           <div className="grid md:grid-cols-3 gap-4">
             <div>
               {label("Choose a program")}
-              <select
-                className={inputClass}
-                value={program}
-                onChange={(e) => setProgram(e.target.value as Program)}
-              >
-                <option value="Course">Course (cohort)</option>
-                <option value="Tutoring">Tutoring (1:1)</option>
-                <option value="Membership">Membership (monthly)</option>
-              </select>
+
+              {lockProgram && program === "Membership" ? (
+                <div className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white/80">
+                  Membership (monthly)
+                </div>
+              ) : (
+                <select
+                  className={inputClass}
+                  value={program}
+                  onChange={(e) => setProgram(e.target.value as Program)}
+                >
+                  <option value="Course">Course (cohort)</option>
+                  <option value="Tutoring">Tutoring (1:1)</option>
+                  <option value="Membership">Membership (monthly)</option>
+                </select>
+              )}
 
               {program === "Course" && cohortMode === "demo" && (
                 <div className="mt-2 text-xs text-teal-200">
-                  You’re applying via the <span className="font-semibold">free demo cohort</span>.
+                  You’re applying via the{" "}
+                  <span className="font-semibold">free demo cohort</span>.
                 </div>
               )}
             </div>
@@ -382,7 +464,8 @@ if (cohort === "demo") next.searchParams.set("cohort", "demo");
                     <option value="6PM">Mon & Wed — 6:00pm to 7:30pm</option>
                   </select>
                   <div className="mt-2 text-xs text-white/50">
-                    You’re choosing your class time now. Next step is a 30-minute onboarding call.
+                    You’re choosing your class time now. Next step is a 30-minute
+                    onboarding call.
                   </div>
                 </div>
               </div>
@@ -401,7 +484,8 @@ if (cohort === "demo") next.searchParams.set("cohort", "demo");
                     <option value="single">Single session — $49</option>
                   </select>
                   <div className="mt-2 text-xs text-white/50">
-                    You’ll schedule your first session next, then checkout to confirm.
+                    You’ll schedule your first session next, then checkout to
+                    confirm.
                   </div>
                 </div>
 
@@ -416,11 +500,69 @@ if (cohort === "demo") next.searchParams.set("cohort", "demo");
                 </div>
               </div>
             ) : (
-              <div className="md:col-span-2">
+              <div className="md:col-span-2 grid gap-3">
                 {label("Membership note")}
                 <div className="rounded-lg border border-white/10 bg-black/30 p-3 text-sm text-white/70">
-                  Membership unlocks the Student Lounge, remix contests, member drops, and discounts.
+                  Membership unlocks the Student Lounge, remix contests, member drops,
+                  and discounts.
                 </div>
+
+                {/* Cohort add-on checkbox */}
+                <label className="mt-2 flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
+                  <input
+                    type="checkbox"
+                    className="mt-1 size-4 accent-teal-400"
+                    checked={addCohortSeat}
+                    onChange={(e) => setAddCohortSeat(e.target.checked)}
+                  />
+                  <div>
+                    <div className="text-sm font-semibold text-white">
+                      Add a seat for the next live cohort (optional)
+                    </div>
+                    <div className="mt-1 text-xs text-white/60">
+                      If checked, you’ll schedule a short onboarding call for the cohort.
+                    </div>
+                  </div>
+                </label>
+
+                {/* If add-on checked, show cohort selectors */}
+                {addCohortSeat && (
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      {label("Cohort course")}
+                      <select
+                        className={inputClass}
+                        value={course}
+                        onChange={(e) => setCourse(e.target.value)}
+                      >
+                        <option>Music Production</option>
+                        <option>Mixing</option>
+                        <option>Remixing</option>
+                        <option>Mastering</option>
+                      </select>
+                      <div className="mt-2 text-xs text-white/50">
+                        Mixing / Remixing / Mastering are coming soon.
+                      </div>
+                    </div>
+
+                    <div>
+                      {label("Cohort class time")}
+                      <select
+                        className={inputClass}
+                        value={classTime}
+                        onChange={(e) =>
+                          setClassTime(e.target.value as ClassTime)
+                        }
+                      >
+                        <option value="12PM">Mon & Wed — 12:00pm to 1:30pm</option>
+                        <option value="6PM">Mon & Wed — 6:00pm to 7:30pm</option>
+                      </select>
+                      <div className="mt-2 text-xs text-white/50">
+                        Cohort add-on triggers onboarding scheduling next.
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -470,7 +612,8 @@ if (cohort === "demo") next.searchParams.set("cohort", "demo");
         <section className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold">Socials (optional)</h2>
           <p className="text-sm text-white/70">
-            If you share your work online, drop your handles so we can tag you when it makes sense.
+            If you share your work online, drop your handles so we can tag you when it
+            makes sense.
           </p>
 
           <div className="grid md:grid-cols-2 gap-4">
@@ -526,7 +669,8 @@ if (cohort === "demo") next.searchParams.set("cohort", "demo");
         <section className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold">Address (optional)</h2>
           <p className="text-sm text-white/70">
-            Not required for enrollment. Helps us with future physical drops or merch fulfillment.
+            Not required for enrollment. Helps us with future physical drops or merch
+            fulfillment.
           </p>
 
           <div className="grid gap-4">
@@ -608,7 +752,7 @@ if (cohort === "demo") next.searchParams.set("cohort", "demo");
             disabled={loading}
             className="rounded-full bg-teal-400 px-6 py-3 font-semibold text-black hover:bg-teal-300 disabled:opacity-60"
           >
-            {loading ? "Submitting…" : "Submit Application"}
+            {loading ? "Submitting…" : isMembership ? "Continue" : "Submit Application"}
           </button>
         </div>
       </form>

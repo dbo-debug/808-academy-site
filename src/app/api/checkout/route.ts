@@ -36,6 +36,11 @@ function safeJson(input: unknown) {
   }
 }
 
+function includesWord(haystack: unknown, needle: string) {
+  if (typeof haystack !== "string") return false;
+  return haystack.toLowerCase().includes(needle.toLowerCase());
+}
+
 export async function POST(req: NextRequest) {
   if (!stripe) {
     console.error("[checkout] STRIPE_SECRET_KEY is missing.");
@@ -56,7 +61,7 @@ export async function POST(req: NextRequest) {
       console.log("[checkout]", msg, safeJson(payload));
 
     // --- 1) MERCH / GENERIC CHECKOUT (explicit priceId from client) ---
-    // This is used by the store "Buy Now" buttons.
+    // Used by store "Buy Now" buttons AND tutoring (which passes priceId).
     if (priceId) {
       const sessionParams: Stripe.Checkout.SessionCreateParams = {
         mode: "payment",
@@ -84,13 +89,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ url: session.url });
     }
 
+    // ------------------------------------------------------------------
+    // V2 TRANSITION RULE:
+    // Membership is the gate to the platform.
+    // Cohort is currently FREE, so any cohort/apply intent should route
+    // to the membership subscription checkout (NOT $399 cohort checkout).
+    //
+    // This prevents accidental routing to cohort paid pricing while you
+    // finish the full membership entitlement flow.
+    // ------------------------------------------------------------------
+    const cohortIntent =
+      body.mode === "demo" ||
+      body.mode === "paid" ||
+      body.mode === "payment" ||
+      includesWord(source, "cohort") ||
+      includesWord(source, "apply");
+
     // --- 2) MEMBERSHIP CHECKOUT (subscription) ---
+    // Membership can be triggered explicitly OR via cohortIntent.
     const isMembership =
       body.mode === "membership" ||
       body.mode === "subscription" ||
-      body.source === "membership";
+      includesWord(source, "membership") ||
+      cohortIntent;
 
     if (isMembership) {
+      const routedFrom =
+        cohortIntent && !includesWord(source, "membership")
+          ? "cohortIntent"
+          : "membershipIntent";
+
       const sessionParams: Stripe.Checkout.SessionCreateParams = {
         mode: "subscription",
         line_items: [{ price: PRICE_MEMBERSHIP, quantity: 1 }],
@@ -99,8 +127,10 @@ export async function POST(req: NextRequest) {
         allow_promotion_codes: true,
         metadata: {
           flow: "membership",
-          source: source ?? "membership",
+          source: source ?? (cohortIntent ? "membership_from_cohort_intent" : "membership"),
           priceId: PRICE_MEMBERSHIP,
+          routedFrom,
+          requestedMode: body.mode ?? "",
         },
       };
 
@@ -117,9 +147,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ url: session.url });
     }
 
-    // --- 3) COHORT CHECKOUT (demo / paid) ---
-    // Your current UI uses body.mode = "demo" | "paid"
-    // If anything else comes in, default to demo.
+    // --- 3) COHORT CHECKOUT (legacy fallback; should not be used in V2) ---
+    // If you ever want cohort paid checkout again, remove the cohortIntent routing above.
     const cohortMode: "demo" | "paid" = body.mode === "paid" ? "paid" : "demo";
     const cohortPriceId =
       cohortMode === "demo" ? PRICE_COHORT_DEMO : PRICE_COHORT_PAID;
@@ -138,11 +167,11 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    log("cohort checkout start", { body, sessionParams });
+    log("cohort checkout start (legacy fallback)", { body, sessionParams });
 
     const session = await stripe.checkout.sessions.create(sessionParams);
 
-    log("cohort checkout session created", {
+    log("cohort checkout session created (legacy fallback)", {
       id: session.id,
       url: session.url,
       customer: session.customer,
@@ -150,25 +179,20 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: session.url });
   } catch (err: unknown) {
-    // Stripe errors often live in err.raw.message, err.message, etc.
     const stripeMessage = (() => {
       if (isRecord(err)) {
-        const raw = err.raw;
+        const raw = (err as Record<string, unknown>).raw;
         if (isRecord(raw) && typeof raw.message === "string") {
           return raw.message;
         }
-        if (typeof err.message === "string") {
-          return err.message;
+        if (typeof (err as Record<string, unknown>).message === "string") {
+          return (err as Record<string, unknown>).message as string;
         }
-        if (typeof err.toString === "function") {
-          return err.toString();
+        if (typeof (err as { toString?: unknown }).toString === "function") {
+          return String(err);
         }
       }
-
-      if (typeof err === "string") {
-        return err;
-      }
-
+      if (typeof err === "string") return err;
       return String(err);
     })();
 

@@ -1,23 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { JoinDemoCohortButton } from "../components/JoinDemoCohortButton";
-import HomeEntryOverlay from "../components/HomeEntryOverlay";
+import JoinPlatformButton from "../components/JoinPlatformButton";
 
 /**
- * Home / Landing
- * - White logo, left-justified hero, dark overlay on /main.jpg
- * - Courses (4 cards)
- * - Choose Your Path (pricing: Courses / Tutoring / Membership)
+ * Home / Landing (V2 direction)
+ * - Membership-first platform positioning
+ * - Keep existing hero visual + course cards + pricing layout
+ * - Remove overlay + free cohort CTA
  */
 export default function HomePage() {
   return (
     <main className="text-gray-100">
-      {/* ---------- ENTRY OVERLAY (shows once per session) ---------- */}
-      <HomeEntryOverlay
-        classHref="/courses/music-production"
-        remixHref="/remix-contest"
-      />
-
       {/* ---------- HERO ---------- */}
       <section
         className="relative min-h-[88vh] flex items-center"
@@ -38,57 +31,49 @@ export default function HomePage() {
             className="h-64 w-auto mb-8 drop-shadow-[0_0_20px_rgba(0,0,0,0.5)]"
           />
 
-          <h1 className="max-w-3xl text-left text-5xl md:text-6xl font-semibold leading-tight">
-            Learn to produce, mix, master, and release{" "}
-            <span className="text-[#00FFF7]">radio-ready</span> music from your
-            home studio.
+          <h1 className="max-w-4xl text-left text-5xl md:text-6xl font-semibold leading-tight">
+            A Platform for Music People to{" "}
+            <span className="text-[#00FFF7]">Learn</span>, Build, and Go Further
           </h1>
 
-          <p className="mt-6 max-w-2xl text-left text-lg text-gray-300">
-            Structured courses, 1:1 tutoring, and VIP mentorship from working
-            engineers — 100% online, with templates, checklists, and replays
-            included.
+          <p className="mt-6 max-w-3xl text-left text-lg text-gray-300">
+            The 808 Academy is a membership-based education platform for musicians,
+            producers, engineers, and music lovers — combining structured
+            learning, feedback, and real opportunities in one place.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-4">
+          <p className="mt-5 max-w-2xl text-left text-lg font-semibold text-white">
+  Live teachers. Real feedback. No pre-recorded lessons.
+</p>
+
+          <p className="mt-3 max-w-2xl text-left text-sm text-gray-300/90 italic">
+            Learn. Build. Collaborate. Create opportunities.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-4 items-center">
+            {/* Primary: Membership */}
+            <JoinPlatformButton />
+
+            {/* Secondary: Browse what's inside */}
+            <Link
+              href="#membership"
+              className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10 transition"
+            >
+              See what’s inside
+            </Link>
+
+            {/* Keep: Courses marketing */}
             <Link
               href="/courses"
-              className="rounded-xl bg-[#00FFF7] px-6 py-3 font-semibold text-black hover:opacity-90 transition"
+              className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10 transition"
             >
               View Courses
             </Link>
-
-            <Link
-              href="/apply"
-              className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10 transition"
-            >
-              Apply Now
-            </Link>
-
-            {/* NEW: explain what the free class/cohort is BEFORE application */}
-            <Link
-              href="/courses/music-production"
-              className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10 transition"
-            >
-              Free Class Details
-            </Link>
-
-            {/* NEW: remix contest entry point */}
-            <Link
-              href="/remix-contest"
-              className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10 transition"
-            >
-              Remix Contest
-            </Link>
-
-            {/* KEEP: this is likely what triggers demo/free cohort behavior + free Stripe product */}
-            <JoinDemoCohortButton label="Join Free Demo Cohort" />
           </div>
 
-          {/* Optional tiny helper text (keeps intent clear; remove if you want it cleaner) */}
-          <p className="mt-4 max-w-2xl text-left text-sm text-gray-400">
-            Tip: “Free Class Details” explains the program. “Join Free Demo
-            Cohort” takes you straight to the demo cohort application.
+          <p className="mt-4 max-w-3xl text-left text-sm text-gray-400">
+            Membership unlocks the Platform (Student Lounge, community, contests,
+            submissions, resources, and more).
           </p>
         </div>
       </section>
@@ -97,11 +82,11 @@ export default function HomePage() {
       <section id="courses" className="py-20">
         <div className="mx-auto max-w-6xl px-6">
           <h2 className="text-4xl font-semibold text-center md:text-left">
-            Our Courses
+            Courses Inside the Platform
           </h2>
           <p className="mt-3 text-center md:text-left text-gray-300">
-            Learn from working engineers with a polished, release-ready
-            curriculum.
+            Structured education paths you can follow at your own pace — with
+            cohorts and live experiences available as part of the platform.
           </p>
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2">
@@ -141,6 +126,52 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ---------- MEMBERSHIP / PLATFORM INCLUDES ---------- */}
+      <section id="membership" className="py-20 border-t border-white/10">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="md:flex md:items-end md:justify-between">
+            <div>
+              <h2 className="text-4xl font-semibold">What you get as a member</h2>
+              <p className="mt-3 max-w-2xl text-gray-300">
+                Membership unlocks the Platform — education, community, creative
+                challenges, and submissions — built to keep you moving.
+              </p>
+            </div>
+
+            <div className="mt-6 md:mt-0">
+              <JoinPlatformButton />
+            </div>
+          </div>
+
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <FeatureCard
+              title="Structured Education"
+              body="Courses and learning paths — starting with music production, expanding over time."
+            />
+            <FeatureCard
+              title="Community + Collaboration"
+              body="Discord for collabs, feedback, practice sessions, and course discussion."
+            />
+            <FeatureCard
+              title="Creative Challenges"
+              body="Remix contests and prompts designed to build skill, momentum, and consistency."
+            />
+            <FeatureCard
+              title="Submissions + Opportunities"
+              body="Submit original work for feedback and real sync-style opportunities."
+            />
+            <FeatureCard
+              title="Member Resources"
+              body="Samples, MIDI patterns, presets, and tools — curated for quality over clutter."
+            />
+            <FeatureCard
+              title="Tools + Deals"
+              body="Plugin deals and proprietary 808 Academy tools built for music creators."
+            />
+          </div>
+        </div>
+      </section>
+
       {/* ---------- CHOOSE YOUR PATH / PRICING ---------- */}
       <section id="pricing" className="py-20 border-t border-white/10">
         <div className="mx-auto max-w-6xl px-6">
@@ -148,37 +179,50 @@ export default function HomePage() {
             <div>
               <h2 className="text-4xl font-semibold">Choose your path</h2>
               <p className="mt-3 max-w-2xl text-gray-300">
-                Three ways to learn — join a cohort, book one-on-one time, or
-                get the full VIP treatment with private sessions and priority
-                support.
+                Membership is the foundation. Add cohorts for live structure or
+                book 1:1 tutoring when you want hands-on help.
               </p>
             </div>
-            <Link
-              href="/apply"
-              className="mt-6 md:mt-0 rounded-xl bg-[#00FFF7] px-6 py-3 font-semibold text-black hover:opacity-90 transition"
-            >
-              Apply Now
-            </Link>
+            <div className="mt-6 md:mt-0">
+              <JoinPlatformButton />
+            </div>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {/* Courses */}
+            {/* Membership (PRIMARY) */}
             <PricingCard
-              name="Courses"
-              price="$399"
-              cadence="per 4-week cohort"
+              name="Platform Membership"
+              price="$15"
+              cadence="per month"
               bullets={[
-                "Live, streamer-style classroom (2x per week, 90 min each)",
-                "Structured curriculum from fundamentals to release-ready tracks",
-                "Weekly homework with detailed feedback and revisions",
-                "15–30 min live office hours for direct questions and troubleshooting",
-                "Real-world workflows for production, arrangement, and mixing",
-                "Replays, templates, project files, and curated sample packs",
-                "Accountability, deadlines, and progress tracking to keep you moving",
+                "Access to the Student Lounge (Platform hub)",
+                "Private Discord (collabs, feedback, practice sessions)",
+                "Unlimited remix contest entries",
+                "Sync-style submission opportunities",
+                "Member resources: samples, MIDI patterns, presets",
+                "Tools + plugin deals (as released)",
+              ]}
+              image="/vip.png"
+              ctaLabel="Join Platform"
+              href="/membership"
+            />
+
+            {/* Cohorts (positioned as add-on path, not the entry point) */}
+            <PricingCard
+              name="Live Cohorts"
+              price="Member access"
+              cadence="inside the Platform"
+              bullets={[
+                "Live classroom experience when cohorts are running",
+                "Structured curriculum + accountability",
+                "Homework + feedback cycles",
+                "Office hours and troubleshooting support",
+                "Replays, templates, and project files",
+                "Future: optional paid cohort upgrades",
               ]}
               image="/courses.jpg"
-              ctaLabel="View Cohorts"
-              href="/apply"
+              ctaLabel="Explore Courses"
+              href="/courses"
             />
 
             {/* Tutoring */}
@@ -187,36 +231,16 @@ export default function HomePage() {
               price="$49"
               cadence="per 55-min session"
               bullets={[
-                "1:1 screen-share sessions with a working producer/engineer",
-                "Hands-on help inside your actual DAW and projects",
-                "Open-topic coaching: production, mixing, mastering, workflow",
-                "Fix stuck tracks, bad habits, and creative blocks in real time",
-                "Personalized feedback tailored to your goals and skill level",
-                "Add-on support for course students who want extra guidance",
-                "Custom 4-week crash courses available on request",
+                "1:1 screen-share with a working producer/engineer",
+                "Hands-on help inside your DAW and projects",
+                "Production, mixing, mastering, workflow coaching",
+                "Fix stuck tracks and creative blocks in real time",
+                "Personalized feedback tailored to your goals",
+                "Add-on support for members and cohort students",
               ]}
               image="/tutoring.jpg"
               ctaLabel="Book Tutoring"
               href="/tutoring"
-            />
-
-            {/* Membership */}
-            <PricingCard
-              name="Membership"
-              price="$15"
-              cadence="per month"
-              bullets={[
-                "Access to 808 sample packs and presets",
-                "Member-only plugin and gear discounts",
-                "Live mix events and Q&A sessions",
-                "Produce With The Pros style sessions",
-                "Private Discord access and practice sessions",
-                "Unlimited entries to 808 remix contests",
-                "Sync submission opportunities and more",
-              ]}
-              image="/vip.png"
-              ctaLabel="Explore Membership"
-              href="/membership"
             />
           </div>
         </div>
@@ -228,26 +252,21 @@ export default function HomePage() {
           <div className="grid gap-8 md:grid-cols-2 md:items-center">
             <div>
               <h3 className="text-3xl font-semibold">
-                Ready to make radio-ready records?
+                Ready to build real momentum?
               </h3>
               <p className="mt-3 text-gray-300">
-                Join a cohort, book 1:1 time, or go VIP. We’ll meet you where
-                you are and get your music over the finish line.
+                Join the Platform, explore the Lounge, and start learning,
+                collaborating, and submitting work — all in one place.
               </p>
             </div>
-            <div className="flex gap-4 md:justify-end">
+            <div className="flex gap-4 md:justify-end items-center">
               <Link
                 href="/courses"
                 className="rounded-xl border border-white/30 px-6 py-3 font-semibold hover:bg-white/10 transition"
               >
                 Explore Courses
               </Link>
-              <Link
-                href="/apply"
-                className="rounded-xl bg-[#00FFF7] px-6 py-3 font-semibold text-black hover:opacity-90 transition"
-              >
-                Apply Now
-              </Link>
+              <JoinPlatformButton />
             </div>
           </div>
         </div>
@@ -287,6 +306,15 @@ function CourseCard({ title, tag, blurb, href, image }: CourseCardProps) {
       </div>
       <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10 group-hover:ring-white/20" />
     </Link>
+  );
+}
+
+function FeatureCard({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+      <h3 className="text-xl font-semibold">{title}</h3>
+      <p className="mt-2 text-gray-300">{body}</p>
+    </div>
   );
 }
 

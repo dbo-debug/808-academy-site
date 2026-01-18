@@ -56,7 +56,7 @@ function Stepper({ current }: { current: 1 | 2 | 3 }) {
   );
 }
 
-// ✅ Calendly (NEW split)
+// ✅ Calendly (split)
 const CAL_ONBOARDING_PAID =
   "https://calendly.com/admin-the808academy/onboarding-call";
 const CAL_ONBOARDING_DEMO =
@@ -99,7 +99,7 @@ const TUTORING: Record<
   },
 };
 
-// Existing helper (keep for tutoring + membership because those may not use calendly redirect flow)
+// Existing helper (keep for tutoring + membership)
 async function startCheckout(params: {
   mode?: "demo" | "paid" | "membership" | "subscription";
   priceId?: string;
@@ -188,15 +188,19 @@ export default function SchedulePage() {
   // Cohort mode is derived ONLY from URL, never selectable
   const [cohortMode, setCohortMode] = React.useState<CohortMode>("paid");
 
-  // tutoring package selector (defaults to block4 per your preference)
+  // tutoring package selector (defaults to block4)
   const [tutoringPackage, setTutoringPackage] =
     React.useState<TutoringPackage>("block4");
 
   const [loading, setLoading] = React.useState(false);
+  const [addCohortSeat, setAddCohortSeat] = React.useState(false);
 
   React.useEffect(() => {
     const normalized = normalizeProgram(getParam("program"));
     setProgram(normalized);
+
+    const addSeat = getParam("addCohortSeat");
+    setAddCohortSeat(addSeat === "1" || addSeat === "true");
 
     const c = getParam("course");
     if (c) setCourse(c);
@@ -210,43 +214,60 @@ export default function SchedulePage() {
     setCohortMode(normalizeCohort(getParam("cohort")));
   }, []);
 
-  const isCourse = program === "Course";
   const isTutoring = program === "Tutoring";
   const isMembership = program === "Membership";
 
+  // Membership + cohort add-on should behave like Course for scheduling UI
+  const isCohortFlow = program === "Course" || (isMembership && addCohortSeat);
+  const isCourse = isCohortFlow;
+
   const tutoring = TUTORING[tutoringPackage];
 
+  // For membership+addon: force paid cohort behavior (no demo)
+  const effectiveCohortMode: CohortMode =
+    isMembership && addCohortSeat ? "paid" : cohortMode;
+
   const headline = isMembership
-    ? "Membership checkout"
+    ? addCohortSeat
+      ? "Membership + cohort add-on — onboarding call"
+      : "Membership checkout"
     : isTutoring
     ? "Tutoring — schedule first, then checkout"
-    : cohortMode === "demo"
+    : effectiveCohortMode === "demo"
     ? "Free demo cohort — onboarding call"
     : "Paid cohort — onboarding call";
 
   const subhead = isMembership
-    ? "Membership goes straight to checkout."
+    ? addCohortSeat
+      ? "You’re adding a seat for the next live cohort. This short onboarding call confirms goals and class time, then you’ll complete checkout."
+      : "Membership goes straight to checkout."
     : isTutoring
     ? "Choose your tutoring option, schedule your session, then complete checkout to confirm."
     : "You already picked your class time. This 30-minute onboarding call confirms goals, answers questions, and gets you set up before payment.";
 
   // ✅ choose correct calendly based on demo/paid
   const courseCalendly =
-    cohortMode === "demo" ? CAL_ONBOARDING_DEMO : CAL_ONBOARDING_PAID;
+    effectiveCohortMode === "demo" ? CAL_ONBOARDING_DEMO : CAL_ONBOARDING_PAID;
+
+  // Membership add-on should always use the paid onboarding call
+  const calendlyForCohortFlow =
+    isMembership && addCohortSeat ? CAL_ONBOARDING_PAID : courseCalendly;
 
   // ✅ helper to preserve params and send to /apply/checkout bridge
   const buildCheckoutBridgeUrl = () => {
     const next = new URL("/apply/checkout", window.location.origin);
 
-    // Explicitly mark demo vs paid for the bridge page
-    next.searchParams.set("cohort", cohortMode === "demo" ? "demo" : "paid");
+    next.searchParams.set(
+      "cohort",
+      effectiveCohortMode === "demo" ? "demo" : "paid"
+    );
 
-    // Keep context (optional but useful)
     next.searchParams.set("program", program);
     if (course) next.searchParams.set("course", course);
     if (classTime) next.searchParams.set("classTime", classTime);
 
-    // If calendly passed details through, they’re already on this URL, but we don’t need them.
+    if (isMembership && addCohortSeat) next.searchParams.set("addCohortSeat", "1");
+
     return next.toString();
   };
 
@@ -263,16 +284,18 @@ export default function SchedulePage() {
             </h1>
             <p className="text-gray-300 mb-6">{subhead}</p>
 
-            {/* ✅ IMPORTANT NOTICE for Courses (this is the fix for confusion) */}
+            {/* ✅ IMPORTANT NOTICE for course/cohort flows */}
             {isCourse && (
               <div className="mb-5 rounded-2xl border border-teal-400/30 bg-teal-400/10 p-4 text-sm text-white/80">
                 <div className="text-xs uppercase tracking-[0.2em] text-teal-200">
                   Important
                 </div>
                 <div className="mt-1">
-                  Booking the onboarding call does <span className="font-semibold">not</span> complete enrollment.
+                  Booking the onboarding call does{" "}
+                  <span className="font-semibold">not</span> complete signup.
                   After you schedule, you’ll be redirected to{" "}
-                  <span className="font-semibold">secure checkout</span> to confirm your spot.
+                  <span className="font-semibold">secure checkout</span> to
+                  confirm payment.
                 </div>
               </div>
             )}
@@ -315,20 +338,20 @@ export default function SchedulePage() {
               </>
             )}
 
-            {/* Course: embed correct onboarding calendly */}
+            {/* Course (or Membership+addon): embed onboarding calendly */}
             {isCourse && (
               <div className="rounded-2xl overflow-hidden border border-white/10 bg-black">
                 <iframe
                   title="Onboarding Call"
-                  src={`${courseCalendly}?hide_gdpr_banner=1`}
+                  src={`${calendlyForCohortFlow}?hide_gdpr_banner=1`}
                   className="w-full"
                   style={{ height: "760px" }}
                 />
               </div>
             )}
 
-            {/* Membership: simple note */}
-            {isMembership && (
+            {/* Membership-only note (ONLY when not adding cohort seat) */}
+            {isMembership && !addCohortSeat && (
               <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
                 <p className="text-sm text-white/70">
                   Click “Continue to Checkout” on the right to complete membership signup.
@@ -369,7 +392,11 @@ export default function SchedulePage() {
             <div className="space-y-3 text-sm text-white/75">
               <div className="flex justify-between gap-3">
                 <span className="text-white/50">Program</span>
-                <span className="text-white">{program}</span>
+                <span className="text-white">
+                  {program === "Membership" && addCohortSeat
+                    ? "Membership + Cohort add-on"
+                    : program}
+                </span>
               </div>
 
               {isCourse && (
@@ -390,7 +417,11 @@ export default function SchedulePage() {
                     <div className="flex justify-between gap-3">
                       <span className="text-white/50">Cohort</span>
                       <span className="text-white">
-                        {cohortMode === "demo" ? "Free demo cohort" : "Paid cohort"}
+                        {program === "Membership" && addCohortSeat
+                          ? "Cohort add-on (paid)"
+                          : effectiveCohortMode === "demo"
+                          ? "Free demo cohort"
+                          : "Paid cohort"}
                       </span>
                     </div>
                     <div className="mt-2">
@@ -437,6 +468,13 @@ export default function SchedulePage() {
                   };
 
                   try {
+                    // ✅ Membership + cohort add-on should go through cohort checkout bridge
+                    if (isMembership && addCohortSeat) {
+                      window.location.href = buildCheckoutBridgeUrl();
+                      return;
+                    }
+
+                    // ✅ Membership-only: direct membership checkout
                     if (isMembership) {
                       await startCheckout({
                         mode: "membership",
@@ -470,7 +508,8 @@ export default function SchedulePage() {
               </button>
 
               <p className="mt-3 text-xs text-white/50">
-                Tip: booking the call does not enroll you — checkout is required to confirm.
+                Tip: booking the call does not enroll you — checkout is required
+                to confirm.
               </p>
             </div>
           </aside>
