@@ -538,7 +538,6 @@ function RemixContestCard() {
 }
 
 function SampleLibraryCard() {
-  // Later: replace with real data + real cover images
   const packs = [
     {
       name: "808 Drum Essentials",
@@ -580,7 +579,7 @@ function SampleLibraryCard() {
         </Link>
       </div>
 
-      {/* Taller carousel on desktop */}
+      {/* Carousel */}
       <div className="mt-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex gap-4">
           {packs.map((p) => (
@@ -588,24 +587,20 @@ function SampleLibraryCard() {
               key={p.name}
               className="group w-[220px] shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-black/30"
             >
-                            {/* Cover */}
-              <div className="relative w-full bg-black/50">
-                <div className="relative w-full aspect-[3/4] max-h-[240px] overflow-hidden">
-                  <Image
-                    src={p.cover}
-                    alt={`${p.name} cover`}
-                    fill
-                    className="object-cover transition duration-300 group-hover:scale-[1.03]"
-                    sizes="(max-width: 768px) 220px, 260px"
-                  />
+              {/* Cover */}
+              <div className="relative aspect-[3/4] w-full overflow-hidden bg-black/50">
+                <Image
+                  src={p.cover}
+                  alt={`${p.name} cover`}
+                  fill
+                  className="object-cover transition duration-300 group-hover:scale-[1.03]"
+                  sizes="(max-width: 768px) 220px, 260px"
+                />
 
-                  {/* subtle overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
-                  {/* tag */}
-                  <div className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/40 px-2 py-1 text-[10px] text-white/70">
-                    {p.tag}
-                  </div>
+                <div className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/40 px-2 py-1 text-[10px] text-white/70">
+                  {p.tag}
                 </div>
               </div>
 
@@ -931,42 +926,40 @@ export default function StudentsHome() {
 
           {!isLoading && !paywalled && lounge && (
             <>
-              <ProfileCard displayName={displayName} membershipLabel={membershipLabel} avatarUrl={avatarUrl} />
+  <ProfileCard displayName={displayName} membershipLabel={membershipLabel} avatarUrl={avatarUrl} />
 
-              <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-                {/* LEFT */}
-                <div className="space-y-6 lg:col-span-2">
-                  {showCourse && (
-                    <CourseProgressCard
-                      courseTitle={courseTitle}
-                      landingHref={ebookLandingHref}
-                      continueHref={continueHref}
-                      done={done}
-                      percent={percentString}
-                    />
-                  )}
+  <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+    {/* LEFT (wide) */}
+    <div className="space-y-6 lg:col-span-2">
+      {showCourse && (
+        <CourseProgressCard
+          courseTitle={courseTitle}
+          landingHref={ebookLandingHref}
+          continueHref={continueHref}
+          done={done}
+          percent={percentString}
+        />
+      )}
 
-                  {showHomework && <HomeworkCard />}
-                  {showSyncLibrary && <SyncLibraryCard />}
+      {showHomework && <HomeworkCard />}
+      {showSyncLibrary && <SyncLibraryCard />}
 
-                  <RemixContestCard />
-                  <SampleLibraryCard />
-                </div>
+      <RemixContestCard />
 
-                {/* RIGHT */}
-                <div className="space-y-6">
-                  <LiveClassCard show={isCohortMember} />
-                  {showStats && <StatsCard gpa={gpaPct} done={done} percentString={percentString} />}
-                  <QuickLinksCard officeHoursUrl={OFFICE_HOURS_URL} />
-                  <AnnouncementsCard items={announcements} />
-                </div>
-              </div>
+      {/* Sample Library + Store STACK so the right column never shows a dead zone */}
+      <SampleLibraryCard />
+      <StoreCard />
+    </div>
 
-              {/* Full-width store card */}
-              <div className="mt-6">
-                <StoreCard />
-              </div>
-            </>
+    {/* RIGHT */}
+    <div className="space-y-6">
+      <LiveClassCard show={isCohortMember} />
+      {showStats && <StatsCard gpa={gpaPct} done={done} percentString={percentString} />}
+      <QuickLinksCard officeHoursUrl={OFFICE_HOURS_URL} />
+      <AnnouncementsCard items={announcements} />
+    </div>
+  </div>
+</>
           )}
         </main>
       </div>
